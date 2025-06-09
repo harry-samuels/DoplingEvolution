@@ -168,6 +168,7 @@ TOPICS=[
     "Coin Magic",
     "Fly Fishing",
     "Bedazzling",
+    "Solitaire",
     #food
     "Brewing Kombucha",
     "Sourdough Bread",
