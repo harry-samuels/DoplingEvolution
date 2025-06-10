@@ -11,3 +11,6 @@ SPAWNED_CELL_FOOD= 5
 #used in cell
 FOOD_TO_MOVE= 0.025
 FOOD_TO_SPLIT= 5
+
+#used in grid
+PAC_MAN_MODE= False

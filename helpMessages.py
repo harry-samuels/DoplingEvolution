@@ -135,6 +135,7 @@ def displayStartupMessages():
     print(tableMessage)
     print('type "help" at any time if you need a refresher')
     if input("Write 'custom' to use custom parameters or press 'Enter' to begin the simulation: ") == "custom":
+        print("\nNOTE: changing the default parameters may introduce unforseen bugs (be careful!...or don't)")
 
         FPTinput= input("\nInput how many pieces of food will be spawned per turn (int), or hit 'Enter' to use default (" + str(inputs.FOOD_PER_TURN) + "): ")
         if FPTinput != "":
@@ -165,6 +166,11 @@ def displayStartupMessages():
         if FTSinput != "":
             inputs.FOOD_TO_SPLIT= float(FTSinput)
             print("Food needed to split: " + FTSinput)
+
+        PMMinput= input("\nType 'Y' to enable edgeless map (Pac-Man mode), or hit 'Enter' to keep 'hard edges': ")
+        if PMMinput == "Y":
+            inputs.PAC_MAN_MODE= True
+            print("Pac-Man Mode enabled")
         
         
 

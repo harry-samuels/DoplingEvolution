@@ -1,4 +1,6 @@
 import cell
+import inputs
+
 import random
 
 class Node:
@@ -94,6 +96,21 @@ def createGrid(rows,columns):
                     container[y-1][x].south= new
 
                     old= new
+
+        #create edgeless map if Pac-Man Mode is enabled
+        if inputs.PAC_MAN_MODE:
+            #link left side and right side to eachother
+            for rowIndex in range(0, len(container)):
+                westEdge= container[rowIndex][0]
+                eastEdge= container[rowIndex][-1]
+                westEdge.west= eastEdge
+                eastEdge.east= westEdge
+            #link top and bottom to eachother
+            for columnIndex in range(0, len(container[1])):
+                northEdge= container[0][columnIndex]
+                southEdge= container[-1][columnIndex]
+                northEdge.north= southEdge
+                southEdge.south= northEdge
 
         return container
 
