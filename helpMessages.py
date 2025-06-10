@@ -1,3 +1,5 @@
+import inputs
+
 starterMessage= """
 Welcome to \x1b[35mSIMULATIN!\x1b[0m
 a (super neat) program by Harry \x1b[34mB\x1b[0m Samuels
@@ -132,7 +134,41 @@ def displayStartupMessages():
     input("press 'Enter' to continue")
     print(tableMessage)
     print('type "help" at any time if you need a refresher')
-    input("press 'Enter' to begin the simulation")
+    if input("Write 'custom' to use custom parameters or press 'Enter' to begin the simulation: ") == "custom":
+
+        FPTinput= input("\nInput how many pieces of food will be spawned per turn (int), or hit 'Enter' to use default (" + str(inputs.FOOD_PER_TURN) + "): ")
+        if FPTinput != "":
+            inputs.FOOD_PER_TURN= int(FPTinput)
+            print("Food per turn: " + FPTinput)
+
+        FVinput= input("\nInput how much food value each spawned food should provide (float), or hit 'Enter' to use default (" + str(inputs.FOOD_VALUE) + "): ")
+        if FVinput != "":
+            inputs.FOOD_VALUE= float(FVinput)
+            print("Spawned food value: " + FVinput)
+
+        BCNinput= input("\nInput the starting number of doplings (int), or hit 'Enter' to use default (" + str(inputs.BASE_CELL_NUMBER) + "): ")
+        if BCNinput != "":
+            inputs.BASE_CELL_NUMBER= int(BCNinput)
+            print("Base dopling number: " + BCNinput)
+
+        SCFinput= input("\nInput the starting amount of food for spawned doplings (float), or hit 'Enter' to use default (" + str(inputs.SPAWNED_CELL_FOOD) + "): ")
+        if SCFinput != "":
+            inputs.SPAWNED_CELL_FOOD= float(SCFinput)
+            print("\nSpawned dopling food: " + SCFinput)
+
+        FTMinput= input("\nInput the amount of food a dopling uses to move (float), or hit 'Enter' to use default (" + str(inputs.FOOD_TO_MOVE) + "): ")
+        if FTMinput != "":
+            inputs.FOOD_TO_MOVE= float(FTMinput)
+            print("Food to move: " + FTMinput)
+
+        FTSinput= input("\nInput the amount of food a dopling needs to split (float), or hit 'Enter' to use default (" + str(inputs.FOOD_TO_SPLIT) + "): ")
+        if FTSinput != "":
+            inputs.FOOD_TO_SPLIT= float(FTSinput)
+            print("Food needed to split: " + FTSinput)
+        
+        
+
+
 
 def displayHelpMessages():
     print(starterMessage)

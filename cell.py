@@ -1,5 +1,6 @@
 import grid
 import genealogy
+import inputs
 
 import random
 import copy
@@ -142,7 +143,7 @@ class Cell:
         self.age+= 1
         goingTo= None
         #food cost to move
-        self.valuetable[MOD_INDEX.index("food")]-= 0.025 
+        self.valuetable[MOD_INDEX.index("food")]-= inputs.FOOD_TO_MOVE 
         if self.valuetable[MOD_INDEX.index("food")] <= 0:
             self.lyse("hungry :(")
 
@@ -197,7 +198,7 @@ class Cell:
             return
         
         #check if ready to split
-        if self.valuetable[MOD_INDEX.index("food")] > 5:
+        if self.valuetable[MOD_INDEX.index("food")] > inputs.FOOD_TO_SPLIT:
             self.split(goingTo)
         else:
             #this was above the if statement but i moved it down, this has stimmied evolution it appears

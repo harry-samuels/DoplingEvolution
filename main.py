@@ -3,6 +3,7 @@ import cell
 import genealogy
 import display
 import helpMessages
+import inputs
 
 import random
 
@@ -10,27 +11,27 @@ import random
 helpMessages.displayStartupMessages()
 
 # max size 52 x52
-MAP= grid.Grid(45, 52)
+MAP= grid.Grid(inputs.MAP_COLUMNS, inputs.MAP_ROWS)
 
-for c in range(0, 15):
-    MAP.spawnCell(5)
-#display.printDisplay(MAP, None)
+#don't actually need these three lines
+#for c in range(0, 15):
+    #MAP.spawnCell(5)
 
 
 inp= ""
 i=0
 trackedCell= None
 while inp != "X":   
-    for f in range(0,1):
-        MAP.spawnFood(3)
+    for f in range(0,inputs.FOOD_PER_TURN):
+        MAP.spawnFood(inputs.FOOD_VALUE)
     moveList= cell.CELLS.copy()
     for z in moveList:
         z.move()
         # print(str(z)) #DEBUG
         # print(len(display.removeANSI(str(z))))
     MAP.totalturns+= 1
-    while len(cell.CELLS)< 15:
-        MAP.spawnCell(5)
+    while len(cell.CELLS)< inputs.BASE_CELL_NUMBER:
+        MAP.spawnCell(inputs.SPAWNED_CELL_FOOD)
     if i<1:
         display.printDisplay(MAP, trackedCell)
         inp= input()
