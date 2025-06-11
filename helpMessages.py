@@ -77,6 +77,7 @@ There are several command inputs that allow you to to fully utilize the program 
     -an ID number is written with the '#' symbol, like "#12" or "#14850"
     -the track command also gives you much more information about the tracked dopling on the right side of the display
     -you can view the dopling's name, species, thoughts, protein levels, activation/inhibition values, and much more
+    -type 'name' while tracking a dopling to rename it!
 
 '\x1b[35muntrack\x1b[0m':
     -the untrack command stops the tracking of all doplings

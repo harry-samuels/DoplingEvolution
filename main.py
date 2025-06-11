@@ -104,6 +104,14 @@ while inp != "X":
             genealogy.untrackAll()
             print(str(trackedTotal) + " cells untracked")
 
+        #renaming tracked cell
+        if inp == "name":
+            if not (trackedCell is None):
+                trackedCell.name= input("What would you like to name this dopling?: ")
+            else:
+                print("\nno dopling currently tracked, please track the dopling to be renamed")
+
+
         #toggle moving phylogeny display from right side to bottom
         if inp == "bottom":
             display.PHYLOGENYBOTTOMDISPLAY= not display.PHYLOGENYBOTTOMDISPLAY
