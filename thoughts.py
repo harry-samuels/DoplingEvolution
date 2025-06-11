@@ -147,6 +147,8 @@ TOPICS=[
     "Captain Crunch",
     "the Trix Rabbit",
     "the Lorax",
+    "Fred FLinstone",
+    "George Jetson",
     #activities
     "Rugby",
     "Woodworking",
