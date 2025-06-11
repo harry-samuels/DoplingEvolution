@@ -80,8 +80,6 @@ class Cell:
         self.name= (random.choice(["ba", "po", "li", "re", "xi", "shu", "cra", "psy", "tri", "fro", "woo", "do", "ki", "epi", "ono", "uba", "aro", "immo", "qui", "gra", "hu", "mi", "vee", "yoo", "zo"]) + 
             random.choice(["tep", "xer", "vill", "rax", "dop", "bell", "twip", "zar", "gloop", "bass", "quail", "lint", "jell", "vex", "darg", "wag", "los"]) + 
             random.choice(["allo", "otron", "ling", "forp", "ilious", "udo", "ali", "atic", " ESQ", "erba", "ark", "idious", "indu", "onco", "abongo"]))
-        
-        self.fullname= self.name + " (#" + str(self.numberID) + ")"
 
         self.lysed= False
         #deathmessage and deathdate are finalized when cell is lysed (hopefully much later)
@@ -114,6 +112,8 @@ class Cell:
         self.genealogy= genealogy.Genealogy(self, mothergenealogy)
 
         
+    def fullname(self):
+        return self.name + " (#" + str(self.numberID) + ")"
 
     def __str__(self):
         alpha= "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -408,7 +408,7 @@ class Cell:
     def report(self):
         messengers= ["thinkin", "schemin", "plottin", "dreamin"]
         proteins= ["upin", "downin", "rightin", "leftin"]
-        print("\n\nREPORT: "+ self.fullname)
+        print("\n\nREPORT: "+ self.fullname())
         print("--------------------------------\n")
         print("Current Location  :  " + self.location.id + "\n")
         #"  Siblings #: "+ str(len(self.genealogy.mother.children)-1) + (needed to remove as not compatible with sponateously generated cells)

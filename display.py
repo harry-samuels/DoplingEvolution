@@ -208,7 +208,7 @@ def assemblePhylogenyDisplay(gcaTaxon, displayedSpecies):
 def assembleTrackedCellDisplay(trackedCell):
     display=[]
     display.append("")
-    display.append("Tracking: \x1b[" + trackedCell.genealogy.color + "m" + trackedCell.fullname + "\x1b[0m | " + str(trackedCell) + " | \x1b[" +trackedCell.genealogy.taxon.color + "m" + trackedCell.genealogy.taxon.genus + " " + trackedCell.genealogy.taxon.species + "\x1b[0m")
+    display.append("Tracking: \x1b[" + trackedCell.genealogy.color + "m" + trackedCell.fullname() + "\x1b[0m | " + str(trackedCell) + " | \x1b[" +trackedCell.genealogy.taxon.color + "m" + trackedCell.genealogy.taxon.genus + " " + trackedCell.genealogy.taxon.species + "\x1b[0m")
     status= "\x1b[32mAlive\x1b[0m" 
     if trackedCell.lysed:
         status="\x1b[31mDead\x1b[0m (Turn "+ str(trackedCell.deathdate) + ") " + trackedCell.deathmessage

@@ -144,7 +144,6 @@ Features to Implement:
 
 
 5) Pedigree creation single cell
-6) Pedigree creation for all currently living cells
 
 7) refactored/cleaner report output (use tracked cell display)
 
@@ -156,6 +155,24 @@ Features to Implement:
 -add ability to adjust ranges for track cell mod table via input
 
 -add ability to view mod/mov tables of multiple cells within species/across species
+
+-rename cells
+-add cell to favorites (yellow highlights)
+-ability to rebirth favorited cell?
+
+-save cells as csv for ressurection
+
+-add ability to bottleneck and kill large number of cells?
+
+-add ability to add walls
+
+-secondary messengers? more messenger hormone options? (strecth goal)
+
+-travk number of generations for all cells (make jumpstart work better?)
+
+-make food turns red on tracked cell display when cell is ten turns away from starving
+
+
 
 
 
@@ -169,4 +186,5 @@ X cell.numberID based lookup for living and dead cells
 X add ability to speed through rounds until enough cells exist to indicate intelligent life
 X add death message to track page after death (will need to condense death messages)
 X add taxonomy (genus, species, etc.)
+X Pedigree creation for all currently living cells
 """

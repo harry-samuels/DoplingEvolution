@@ -205,6 +205,7 @@ TOPICS=[
     "Polka-Dots",
     "The Former Yugoslavia",
     "The Ship of Theseus",
+    "The New York Jets",
     #People
     "Pete Davidson",
     "Grover Cleveland",
