@@ -3,6 +3,8 @@ import cell
 import genealogy
 import random
 import thoughts
+import inputs
+
 import re
 
 PHYLOGENYBOTTOMDISPLAY= False
@@ -225,8 +227,11 @@ def assembleTrackedCellDisplay(trackedCell):
     display.append('"' + thoughts.think(trackedCell) + '"')
 
     display.append("")
-    display.append("Food: "+ str(trackedCell.valuetable[cell.MOD_INDEX.index("food")])[:5])
-    display.append("Age: "+ str(trackedCell.age))
+    foodAlert= ""
+    if trackedCell.valuetable[cell.MOD_INDEX.index("food")]/inputs.FOOD_TO_MOVE < 20:
+        foodAlert= "\x1b[31m"
+    display.append("Food: " + foodAlert + str(trackedCell.valuetable[cell.MOD_INDEX.index("food")])[:5] + "\x1b[0m")
+    display.append("Age: " + str(trackedCell.age))
     display.append("Generation: " + str(trackedCell.genealogy.generation))
     display.append("Children: " + str(len(trackedCell.genealogy.children)))
     if not(trackedCell.genealogy.mother is None):

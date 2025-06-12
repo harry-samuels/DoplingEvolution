@@ -31,7 +31,7 @@ while inp != "X":
         # print(len(display.removeANSI(str(z))))
     MAP.totalturns+= 1
     while len(cell.CELLS)< inputs.BASE_CELL_NUMBER:
-        MAP.spawnCell(inputs.SPAWNED_CELL_FOOD)
+        MAP.spawnCell(food=inputs.SPAWNED_CELL_FOOD)
     if i<1:
         display.printDisplay(MAP, trackedCell)
         inp= input()
