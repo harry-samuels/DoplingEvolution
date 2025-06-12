@@ -343,8 +343,12 @@ def printPedigree():
         return
     pedigree= genealogy.generatePedigree(gca)
 
-    print("Pedigree: Turn #" + str(gca.map.totalturns))
-    print("-----------------------------------\n")
+    print("\nPedigree: Turn #" + str(gca.map.totalturns))
+    print("-----------------------------------")
+    print("Key:")
+    print("species originators are \x1b[43mhighlighted\x1b[0m")
+    print("living doplings are \x1b[4munderlined\x1b[0m")
+    print("dead doplings are not underlined\n")
 
     pedigreeDisplay= generatePedigreeDisplay(pedigree)
     for line in pedigreeDisplay:
@@ -420,7 +424,7 @@ def generatePedigreeDisplay(pedigree):
                 display.insert(0, ("|" + (" " * (displayLen-1))))
 
         #add pedigree cell str
-        display.insert(0, (str(pedigree[0]) + (" " * (displayLen-1))))
+        display.insert(0, (pedigreeString(pedigree[0]) + (" " * (displayLen-1))))
 
         return display
         
@@ -431,7 +435,7 @@ def generatePedigreeDisplay(pedigree):
         #if pedigree cell is alive
         if pedigree[0] in cell.CELLS:
             #return str of pedigree cell
-            return [str(pedigree[0])]
+            return [pedigreeString(pedigree[0])]
         #if pedigree cell is dead:
         else:
             return []
@@ -439,6 +443,19 @@ def generatePedigreeDisplay(pedigree):
             
 #returns str coloredText without ANSCI sequence(s)
 def removeANSI(coloredText):
-    halfCleaned= re.sub("\\x1b\[.{2}m", "", coloredText)
+    quarterCleaned= re.sub("\\x1b\[4m", "", coloredText)
+    halfCleaned= re.sub("\\x1b\[.{2}m", "", quarterCleaned)
     cleaned=  re.sub("\\x1b\[0m", "", halfCleaned)
     return cleaned
+
+def pedigreeString(pedigreeCell):
+    letter= removeANSI(str(pedigreeCell))
+
+    originatorHighlight= ""
+    if pedigreeCell == pedigreeCell.genealogy.taxon.originator:
+        originatorHighlight= "\x1b[4" + pedigreeCell.genealogy.color[1:] + "m"
+
+    if pedigreeCell.lysed:
+        return "\x1b[" + pedigreeCell.genealogy.color + "m" + pedigreeCell.genealogy.tracking + originatorHighlight + letter + "\x1b[0m"
+    else:
+        return "\x1b[4m\x1b[" + pedigreeCell.genealogy.color + "m" + pedigreeCell.genealogy.tracking + originatorHighlight + letter + "\x1b[0m"
