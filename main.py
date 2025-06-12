@@ -164,7 +164,7 @@ Features to Implement:
 
 -add ability to view mod/mov tables of multiple cells within species/across species
 
--rename cells
+
 -add cell to favorites (yellow highlights)
 -ability to rebirth favorited cell?
 
@@ -179,6 +179,10 @@ Features to Implement:
 -travk number of generations for all cells (make jumpstart work better?)
 
 -make food turns red on tracked cell display when cell is ten turns away from starving
+
+-allow cells to evolve faster "speed" to move first
+
+-change collision behavior to allow cell with more food to "eat" other cell
 
 
 
@@ -195,4 +199,5 @@ X add ability to speed through rounds until enough cells exist to indicate intel
 X add death message to track page after death (will need to condense death messages)
 X add taxonomy (genus, species, etc.)
 X Pedigree creation for all currently living cells
+X rename cells
 """
