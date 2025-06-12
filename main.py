@@ -150,6 +150,7 @@ Features to Implement:
 
 
 
+--------VISUAL/TRACKING:
 
 5) Pedigree creation single cell
 
@@ -164,19 +165,23 @@ Features to Implement:
 
 -add ability to view mod/mov tables of multiple cells within species/across species
 
+-travk number of generations for all cells (make jumpstart work better?)
 
+
+-----SAVING CELLS
 -add cell to favorites (yellow highlights)
 -ability to rebirth favorited cell?
 
 -save cells as csv for ressurection
 
+
+-----SIMULATION FEATURES
+
 -add ability to bottleneck and kill large number of cells?
 
 -add ability to add walls
 
--secondary messengers? more messenger hormone options? (strecth goal)
-
--travk number of generations for all cells (make jumpstart work better?)
+-secondary messengers? more messenger hormone options? (stretch goal)
 
 -make food turns red on tracked cell display when cell is ten turns away from starving
 
