@@ -82,6 +82,9 @@ There are several command inputs that allow you to to fully utilize the program 
 '\x1b[35muntrack\x1b[0m':
     -the untrack command stops the tracking of all doplings
 
+'\x1b[35mmultitrack\x1b[0m':
+    -the multitrack command allows a group of multiple cells to be tracked at once
+
 '\x1b[34mpedigree\x1b[0m':
     -the pedigree command generates and prints a family tree containing all living doplings 
     -a pedigree can only be made if all doplings are descended from a common ancestor

@@ -10,6 +10,8 @@ import re
 PHYLOGENYBOTTOMDISPLAY= False
 BOTTOM_DISPLAY= []
 
+MULTITRACK= False
+
 def printDisplay(map, trackedCell):
     BOTTOM_DISPLAY.clear()
     mapDisplay= assembleMapDisplay(map)
@@ -29,7 +31,7 @@ def assembleMapDisplay(map):
     alpha= "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
     firstLine= "+   A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y z"[:((map.columns*2)+ 4)]
    
-    display= [firstLine, ""]
+    display= [firstLine, (" "*len(firstLine))]
    
     i= 0
     line=""
@@ -43,12 +45,14 @@ def assembleMapDisplay(map):
     return display
 
 def assembleDataDisplay(map, trackedCell):
-    display= ["",
-        "",
-        "Total Turns:  " + str(map.totalturns) + "  |  Total Doplings:  " + str(map.totalcellsspawned),
-        "Living Doplings: " + str(len(cell.CELLS))]
+    display= [" Total Turns:  " + str(map.totalturns) + "  |  Total Doplings:  " + str(map.totalcellsspawned),
+        " Living Doplings: " + str(len(cell.CELLS))]
     if trackedCell is None:
-        display.extend(assembleExpandedSpeciesDisplay())
+        if MULTITRACK:
+            genealogy.untrackAll()
+            display.extend(assembleMultitrackDisplay())
+        else:
+            display.extend(assembleExpandedSpeciesDisplay())
     else:
         display.extend(assembleTrackedCellDisplay(trackedCell))
         
@@ -132,7 +136,7 @@ def assembleExpandedSpeciesDisplay():
                 count= currentSpeciesCount[i]
                 species= currentSpecies[i]
                 maxIndex= i
-        display.append("\x1b[" +species.color + "m" + species.genus + " " + species.species + "\x1b[0m " + spacer[:maxSpeciesDisplayLength-speciesDisplayLengths[maxIndex]] + str(currentSpeciesCount[maxIndex]) + " Cells")
+        display.append("\x1b[" +species.color + "m" + species.genus + " " + species.species + "\x1b[0m " + spacer[:maxSpeciesDisplayLength-speciesDisplayLengths[maxIndex]] + str(currentSpeciesCount[maxIndex]) + " Doplings")
         displayedSpeciesCount+= 1
         if displayedSpeciesCount <=3:
             display.append("")
@@ -203,7 +207,125 @@ def assemblePhylogenyDisplay(gcaTaxon, displayedSpecies):
         return []
 
     return display
-     
+
+#tracks multiple cells and returns display
+def assembleMultitrackDisplay():
+    
+    #list that will contain all extant species in order from most to least living members
+    currentSpecies= []
+    for liveCell in cell.CELLS:
+        taxon= liveCell.genealogy.taxon
+        if not taxon in currentSpecies:
+            i= 0
+            taxonLivingCells= len(taxon.memberlist) - taxon.deadMembers
+            while i < len(currentSpecies) and (taxonLivingCells < (len(currentSpecies[i].memberlist) - currentSpecies[i].deadMembers)):
+                i+= 1
+            currentSpecies.insert(i, taxon)
+
+
+    display=[]
+    #add key for + and - indicators
+    display.append("")
+    display.append("Key: \x1b[41m--\x1b[0m <-5  \x1b[41m-\x1b[0m <-2  \x1b[31m--\x1b[0m <-1  \x1b[31m-\x1b[0m <-0.1  \x1b[32m+\x1b[0m >0.1  \x1b[32m++\x1b[0m >1  \x1b[42m+\x1b[0m >2  \x1b[42m++\x1b[0m >5")
+    display.append("")
+    numDisplays= 0
+    while numDisplays < 3 and numDisplays < len(currentSpecies):
+        taxon= currentSpecies[numDisplays]
+        memberIndex= 0
+        stillSearching= True
+        while stillSearching and memberIndex < len(taxon.memberlist) -1:
+            if taxon.memberlist[memberIndex].lysed:
+                memberIndex+= 1
+            else:
+                stillSearching= False
+        multitrackedCell= taxon.memberlist[memberIndex]
+        multitrackedCell.genealogy.track("multitrack")
+        display.append("\x1b[" + taxon.color + "m" + taxon.genus + " " + taxon.species + "\x1b[0m" + " ~ " + str(len(taxon.memberlist) - taxon.deadMembers) + " Alive ~ " + str(taxon.generations) + " Gens since Turn " + str(taxon.advent))
+        display.append("Oldest Member: " + "\x1b[" + multitrackedCell.genealogy.color + "m" + multitrackedCell.fullname() + "\x1b[0m" + " ~ " + str(multitrackedCell) + " ~ Gen: " + str(multitrackedCell.genealogy.generation))
+        #remove valuline from track cell display
+        display.extend(assembleModTableDisplay(multitrackedCell)[1:])
+        display.append("")
+        display.extend(assembleMovTableDisplay(multitrackedCell))
+        display.append("")
+        numDisplays+=1
+    return display
+
+#creates printable table representation of trackedCell's modtable and partial valuetable with key
+def assembleModTableDisplay(trackedCell):
+    display=[]
+    valuesLine= " #: |"
+    for v in range(0, cell.MOD_INDEX.index("food")):
+        valuesLine+= str(trackedCell.valuetable[v]) + " |"
+    display.append(valuesLine)
+    display.append("In:  NE NF NC SE SF SC EE EF EC WE WF WC Fd Th Sc Pl Dr Up Dw Rt Lf")
+    messengersI=  ["Th: ", "Sc: ", "Pl: ", "Dr: "]
+    for m in range(len(messengersI)):
+        tableLine= messengersI[m]
+        for v in range(len(trackedCell.valuetable)):
+            tableLine+= "|" + convertModDisplay(trackedCell.modtable[v][m])
+        display.append(tableLine + "|")
+
+    return display
+
+#creates printable table representation of trackedCell's movementtable
+def assembleMovTableDisplay(trackedCell):
+    display= []
+    display.append("In:    Th     Sc     Pl     Dr")
+    proteinsI=  ["Up: ", "Dw: ", "Rt: ", "Lf: "]
+    for p in range(len(proteinsI)):
+        tableLine= proteinsI[p]
+        # next loop uses length of movement table to determine number of messenger hormones
+        for m in range(len(trackedCell.movementtable)):
+            tableLine+= "|" + convertMovDisplay(trackedCell.movementtable[m][p])
+        display.append(tableLine + "|")
+
+    return display
+
+#converts modtable value (mod) into display ready length 2 str with specified color/highlighting based on value
+def convertModDisplay(mod):
+    if (mod < 0.1) and (mod > -0.1):
+        return "0 "
+    if mod > 5: 
+        return "\x1b[42m++\x1b[0m"
+    if mod > 2:
+        return "\x1b[42m+\x1b[0m "
+    if mod > 1:
+        return "\x1b[32m++\x1b[0m"
+    if mod > 0:
+        return "\x1b[32m+\x1b[0m "
+    if mod < -5:
+        return "\x1b[41m--\x1b[0m"
+    if mod < -2:
+        return "\x1b[41m-\x1b[0m "
+    if mod < -1:
+        return "\x1b[31m--\x1b[0m"
+    if mod < 0:
+        return "\x1b[31m-\x1b[0m "
+
+#converts movementtable value (mov) into display ready length 6 str for use in cell tracking display
+def convertMovDisplay(mov):
+    color= ""
+    if mov > 2:
+        color= "\x1b[42m"
+    elif mov > 0.1:
+        color= "\x1b[32m"
+    elif mov < -2:
+        color= "\x1b[41m"
+    elif mov < -0.1:
+        color= "\x1b[31m"
+    printableMov= str(round(mov, 2))
+    mLen= len(printableMov)
+
+    if mLen > 6:
+        printableMov= printableMov[:6]
+
+    #spacers contains 6 lists, one for each possible sub-6 length (0-5) of printableMov,  
+    #each contain a pair of frontend and backend blank spaces to center the test in the printed table
+    spacers= [["   ", "   "], ["  ", "   "], ["  ", "  "], [" ", "  "], [" ", " "], ["", " "]]
+    if mLen < 6:
+        #now printable mov is length 6
+        printableMov= spacers[mLen][0] + printableMov + spacers[mLen][1]
+    return color + printableMov + "\x1b[0m"
 
 
 #adds relevent strings to list display for displaying trackedCell information and returns the display
@@ -259,80 +381,40 @@ def assembleTrackedCellDisplay(trackedCell):
     display.append("Leftin :\x1b[43m " + barGraph[:((round((movementValues[3]/(movementMax+.0001))*20)))] + "\x1b[0m" + str(round(movementValues[3], 1)))
 
     display.append("")
-    valuesLine= " #: |"
-    for v in range(0, cell.MOD_INDEX.index("food")):
-        valuesLine+= str(trackedCell.valuetable[v]) + " |"
-    display.append(valuesLine)
-    display.append("In:  NE NF NC SE SF SC EE EF EC WE WF WC Fd Th Sc Pl Dr Up Dw Rt Lf")
-    messengersI=  ["Th: ", "Sc: ", "Pl: ", "Dr: "]
-    for m in range(len(messengersI)):
-        tableLine= messengersI[m]
-        for v in range(len(trackedCell.valuetable)):
-            tableLine+= "|" + convertModDisplay(trackedCell.modtable[v][m])
-        display.append(tableLine + "|")
-
+    display.extend(assembleModTableDisplay(trackedCell))
     #add key for + and - indicators
     display.append("")
     display.append("Key: \x1b[41m--\x1b[0m <-5  \x1b[41m-\x1b[0m <-2  \x1b[31m--\x1b[0m <-1  \x1b[31m-\x1b[0m <-0.1  \x1b[32m+\x1b[0m >0.1  \x1b[32m++\x1b[0m >1  \x1b[42m+\x1b[0m >2  \x1b[42m++\x1b[0m >5")
-
     display.append("")
-    display.append("In:    Th     Sc     Pl     Dr")
-    proteinsI=  ["Up: ", "Dw: ", "Rt: ", "Lf: "]
-    for p in range(len(proteinsI)):
-        tableLine= proteinsI[p]
-        # next loop uses length of movement table to determine number of messenger hormones
-        for m in range(len(trackedCell.movementtable)):
-            tableLine+= "|" + convertMovDisplay(trackedCell.movementtable[m][p])
-        display.append(tableLine + "|")
+    display.extend(assembleMovTableDisplay(trackedCell))
+    # valuesLine= " #: |"
+    # for v in range(0, cell.MOD_INDEX.index("food")):
+    #     valuesLine+= str(trackedCell.valuetable[v]) + " |"
+    # display.append(valuesLine)
+    # display.append("In:  NE NF NC SE SF SC EE EF EC WE WF WC Fd Th Sc Pl Dr Up Dw Rt Lf")
+    # messengersI=  ["Th: ", "Sc: ", "Pl: ", "Dr: "]
+    # for m in range(len(messengersI)):
+    #     tableLine= messengersI[m]
+    #     for v in range(len(trackedCell.valuetable)):
+    #         tableLine+= "|" + convertModDisplay(trackedCell.modtable[v][m])
+    #     display.append(tableLine + "|")
+
+    # #add key for + and - indicators
+    # display.append("")
+    # display.append("Key: \x1b[41m--\x1b[0m <-5  \x1b[41m-\x1b[0m <-2  \x1b[31m--\x1b[0m <-1  \x1b[31m-\x1b[0m <-0.1  \x1b[32m+\x1b[0m >0.1  \x1b[32m++\x1b[0m >1  \x1b[42m+\x1b[0m >2  \x1b[42m++\x1b[0m >5")
+
+    # display.append("")
+    # display.append("In:    Th     Sc     Pl     Dr")
+    # proteinsI=  ["Up: ", "Dw: ", "Rt: ", "Lf: "]
+    # for p in range(len(proteinsI)):
+    #     tableLine= proteinsI[p]
+    #     # next loop uses length of movement table to determine number of messenger hormones
+    #     for m in range(len(trackedCell.movementtable)):
+    #         tableLine+= "|" + convertMovDisplay(trackedCell.movementtable[m][p])
+    #     display.append(tableLine + "|")
 
     return display
 
-
-#converts modtable value (mod) into display ready length 2 str with specified color/highlighting based on value
-def convertModDisplay(mod):
-    if (mod < 0.1) and (mod > -0.1):
-        return "0 "
-    if mod > 5: 
-        return "\x1b[42m++\x1b[0m"
-    if mod > 2:
-        return "\x1b[42m+\x1b[0m "
-    if mod > 1:
-        return "\x1b[32m++\x1b[0m"
-    if mod > 0:
-        return "\x1b[32m+\x1b[0m "
-    if mod < -5:
-        return "\x1b[41m--\x1b[0m"
-    if mod < -2:
-        return "\x1b[41m-\x1b[0m "
-    if mod < -1:
-        return "\x1b[31m--\x1b[0m"
-    if mod < 0:
-        return "\x1b[31m-\x1b[0m "
-
-#converts movementtable value (mov) into display ready length 6 str for use in cell tracking display
-def convertMovDisplay(mov):
-    color= ""
-    if mov > 2:
-        color= "\x1b[42m"
-    elif mov > 0.1:
-        color= "\x1b[32m"
-    elif mov < -2:
-        color= "\x1b[41m"
-    elif mov < -0.1:
-        color= "\x1b[31m"
-    printableMov= str(round(mov, 2))
-    mLen= len(printableMov)
-
-    if mLen > 6:
-        printableMov= printableMov[:6]
-
-    #spacers contains 6 lists, one for each possible sub-6 length (0-5) of printableMov,  
-    #each contain a pair of frontend and backend blank spaces to center the test in the printed table
-    spacers= [["   ", "   "], ["  ", "   "], ["  ", "  "], [" ", "  "], [" ", " "], ["", " "]]
-    if mLen < 6:
-        #now printable mov is length 6
-        printableMov= spacers[mLen][0] + printableMov + spacers[mLen][1]
-    return color + printableMov + "\x1b[0m"
 
 
 #prints a pedigree depicting all living cells descended from the greatest common anscestor

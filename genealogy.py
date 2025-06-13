@@ -96,6 +96,11 @@ class Genealogy:
                 if not self.mother.cell.lysed:             
                     self.mother.track("ancestor")
             return
+        elif tracktype == "multitrack":
+            self.tracktype= "multitrack"
+            #underline
+            self.tracking= "\x1b[4m"
+
 
     #stop tracking cell
     def untrack(self):
@@ -107,7 +112,7 @@ class Genealogy:
     #only able to be used on cells that were not spontaneously generated (ie: were split from another cell)
     def initializeTracking(self):
         #if mother cell is not being tracked, both values are the empty string
-        if self.mother.tracking == "":
+        if self.mother.tracking == "" or self.mother.tracking == "multitrack":
             self.tracking= ""
             self.tracktype= ""
             return

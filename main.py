@@ -85,6 +85,7 @@ while inp != "X":
 
         #track and untrack input processing
         if inp == "track":
+            display.MULTITRACK= False
             trackIdentifier= (input("Enter the ID, beginning with '#', or the grid location ('YX') of the dopling to be tracked: "))
             if "#" in trackIdentifier:
                 trackID= int(trackIdentifier[1:])
@@ -100,6 +101,7 @@ while inp != "X":
      
         if inp == "untrack":
             trackedCell= None
+            display.MULTITRACK= False
             trackedTotal= len(genealogy.TRACKED_CELLS)
             genealogy.untrackAll()
             print(str(trackedTotal) + " cells untracked")
@@ -110,6 +112,13 @@ while inp != "X":
                 trackedCell.name= input("What would you like to name this dopling?: ")
             else:
                 print("\nno dopling currently tracked, please track the dopling to be renamed")
+
+        if inp == "multitrack":
+            genealogy.untrackAll()
+            trackedCell= None
+            if input("Type 'species' to view the top 3 species: ") == "species":
+                display.MULTITRACK= True
+            
 
 
         #toggle moving phylogeny display from right side to bottom
