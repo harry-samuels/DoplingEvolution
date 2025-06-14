@@ -20,6 +20,13 @@ MOD_INDEX= [
     "upin", "downin", "rightin", "leftin"
 ]
 
+#adds newly generated cell to list of living Cells at the correct speed postion. CELLS is ordered from fastest (greatest speed) to slowest cells
+#This method keeps the list sorted
+def addtoCELLS(newCell, cellSpeed):
+    i= 0
+    while i < len(CELLS) and cellSpeed < CELLS[i].speed:
+        i+= 1
+    CELLS.insert(i, newCell)
 
 #create a new modifier table, if no mod table is given determine all modifiers randomly, otherwise return the given modtable
 def generateModTable(modtable=None):
@@ -72,15 +79,22 @@ def mutateSplitThreshold(splitThreshold, parent):
             splitThreshold= splitThreshold * random.uniform(0.9, 1.1)
     return splitThreshold
 
+def mutateSpeed(speed, parent):
+    if random.randint(0, 100) < 5:
+        if random.randint(0, 100) == 1:
+            speed= speed * random.choice([random.uniform(0.2, 0.5), random.uniform(2, 5)])
+            parent.genealogy.nextchildmegamutation= True
+        else:
+            speed= speed * random.uniform(0.9, 1.1)
+    #prevent speed form going below default value
+    if speed < inputs.FOOD_TO_MOVE:
+        speed= inputs.FOOD_TO_MOVE
+    return speed
+
+
 class Cell:
     #Grid: map, Node: location, int: food, []: modtable, []: movementtable, []: valuetable
-    def __init__(self, map, location, food, modtable=None, movementtable=None, valuetable=None, mothergenealogy=None, splitThreshold=inputs.FOOD_TO_SPLIT):
-        #add cell to the list of living cells
-        CELLS.insert(0, self)
-        #add cell tio list of all cells that have existed
-        ALL_CELLS.append(self)
-        #set unique identification number corresponding to ALL_CELLS index
-        self.numberID= len(ALL_CELLS)-1
+    def __init__(self, map, location, food, modtable=None, movementtable=None, valuetable=None, mothergenealogy=None, splitThreshold=inputs.FOOD_TO_SPLIT, speed=inputs.FOOD_TO_MOVE):
 
         self.age= 0
         self.name= (random.choice(["ba", "po", "li", "re", "xi", "shu", "cra", "psy", "tri", "fro", "woo", "do", "ki", "epi", "ono", "uba", "aro", "immo", "qui", "gra", "hu", "mi", "vee", "yoo", "zo"]) + 
@@ -116,9 +130,21 @@ class Cell:
         self.movementtable= generateMovementTable(movementtable)
 
         self.genealogy= genealogy.Genealogy(self, mothergenealogy)
+
         self.splitThreshold= splitThreshold
+        self.speed= speed
 
         
+
+        #add cell to the list of living cells
+        addtoCELLS(self, self.speed)
+        #add cell tio list of all cells that have existed
+        ALL_CELLS.append(self)
+        #set unique identification number corresponding to ALL_CELLS index
+        self.numberID= len(ALL_CELLS)-1
+        
+
+
     def fullname(self):
         return self.name + " (#" + str(self.numberID) + ")"
 
@@ -150,7 +176,7 @@ class Cell:
         self.age+= 1
         goingTo= None
         #food cost to move
-        self.valuetable[MOD_INDEX.index("food")]-= inputs.FOOD_TO_MOVE 
+        self.valuetable[MOD_INDEX.index("food")]-= self.speed 
         if self.valuetable[MOD_INDEX.index("food")] <= 0:
             self.lyse("hungry :(")
 
@@ -407,7 +433,7 @@ class Cell:
             self.valuetable[MOD_INDEX.index(p)]= (self.valuetable[MOD_INDEX.index(p)])/2
 
         #SQUASHED BUG!
-        c= Cell(self.map, position, self.valuetable[MOD_INDEX.index("food")], mutate(copy.deepcopy(self.modtable), self), mutate(copy.deepcopy(self.movementtable), self), copy.deepcopy(self.valuetable), self.genealogy, mutateSplitThreshold(self.splitThreshold, self))
+        c= Cell(self.map, position, self.valuetable[MOD_INDEX.index("food")], mutate(copy.deepcopy(self.modtable), self), mutate(copy.deepcopy(self.movementtable), self), copy.deepcopy(self.valuetable), self.genealogy, mutateSplitThreshold(self.splitThreshold, self), mutateSpeed(self.speed, self))
         #print("split " + c.name + " @ " + str(position.id) + " from " + self.name + " @ " + str(self.location.id)) #DEBUG
         c.move()
         return c
@@ -454,7 +480,7 @@ class Food:
         self.location.insert(self)
 
     def __str__(self):
-        if self.value > 5:
+        if self.value > inputs.FOOD_VALUE * 2:
             return "$"
         else:
             return "*"

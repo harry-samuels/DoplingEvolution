@@ -194,9 +194,6 @@ Features to Implement:
 
 -make food turns red on tracked cell display when cell is ten turns away from starving
 
--allow cells to evolve faster "speed" to move first
--allow cells to change their split value 
-
 -change collision behavior to allow cell with more food to "eat" other cell
 
 
@@ -215,4 +212,6 @@ X add death message to track page after death (will need to condense death messa
 X add taxonomy (genus, species, etc.)
 X Pedigree creation for all currently living cells
 X rename cells
+X allow cells to evolve faster "speed" to move first
+X allow cells to change their split value 
 """

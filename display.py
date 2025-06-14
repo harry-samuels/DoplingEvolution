@@ -240,8 +240,8 @@ def assembleMultitrackDisplay():
                 stillSearching= False
         multitrackedCell= taxon.memberlist[memberIndex]
         multitrackedCell.genealogy.track("multitrack")
-        display.append("\x1b[" + taxon.color + "m" + taxon.genus + " " + taxon.species + "\x1b[0m" + " ~ " + str(len(taxon.memberlist) - taxon.deadMembers) + " Alive ~ " + str(taxon.generations) + " Gens since Turn " + str(taxon.advent))
-        display.append("Oldest Member: " + "\x1b[" + multitrackedCell.genealogy.color + "m" + multitrackedCell.fullname() + "\x1b[0m" + " ~ " + str(multitrackedCell) + " ~ Gen: " + str(multitrackedCell.genealogy.generation))
+        display.append("\x1b[" + taxon.color + "m" + taxon.genus + " " + taxon.species + "\x1b[0m" + " ~ " + str(len(taxon.memberlist) - taxon.deadMembers) + " Alive ~ " + str(taxon.generations) + " Generations over "+ str(multitrackedCell.map.totalturns - taxon.advent) + " Turns")
+        display.append("Rep: " + "\x1b[" + multitrackedCell.genealogy.color + "m" + multitrackedCell.fullname() + "\x1b[0m" + " ~ " + str(multitrackedCell) + " ~ Gen: " + str(multitrackedCell.genealogy.generation) + " ~ Spl: " + str(multitrackedCell.splitThreshold)[:5] + " ~ Spd: " + str(multitrackedCell.speed)[:5])
         #remove valuline from track cell display
         display.extend(assembleModTableDisplay(multitrackedCell)[1:])
         display.append("")
@@ -352,7 +352,7 @@ def assembleTrackedCellDisplay(trackedCell):
     foodAlert= ""
     if trackedCell.valuetable[cell.MOD_INDEX.index("food")]/inputs.FOOD_TO_MOVE < 20:
         foodAlert= "\x1b[31m"
-    display.append("Food: " + foodAlert + str(trackedCell.valuetable[cell.MOD_INDEX.index("food")])[:5] + "\x1b[0m" + " | Split @ " + str(trackedCell.splitThreshold)[:5] + " | Speed: 522.2")
+    display.append("Food: " + foodAlert + str(trackedCell.valuetable[cell.MOD_INDEX.index("food")])[:5] + "\x1b[0m" + " | Split @ " + str(trackedCell.splitThreshold)[:5] + " | Speed: " + str(trackedCell.speed)[:5])
     display.append("Age: " + str(trackedCell.age))
     display.append("Generation: " + str(trackedCell.genealogy.generation))
     display.append("Children: " + str(len(trackedCell.genealogy.children)))
