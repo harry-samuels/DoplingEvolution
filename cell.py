@@ -62,13 +62,19 @@ def mutate(table, parent):
                     table[r][c]= table[r][c] + (random.uniform(-0.99, 0.99))
     return table
 
-
-
-
+#add mutation to splitThreshold
+def mutateSplitThreshold(splitThreshold, parent):
+    if random.randint(0, 100) < 5:
+        if random.randint(0, 100) == 1:
+            splitThreshold= splitThreshold * random.choice([random.uniform(0.2, 0.5), random.uniform(2, 5)])
+            parent.genealogy.nextchildmegamutation= True
+        else:
+            splitThreshold= splitThreshold * random.uniform(0.9, 1.1)
+    return splitThreshold
 
 class Cell:
     #Grid: map, Node: location, int: food, []: modtable, []: movementtable, []: valuetable
-    def __init__(self, map, location, food, modtable=None, movementtable=None, valuetable=None, mothergenealogy=None):
+    def __init__(self, map, location, food, modtable=None, movementtable=None, valuetable=None, mothergenealogy=None, splitThreshold=inputs.FOOD_TO_SPLIT):
         #add cell to the list of living cells
         CELLS.insert(0, self)
         #add cell tio list of all cells that have existed
@@ -110,6 +116,7 @@ class Cell:
         self.movementtable= generateMovementTable(movementtable)
 
         self.genealogy= genealogy.Genealogy(self, mothergenealogy)
+        self.splitThreshold= splitThreshold
 
         
     def fullname(self):
@@ -198,7 +205,7 @@ class Cell:
             return
         
         #check if ready to split
-        if self.valuetable[MOD_INDEX.index("food")] > inputs.FOOD_TO_SPLIT:
+        if self.valuetable[MOD_INDEX.index("food")] > self.splitThreshold:
             self.split(goingTo)
         else:
             #this was above the if statement but i moved it down, this has stimmied evolution it appears
@@ -400,7 +407,7 @@ class Cell:
             self.valuetable[MOD_INDEX.index(p)]= (self.valuetable[MOD_INDEX.index(p)])/2
 
         #SQUASHED BUG!
-        c= Cell(self.map, position, self.valuetable[MOD_INDEX.index("food")], mutate(copy.deepcopy(self.modtable), self), mutate(copy.deepcopy(self.movementtable), self), copy.deepcopy(self.valuetable), self.genealogy)
+        c= Cell(self.map, position, self.valuetable[MOD_INDEX.index("food")], mutate(copy.deepcopy(self.modtable), self), mutate(copy.deepcopy(self.movementtable), self), copy.deepcopy(self.valuetable), self.genealogy, mutateSplitThreshold(self.splitThreshold, self))
         #print("split " + c.name + " @ " + str(position.id) + " from " + self.name + " @ " + str(self.location.id)) #DEBUG
         c.move()
         return c
