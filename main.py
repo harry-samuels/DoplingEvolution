@@ -196,6 +196,8 @@ Features to Implement:
 
 -change collision behavior to allow cell with more food to "eat" other cell
 
+-make hormones cost food?
+
 
 
 
