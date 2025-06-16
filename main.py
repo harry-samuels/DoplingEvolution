@@ -202,6 +202,8 @@ Features to Implement:
 -add ability to bottleneck and kill large number of cells?
 
 -add ability to add walls
+-preset walls? (ie: halves/quarters)
+-build mountain range? (over time mountain range grows and then recedes across screen? could be really neat)
 
 -secondary messengers? more messenger hormone options? (stretch goal)
 
