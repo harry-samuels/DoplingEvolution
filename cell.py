@@ -99,7 +99,7 @@ class Cell:
         self.age= 0
         self.name= (random.choice(["ba", "po", "li", "re", "xi", "shu", "cra", "psy", "tri", "fro", "woo", "do", "ki", "epi", "ono", "uba", "aro", "immo", "qui", "gra", "hu", "mi", "vee", "yoo", "zo"]) + 
             random.choice(["tep", "xer", "vill", "rax", "dop", "bell", "twip", "zar", "gloop", "bass", "quail", "lint", "jell", "vex", "darg", "wag", "los"]) + 
-            random.choice(["allo", "otron", "ling", "forp", "ilious", "udo", "ali", "atic", " ESQ", "erba", "ark", "idious", "indu", "onco", "abongo"]))
+            random.choice(["allo", "otron", "ling", "forp", "ilious", "udo", "ali", "atic", " ESQ", "erba", "ark", "idious", "indu", "onco", "abongo", "ack"]))
 
         self.lysed= False
         #deathmessage and deathdate are finalized when cell is lysed (hopefully much later)
@@ -130,6 +130,9 @@ class Cell:
         self.movementtable= generateMovementTable(movementtable)
 
         self.genealogy= genealogy.Genealogy(self, mothergenealogy)
+
+        #how many other cells this cell has eaten
+        self.cellsEaten= 0
 
         self.splitThreshold= splitThreshold
         self.speed= speed
@@ -411,9 +414,22 @@ class Cell:
             self.lyse("wanderlust")
             return
         elif (goingTo.isFull()):
-            self.lyse("collision")
+            self.collide(goingTo.contains)
             return
     
+    # process collision between two cells (this cell which is attempting to move into the node occupied by the collidee)
+    def collide(self, collidee):
+        selfFood= self.valuetable[MOD_INDEX.index("food")]
+        collideeFood= collidee.valuetable[MOD_INDEX.index("food")]
+        #if collidee is at least 10% bigger than this cell: lyse this cell
+        if collideeFood > selfFood * 0.9:
+            self.lyse("collision")
+        #if this cell is the bigger one, the other cell lyses (and this cell then moves into it's space, "eating it"), tie goes to the runner
+        else:
+            collidee.lyse("got chomped")
+            self.cellsEaten+= 1
+
+
     def checkFood(self, goingTo):
         if goingTo.isFood():
             self.valuetable[MOD_INDEX.index("food")]+= goingTo.contains.value

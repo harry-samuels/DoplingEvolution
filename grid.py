@@ -124,6 +124,8 @@ class Grid:
 
         self.totalturns= 0
         self.totalcellsspawned= 0
+        #contains the generation of the most recently created cell
+        self.latestgeneration= 0
 
         
 

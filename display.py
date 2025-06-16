@@ -14,6 +14,7 @@ MULTITRACK= False
 
 def printDisplay(map, trackedCell):
     BOTTOM_DISPLAY.clear()
+    #SWITCH THESE TO MAKE DISPLAY UPDATE CORRECTLY
     mapDisplay= assembleMapDisplay(map)
     dataDisplay= assembleDataDisplay(map, trackedCell)
     finalDisplay= stitchDisplays(mapDisplay, dataDisplay)
@@ -46,7 +47,7 @@ def assembleMapDisplay(map):
 
 def assembleDataDisplay(map, trackedCell):
     display= [" Total Turns:  " + str(map.totalturns) + "  |  Total Doplings:  " + str(map.totalcellsspawned),
-        " Living Doplings: " + str(len(cell.CELLS))]
+        " Living Doplings: " + str(len(cell.CELLS)) + "  |  Latest Generation: " + str(map.latestgeneration)]
     if trackedCell is None:
         if MULTITRACK:
             genealogy.untrackAll()
@@ -353,7 +354,7 @@ def assembleTrackedCellDisplay(trackedCell):
     if trackedCell.valuetable[cell.MOD_INDEX.index("food")]/inputs.FOOD_TO_MOVE < 20:
         foodAlert= "\x1b[31m"
     display.append("Food: " + foodAlert + str(trackedCell.valuetable[cell.MOD_INDEX.index("food")])[:5] + "\x1b[0m" + " | Split @ " + str(trackedCell.splitThreshold)[:5] + " | Speed: " + str(trackedCell.speed)[:5])
-    display.append("Age: " + str(trackedCell.age))
+    display.append("Age: " + str(trackedCell.age) + " | Ate " + str(trackedCell.cellsEaten) + " other doplings")
     display.append("Generation: " + str(trackedCell.genealogy.generation))
     display.append("Children: " + str(len(trackedCell.genealogy.children)))
     if not(trackedCell.genealogy.mother is None):

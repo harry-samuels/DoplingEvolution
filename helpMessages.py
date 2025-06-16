@@ -62,12 +62,12 @@ There are several command inputs that allow you to to fully utilize the program 
     -upon completion, the new grid will be displayed and the simulation can be interacted with once again
 
 '\x1b[32mjumpstart\x1b[0m':
-    -the jumpstart command allows you to "jump" to a point in the simulation with a specified number of living doplings
-    -typing the jumpstart command will promt you to enter a desired number of living doplings
-    -the simulation will then run in 'speed' mode until the living dopling count reaches the desired quantity
-    -WARNING: the simulation will not be interactable until the desired living doping count is reached
-    -if the entered desired dopling count is too high, the simulation may become stuck in an endless loop, so be cautious
-    -'100' is a good number for reaching 'smarter' doplings on a default size grid (though it may take a couple tries)
+    -the jumpstart command allows you to "jump" to a point in the simulation with a specified number of generations
+    -typing the jumpstart command will promt you to enter a desired number of generations
+    -the simulation will then run in 'speed' mode until the doplings reach the desired generation
+    -WARNING: the simulation will not be interactable until the desired generation count is reached
+    -if the entered generation is too high, the simulation may become stuck in an endless loop, so be cautious
+    -'300' is a good number for reaching 'smarter' doplings on a default size grid (though it may take a couple tries)
 
 '\x1b[35mtrack\x1b[0m':
     -the track command allows you to track a specific dopling

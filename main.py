@@ -27,11 +27,14 @@ while inp != "X":
     moveList= cell.CELLS.copy()
     for z in moveList:
         z.move()
-        # print(str(z)) #DEBUG
-        # print(len(display.removeANSI(str(z))))
+
     MAP.totalturns+= 1
+
     while len(cell.CELLS)< inputs.BASE_CELL_NUMBER:
         MAP.spawnCell(food=inputs.SPAWNED_CELL_FOOD)
+
+    MAP.latestgeneration= cell.ALL_CELLS[-1].genealogy.generation
+
     if i<1:
         display.printDisplay(MAP, trackedCell)
         inp= input()
@@ -80,8 +83,14 @@ while inp != "X":
 
         #jumpstart rounds input processing
         if inp == "jumpstart":
-            jumpstartCutoff= int(input("How many living doplings should there be? "))
-            i=1
+            try:
+                jumpstartCutoff= int(input("How many GENERATIONS should there be?: "))
+                #old version for cell count
+                #jumpstartCutoff= int(input("How many living doplings should there be? "))
+                i=1
+            except (ValueError):
+                print("Non-numeric value input: Unable to reach warp-speed")
+
 
         #track and untrack input processing
         if inp == "track":
@@ -140,10 +149,12 @@ while inp != "X":
 
     else:
         if inp == "jumpstart":
-            if len(cell.CELLS) < jumpstartCutoff:
+            #old version using cell count:
+            #if len(cell.CELLS) < jumpstartCutoff:
+            if MAP.latestgeneration < jumpstartCutoff:
                 i+=1
             if MAP.totalturns%5000==0:
-                print("Total Turns: " + str(MAP.totalturns) + "  Doplings generated: " + str(len(cell.ALL_CELLS)) + "  Doplings Alive: " + str(len(cell.CELLS)))
+                print("Total Turns: " + str(MAP.totalturns) + "  Doplings generated: " + str(len(cell.ALL_CELLS)) + "  Doplings Alive: " + str(len(cell.CELLS)) + "  Latest Generation: " + str(MAP.latestgeneration))
         else:
             if i%(numTotalRounds/10) == 0:
                 print("percentage complete: " + str(percentage) + "%")
@@ -175,6 +186,8 @@ Features to Implement:
 -add ability to view mod/mov tables of multiple cells within species/across species
 
 -travk number of generations for all cells (make jumpstart work better?)
+
+-SWAP ORDER OF MAP AND DATA DISPLAY GEN TO MAKE MULTITRACK WORK RIGHT
 
 
 -----SAVING CELLS
