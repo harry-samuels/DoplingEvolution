@@ -94,7 +94,7 @@ def mutateSpeed(speed, parent):
 
 class Cell:
     #Grid: map, Node: location, int: food, []: modtable, []: movementtable, []: valuetable
-    def __init__(self, map, location, food, modtable=None, movementtable=None, valuetable=None, mothergenealogy=None, splitThreshold=inputs.FOOD_TO_SPLIT, speed=inputs.FOOD_TO_MOVE):
+    def __init__(self, map, location, food, modtable=None, movementtable=None, valuetable=None, mothergenealogy=None, splitThreshold=None, speed=None):
 
         self.age= 0
         self.name= (random.choice(["ba", "po", "li", "re", "xi", "shu", "cra", "psy", "tri", "fro", "woo", "do", "ki", "epi", "ono", "uba", "aro", "immo", "qui", "gra", "hu", "mi", "vee", "yoo", "zo"]) + 
@@ -134,7 +134,13 @@ class Cell:
         #how many other cells this cell has eaten
         self.cellsEaten= 0
 
+        if splitThreshold is None:
+            splitThreshold= inputs.FOOD_TO_SPLIT
         self.splitThreshold= splitThreshold
+        print("inputs FTS == " + str(inputs.FOOD_TO_SPLIT)) #DEBUG
+        print("self.split == " + str(self.splitThreshold)) #DEBUG
+        if speed is None:
+            speed= inputs.FOOD_TO_MOVE
         self.speed= speed
 
         
