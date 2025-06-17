@@ -137,8 +137,6 @@ class Cell:
         if splitThreshold is None:
             splitThreshold= inputs.FOOD_TO_SPLIT
         self.splitThreshold= splitThreshold
-        print("inputs FTS == " + str(inputs.FOOD_TO_SPLIT)) #DEBUG
-        print("self.split == " + str(self.splitThreshold)) #DEBUG
         if speed is None:
             speed= inputs.FOOD_TO_MOVE
         self.speed= speed

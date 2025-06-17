@@ -173,7 +173,6 @@ def displayStartupMessages():
         if FTSinput != "":
             inputs.FOOD_TO_SPLIT= float(FTSinput)
             print("Food needed to split: " + FTSinput)
-            print(inputs.FOOD_TO_SPLIT) #DEBUG
 
         PMMinput= input("\nType 'Y' to enable edgeless map (Pac-Man mode), or hit 'Enter' to keep 'hard edges': ")
         if PMMinput == "Y":
