@@ -94,6 +94,9 @@ There are several command inputs that allow you to to fully utilize the program 
     -typing the bottom command again will move the phylogeny display back to the right side of the display 
     -this is useful for if the phylogeny grows too long and starts to wrap around
 
+'\x1b[31mwall\x1b[0m':
+    -the 'wall' command allows you to construct or remove walls on the grid
+
 '\x1b[31mX\x1b[0m':
     -typing X will prompt you to end the simulation by typing "X" again
     -this is final and will permanently destroy all the doplings :c
