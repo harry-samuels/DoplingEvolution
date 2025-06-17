@@ -141,6 +141,19 @@ while inp != "X":
             inp= input()
 
 
+        if inp == "wall":
+            buildDestroy= input("Enter 'build' to build walls or 'destroy' to remove all walls: ")
+            if buildDestroy == "build":
+                direction= input("Enter 'H' for a horizontal wall or 'V' for a vertical wall: ")
+                topleft= input("Enter the grid location of the top/left of the wall: ")
+                try:
+                    wallLength= int(input("Enter how many space long the wall should be: "))
+                    MAP.buildWall(direction, topleft, wallLength)
+                except (ValueError):
+                    print("non-numeric entry for wall length")
+            elif buildDestroy == "destroy":
+                MAP.removeWalls()
+
         #double check if input is to end simulation       
         if inp == "X":
             doubleCheck= input("Are you sure you want to end the simulation? Type 'X' to end, or anything else to continue:")

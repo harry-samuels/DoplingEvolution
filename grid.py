@@ -11,6 +11,8 @@ class Node:
         self.id= id
         #current object occupying Node, None if empty
         self.contains= None
+        #True if this node is a wall
+        self.wall= False
         #Node north of this node
         self.north= None
         #Node south of this node
@@ -19,11 +21,14 @@ class Node:
         self.east= None
         #Node west of this node
         self.west= None
+        
 
     #returns the Node id as a string when printed
     def __str__(self):
         if self.isFull() or self.isFood():
-            return str(self.contains)       
+            return str(self.contains)
+        elif self.isWall():
+            return "\x1b[41m \x1b[0m"       
         else:
             return "."
 
@@ -33,6 +38,9 @@ class Node:
 
     def isFood(self):
         return type(self.contains) is cell.Food
+
+    def isWall(self):
+        return self.wall
 
     def getNorth(self):
         return self.north
@@ -51,6 +59,15 @@ class Node:
 
     def clear(self):
         self.contains= None
+
+    def makeWall(self):
+        self.wall= True
+        if self.isFull():
+            self.contains.lyse()
+        self.clear()
+    
+    def removeWall(self):
+        self.wall= False
 
 
 #Create a new grid filled with fully linked nodes and return the containing list
@@ -148,29 +165,65 @@ class Grid:
     def getNode(self, y, x):
         return self.container[y][x]
 
-    
-    #returns the cell object at the specified alphabet-grid location, returns None if there is no cell at the specified location
-    #location is a str containing two letters corresponding to a grid row and grid column (example: "xY")
-    def getCellAlphgrid(self, location):
+    def getNodeAlphaGrid(self, location):
         alpha= "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
         #type and len check
         if (not type(location) == str) or (len(location) != 2):
-            print("incompatible input for cell location")
+            print("incompatible input for location")
             return None
         row= alpha.index(location[:1])
         column= alpha.index(location[1:])
         if (row > self.rows-1) or (column > self.columns -1):
-            print("incompatible input for cell location")
+            print("incompatible input for location")
             return None
-        gridLocation= self.container[row][column]
+        return self.container[row][column]
+
+    #returns the cell object at the specified alphabet-grid location, returns None if there is no cell at the specified location
+    #location is a str containing two letters corresponding to a grid row and grid column (example: "xY")
+    def getCellAlphgrid(self, location):
+        gridLocation= self.getNodeAlphaGrid(location)
+        if gridLocation is None:
+            return None
         if gridLocation.isFull():
             return gridLocation.contains
         else:
             return None
 
+    #builds a wall of length wallLength (int) in direction direction("horizontal"/"h"/"H" or "vertical"/"v"/"V") starting from the top/left location (alpha notation) of topleft
+    def buildWall(self, direction, topleft, wallLength):
+        topleftNode= self.getNodeAlphaGrid(topleft)
+        if topleftNode is None:
+            return
+        if (direction == "H") or (direction == "h") or (direction == "horizontal"):
+            i=0
+            nextNode= topleftNode
+            while i< wallLength:
+                if nextNode is None:
+                    return
+                else:
+                    nextNode.makeWall()
+                    nextNode= nextNode.east
+                i+= 1
 
+        elif (direction == "V") or (direction == "v") or (direction == "vertical"):
+            i=0
+            nextNode= topleftNode
+            while i< wallLength:
+                if nextNode is None:
+                    return
+                else:
+                    nextNode.makeWall()
+                    nextNode= nextNode.south
+                i+= 1
 
-        
+        else:
+            print("invalid wall directional input")
+            return
+
+    def removeWalls(self):
+        for row in self.container:
+            for node in row:
+                node.removeWall()
 
 
     def spawnFood(self, value=1, location=None):
@@ -178,10 +231,10 @@ class Grid:
         if location is None:
             available= False
             while not available:
-                y= random.randint(0,self.rows -2)
-                x= random.randint(0,self.columns -2)
+                y= random.randint(1,self.rows -2)
+                x= random.randint(1,self.columns -2)
                 location= self.container[y][x]
-                if not location.isFull():
+                if (not location.isFull()) and (not location.isWall()):
                     available= True
                     cell.Food(value, location)
         else:
@@ -195,7 +248,7 @@ class Grid:
                 y= random.randint(1,self.rows -2)
                 x= random.randint(1,self.columns -2)
                 location= self.container[y][x]
-                if (not location.isFull()) and (not location.isFood()):
+                if (not location.isFull()) and (not location.isFood()) and (not location.isWall()):
                     available= True
                     cell.Cell(self, location, food)
 

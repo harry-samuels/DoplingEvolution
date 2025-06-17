@@ -251,7 +251,7 @@ class Cell:
         stillSearching= True
         nextNorth= self.location.north
         while i > 0 and stillSearching:
-            if nextNorth is None:
+            if nextNorth is None or nextNorth.isWall():
                 self.valuetable[MOD_INDEX.index("Nempty")]= i
                 self.valuetable[MOD_INDEX.index("Nfood")]= 0
                 self.valuetable[MOD_INDEX.index("Ncell")]= 0
@@ -281,7 +281,7 @@ class Cell:
         stillSearching= True
         nextSouth= self.location.south
         while i > 0 and stillSearching:
-            if nextSouth is None:
+            if nextSouth is None or nextSouth.isWall():
                 self.valuetable[MOD_INDEX.index("Sempty")]= i
                 self.valuetable[MOD_INDEX.index("Sfood")]= 0
                 self.valuetable[MOD_INDEX.index("Scell")]= 0
@@ -312,7 +312,7 @@ class Cell:
         stillSearching= True
         nextEast= self.location.east
         while i > 0 and stillSearching:
-            if nextEast is None:
+            if nextEast is None or nextEast.isWall():
                 self.valuetable[MOD_INDEX.index("Eempty")]= i
                 self.valuetable[MOD_INDEX.index("Efood")]= 0
                 self.valuetable[MOD_INDEX.index("Ecell")]= 0
@@ -342,7 +342,7 @@ class Cell:
         stillSearching= True
         nextWest= self.location.west
         while i > 0 and stillSearching:
-            if nextWest is None:
+            if nextWest is None or nextWest.isWall():
                 self.valuetable[MOD_INDEX.index("Wempty")]= i
                 self.valuetable[MOD_INDEX.index("Wfood")]= 0
                 self.valuetable[MOD_INDEX.index("Wcell")]= 0
@@ -412,6 +412,9 @@ class Cell:
     def checkMoveValidity(self, goingTo):
         if (goingTo is None):
             self.lyse("wanderlust")
+            return
+        elif (goingTo.isWall()):
+            self.lyse("splat")
             return
         elif (goingTo.isFull()):
             self.collide(goingTo.contains)
