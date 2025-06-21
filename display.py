@@ -284,28 +284,38 @@ def assembleMovTableDisplay(trackedCell):
 #converts modtable value (mod) into display ready length 2 str with specified color/highlighting based on value
 def convertModDisplay(mod):
     if (mod < 0.1) and (mod > -0.1):
-        return "0 "
-    if mod > 5: 
+        if mod > 0:
+            return "\x1b[32m0\x1b[0m "
+        elif mod < 0:
+            return "\x1b[31m0\x1b[0m "
+        else:
+         return "0 "
+    elif mod > 5: 
         return "\x1b[42m++\x1b[0m"
-    if mod > 2:
+    elif mod > 2:
         return "\x1b[42m+\x1b[0m "
-    if mod > 1:
+    elif mod > 1:
         return "\x1b[32m++\x1b[0m"
-    if mod > 0:
+    elif mod > 0:
         return "\x1b[32m+\x1b[0m "
-    if mod < -5:
+    elif mod < -5:
         return "\x1b[41m--\x1b[0m"
-    if mod < -2:
+    elif mod < -2:
         return "\x1b[41m-\x1b[0m "
-    if mod < -1:
+    elif mod < -1:
         return "\x1b[31m--\x1b[0m"
-    if mod < 0:
+    elif mod < 0:
         return "\x1b[31m-\x1b[0m "
 
 #converts movementtable value (mov) into display ready length 6 str for use in cell tracking display
 def convertMovDisplay(mov):
     color= ""
-    if mov > 2:
+    if (mov < 0.1) and (mov > -0.1):
+        if mov > 0:
+            color= "\x1b[32m"
+        if mov < 0:
+            color= "\x1b[31m"
+    elif mov > 2:
         color= "\x1b[42m"
     elif mov > 0.1:
         color= "\x1b[32m"

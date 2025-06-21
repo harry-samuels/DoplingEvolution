@@ -203,7 +203,6 @@ Features to Implement:
 
 -travk number of generations for all cells (make jumpstart work better?)
 
--MOVDISPLAY IF -0.1< x <0.1 make text color green or red based on if slightly pos or neg
 
 
 -----SAVING CELLS
