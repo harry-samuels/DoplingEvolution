@@ -14,9 +14,8 @@ MULTITRACK= False
 
 def printDisplay(map, trackedCell):
     BOTTOM_DISPLAY.clear()
-    #SWITCH THESE TO MAKE DISPLAY UPDATE CORRECTLY
-    mapDisplay= assembleMapDisplay(map)
     dataDisplay= assembleDataDisplay(map, trackedCell)
+    mapDisplay= assembleMapDisplay(map)
     finalDisplay= stitchDisplays(mapDisplay, dataDisplay)
     if PHYLOGENYBOTTOMDISPLAY:
         finalDisplay.extend(BOTTOM_DISPLAY)
