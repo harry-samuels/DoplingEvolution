@@ -93,6 +93,7 @@ def mutateSpeed(speed, parent):
 
 
 class Cell:
+    SPLIT_SPEED_RATIO= inputs.FOOD_TO_SPLIT / inputs.FOOD_TO_MOVE
     #Grid: map, Node: location, int: food, []: modtable, []: movementtable, []: valuetable
     def __init__(self, map, location, food, modtable=None, movementtable=None, valuetable=None, mothergenealogy=None, splitThreshold=None, speed=None):
 
@@ -139,6 +140,8 @@ class Cell:
         self.splitThreshold= splitThreshold
         if speed is None:
             speed= inputs.FOOD_TO_MOVE
+        if (splitThreshold / speed) > Cell.SPLIT_SPEED_RATIO:
+            speed= splitThreshold / Cell.SPLIT_SPEED_RATIO
         self.speed= speed
 
         
@@ -428,8 +431,8 @@ class Cell:
     def collide(self, collidee):
         selfFood= self.valuetable[MOD_INDEX.index("food")]
         collideeFood= collidee.valuetable[MOD_INDEX.index("food")]
-        #if collidee is at least 10% bigger than this cell: lyse this cell
-        if collideeFood > selfFood * 0.9:
+        #if collidee is at least 50% bigger than this cell: lyse this cell
+        if collideeFood > selfFood * 0.5:
             self.lyse("collision")
         #if this cell is the bigger one, the other cell lyses (and this cell then moves into it's space, "eating it"), tie goes to the runner
         else:

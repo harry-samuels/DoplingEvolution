@@ -10,6 +10,9 @@ import random
 
 helpMessages.displayStartupMessages()
 
+#make this an actual input value?
+cell.Cell.SPLIT_SPEED_RATIO= inputs.FOOD_TO_SPLIT/inputs.FOOD_TO_MOVE
+
 # max size 52 x52
 MAP= grid.Grid(inputs.MAP_COLUMNS, inputs.MAP_ROWS)
 
@@ -201,6 +204,7 @@ Features to Implement:
 -travk number of generations for all cells (make jumpstart work better?)
 
 -SWAP ORDER OF MAP AND DATA DISPLAY GEN TO MAKE MULTITRACK WORK RIGHT
+-MOVDISPLAY IF -0.1< x <0.1 make text color green or red based on if slightly pos or neg
 
 
 -----SAVING CELLS
