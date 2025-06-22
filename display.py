@@ -28,19 +28,23 @@ def printDisplay(map, trackedCell):
     #     print(line)
 
 def assembleMapDisplay(map):
-    alpha= "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-    firstLine= "+   A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y z"[:((map.columns*2)+ 4)]
-   
-    display= [firstLine, (" "*len(firstLine))]
-   
-    i= 0
+    hundredsLine= "      "
+    tensLine= "      "
+    onesLine= "  +   "
+    for x in range(0, map.columns):
+        hundredsLine+= str(x//100) + " "
+        tensLine+= str((x%100)//10) + " "
+        onesLine+= str(x%10) + " "
+
+    display= [hundredsLine, tensLine, onesLine, (" "*len(hundredsLine))]
+    y= 0
     line=""
-    for y in map.container:
+    for row in map.container:
         line=""
-        line+= alpha[i]+ "   "
-        i+= 1
-        for x in y:
-            line+= str(x) + " "
+        line+= str(y).rjust(3, '0')+ "   "
+        y+= 1
+        for node in row:
+            line+= str(node) + " "
         display.append(line)
     return display
 
@@ -55,7 +59,7 @@ def assembleDataDisplay(map, trackedCell):
             display.extend(assembleExpandedSpeciesDisplay())
     else:
         display.extend(assembleTrackedCellDisplay(trackedCell))
-        
+    
     return display
 
 #combines two display list of strings to be printed into one list, with display1 on the left and display2 on the right and 2 spaces in between
@@ -90,7 +94,7 @@ def assembleExpandedSpeciesDisplay():
         if gca.lysed:
             display.append("Died " + str(gca.map.totalturns - gca.deathdate) + " Turns Ago")
         else:
-            display.append("Current Location: " + gca.location.id)
+            display.append("Current Location: " + gca.location.coordDisplay)
 
 
     display.append("")
@@ -347,7 +351,7 @@ def assembleTrackedCellDisplay(trackedCell):
     if trackedCell.lysed:
         status="\x1b[31mDead\x1b[0m (Turn "+ str(trackedCell.deathdate) + ") " + trackedCell.deathmessage
     #display.append("Status: " + status)
-    display.append("Location: " + trackedCell.location.id + " | Status: " + status)
+    display.append("Location: " + trackedCell.location.coordDisplay + " | Status: " + status)
     #display.append("Species: \x1b[" +trackedCell.genealogy.taxon.color + "m" + trackedCell.genealogy.taxon.genus + " " + trackedCell.genealogy.taxon.species + "\x1b[0m")
 
 

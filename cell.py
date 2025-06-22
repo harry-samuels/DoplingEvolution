@@ -458,9 +458,7 @@ class Cell:
         for p in proteins:
             self.valuetable[MOD_INDEX.index(p)]= (self.valuetable[MOD_INDEX.index(p)])/2
 
-        #SQUASHED BUG!
         c= Cell(self.map, position, self.valuetable[MOD_INDEX.index("food")], mutate(copy.deepcopy(self.modtable), self), mutate(copy.deepcopy(self.movementtable), self), copy.deepcopy(self.valuetable), self.genealogy, mutateSplitThreshold(self.splitThreshold, self), mutateSpeed(self.speed, self))
-        #print("split " + c.name + " @ " + str(position.id) + " from " + self.name + " @ " + str(self.location.id)) #DEBUG
         c.move()
         return c
 
@@ -469,7 +467,7 @@ class Cell:
         proteins= ["upin", "downin", "rightin", "leftin"]
         print("\n\nREPORT: "+ self.fullname())
         print("--------------------------------\n")
-        print("Current Location  :  " + self.location.id + "\n")
+        print("Current Location  :  " + self.location.coordDisplay + "\n")
         #"  Siblings #: "+ str(len(self.genealogy.mother.children)-1) + (needed to remove as not compatible with sponateously generated cells)
         print("Current Age: " + str(self.age) + "  Generation: "+ str(self.genealogy.generation) + " Children #: "+ str(len(self.genealogy.children)) + "\n")
         print("Value Table:")

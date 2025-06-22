@@ -11,7 +11,7 @@ def think(thinkerCell):
             "Ouch",
             "So long, cruel world",
             "One minute you're hot and the next you're not",
-            "My favorite place on earth was " + thinkerCell.location.id,
+            "My favorite place on earth was " + thinkerCell.location.coordDisplay,
             "oooOOoooOOOooo I'm a ghost now",
             "Was it something I said?",
             "Oh no, I'm dead now"
@@ -60,7 +60,7 @@ def familyThought(thinkerCell):
         thought= random.choice([
             "My mother always liked " + sibling.name + " better",
             "Mom says " + sibling.name + " got the brains, but I got the looks",
-            sibling.name + " thinks they're a big hotshot out in " + sibling.location.id,
+            sibling.name + " thinks they're a big hotshot out in " + sibling.location.coordDisplay,
             "I miss " + sibling.name,
             sibling.name + " makes me embarrassed to be a " + thinkerCell.genealogy.taxon.species,
             "I can't believe " + sibling.name + " is " + siblingStatus

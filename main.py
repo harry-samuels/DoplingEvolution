@@ -14,7 +14,7 @@ helpMessages.displayStartupMessages()
 cell.Cell.SPLIT_SPEED_RATIO= inputs.FOOD_TO_SPLIT/inputs.FOOD_TO_MOVE
 
 # max size 52 x52
-MAP= grid.Grid(inputs.MAP_COLUMNS, inputs.MAP_ROWS)
+MAP= grid.Grid(inputs.MAP_ROWS, inputs.MAP_COLUMNS)
 
 #don't actually need these three lines
 #for c in range(0, 15):
@@ -47,30 +47,30 @@ while inp != "X":
         if inp == "help":
             helpMessages.displayHelpMessages()
 
-        #report generation input processing
-        if inp == "report":
-            reportLocation= input("Please list the location of the dopling, or list multiple locations separted only by a ',':\n")
-            if reportLocation.count(",") > 0:
-                locationList= reportLocation
-                for section in range(0, reportLocation.count(",")+1):
-                    if locationList.count(",")>0:
-                        reportLocation= locationList[:locationList.index(",")]
-                    else:
-                        reportLocation=locationList
-                    queriedCell= MAP.getCellAlphgrid(reportLocation)
-                    if queriedCell is None:
-                        print("no dopling found in " + str(reportLocation))
-                    else:
-                        queriedCell.report()
-                    if locationList.count(",")>0:
-                        locationList= locationList[locationList.index(",")+1:]
-            else:
-                queriedCell= MAP.getCellAlphgrid(reportLocation)
-                if queriedCell is None:
-                    print("no dopling found in " + str(reportLocation))
-                else:
-                    queriedCell.report()
-            inp= input()
+        #report generation input processing CURRENTLY DEPRECATED while being switched from alphagrid
+        # if inp == "report":
+        #     reportLocation= input("Please list the location of the dopling, or list multiple locations separted only by a ',':\n")
+        #     if reportLocation.count(",") > 0:
+        #         locationList= reportLocation
+        #         for section in range(0, reportLocation.count(",")+1):
+        #             if locationList.count(",")>0:
+        #                 reportLocation= locationList[:locationList.index(",")]
+        #             else:
+        #                 reportLocation=locationList
+        #             queriedCell= MAP.getCellAlphgrid(reportLocation)
+        #             if queriedCell is None:
+        #                 print("no dopling found in " + str(reportLocation))
+        #             else:
+        #                 queriedCell.report()
+        #             if locationList.count(",")>0:
+        #                 locationList= locationList[locationList.index(",")+1:]
+        #     else:
+        #         queriedCell= MAP.getCellAlphgrid(reportLocation)
+        #         if queriedCell is None:
+        #             print("no dopling found in " + str(reportLocation))
+        #         else:
+        #             queriedCell.report()
+        #     inp= input()
             
 
         #speed rounds input processing
@@ -98,12 +98,17 @@ while inp != "X":
         #track and untrack input processing
         if inp == "track":
             display.MULTITRACK= False
-            trackIdentifier= (input("Enter the ID, beginning with '#', or the grid location ('YX') of the dopling to be tracked: "))
+            trackIdentifier= (input("Enter the ID, beginning with '#', or the grid location ('X, Y') of the dopling to be tracked: "))
             if "#" in trackIdentifier:
                 trackID= int(trackIdentifier[1:])
                 trackedCell= cell.ALL_CELLS[trackID]
             else:
-                trackedCell= MAP.getCellAlphgrid(trackIdentifier)
+                try:
+                    trackX= int(trackIdentifier[:trackIdentifier.index(',')])
+                    trackY= int(trackIdentifier[trackIdentifier.index(',') +1:])
+                    trackedCell= MAP.getCellFromCoordinates(trackX, trackY)
+                except(ValueError, IndexError):
+                    print("Incorrect coordinate input, please be sure to include both x and y separated by a comma ','")
 
             if trackedCell is None:
                 print("No dopling found @" + str(trackIdentifier))
@@ -148,12 +153,18 @@ while inp != "X":
             buildDestroy= input("Enter 'build' to build walls or 'destroy' to remove all walls: ")
             if buildDestroy == "build":
                 direction= input("Enter 'H' for a horizontal wall or 'V' for a vertical wall: ")
-                topleft= input("Enter the grid location of the top/left of the wall: ")
+                topleft= input("Enter the grid location of the top/left of the wall (X,Y): ")
                 try:
-                    wallLength= int(input("Enter how many space long the wall should be: "))
-                    MAP.buildWall(direction, topleft, wallLength)
-                except (ValueError):
-                    print("non-numeric entry for wall length")
+                    topleftX= int(topleft[:topleft.index(',')])
+                    topleftY= int(topleft[topleft.index(',') +1:])
+                    try:
+                        wallLength= int(input("Enter how many space long the wall should be: "))
+                        MAP.buildWall(direction, topleftX, topleftY, wallLength)
+                    except (ValueError):
+                        print("non-numeric entry for wall length")
+                except(ValueError, IndexError):
+                    print("Incorrect coordinate input, please be sure to include both x and y separated by a comma ','")
+
             elif buildDestroy == "destroy":
                 MAP.removeWalls()
 

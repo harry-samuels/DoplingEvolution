@@ -5,10 +5,16 @@ import random
 
 class Node:
 
-    #creates new Node
-    def __init__(self, id):
-        #name of node
-        self.id= id
+    #creates new Node with int x and int y
+    def __init__(self, x, y):
+        #id of this cell (DEPRECATED)
+        #self.id=
+        #x-coordinate of node
+        self.x= x
+        #y-coordinate of node
+        self.y= y
+        #coordinate display of node
+        self.coordDisplay= "(" + str(x) + ", " + str(y) + ")"
         #current object occupying Node, None if empty
         self.contains= None
         #True if this node is a wall
@@ -80,7 +86,7 @@ def createGrid(rows,columns):
             #create new row
             container.append([])
             #create first node in row
-            new= Node(alpha[y]+"A")
+            new= Node(0,y)
             #add new first node to row
             container[y].append(new)
             #check if this is the first row
@@ -88,7 +94,7 @@ def createGrid(rows,columns):
                 old= new
                 for x in range (1,columns):
                     #create next node
-                    new= Node(alpha[y]+alpha[x])
+                    new= Node(x, y)
                     #add node to correct row
                     container[y].append(new)
 
@@ -102,7 +108,7 @@ def createGrid(rows,columns):
                 old=new
                 for x in range (1,columns):
                     #create next node
-                    new= Node(alpha[y]+alpha[x])
+                    new= Node(x, y)
                     #add node to correct row
                     container[y].append(new)
 
@@ -145,55 +151,39 @@ class Grid:
         self.latestgeneration= 0
 
         
-
+    #DEPRECATED AFTER SWITCHING FROM APLPHAGRID TO COORDINATE GRID
     def __str__(self):
-        alpha= "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-        i= 0
+        return "oops! don't call print on the map"
+    #     alpha= "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
+    #     i= 0
 
-        string= ("    Total Turns: " + str(self.totalturns) + " | Living Cells: " + str(len(cell.CELLS)) + " | Cells Spawned: " + str(self.totalcellsspawned) + "\n\n" +
-            "+   A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y z"[:((self.columns*2)+ 4)] +
-            "\n\n")
+    #     string= ("    Total Turns: " + str(self.totalturns) + " | Living Cells: " + str(len(cell.CELLS)) + " | Cells Spawned: " + str(self.totalcellsspawned) + "\n\n" +
+    #         "+   A B C D E F G H I J K L M N O P Q R S T U V W X Y Z a b c d e f g h i j k l m n o p q r s t u v w x y z"[:((self.columns*2)+ 4)] +
+    #         "\n\n")
         
-        for y in self.container:
-            string+= alpha[i]+ "   "
-            i+= 1
-            for x in y:
-                string+= str(x) + " "
-            string+= "\n"
-        return string
+    #     for y in self.container:
+    #         string+= alpha[i]+ "   "
+    #         i+= 1
+    #         for x in y:
+    #             string+= str(x) + " "
+    #         string+= "\n"
+    #     return string
 
-    def getNode(self, y, x):
+    def getNode(self, x, y):
         return self.container[y][x]
 
-    def getNodeAlphaGrid(self, location):
-        alpha= "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-        #type and len check
-        if (not type(location) == str) or (len(location) != 2):
-            print("incompatible input for location")
-            return None
-        row= alpha.index(location[:1])
-        column= alpha.index(location[1:])
-        if (row > self.rows-1) or (column > self.columns -1):
-            print("incompatible input for location")
-            return None
-        return self.container[row][column]
-
-    #returns the cell object at the specified alphabet-grid location, returns None if there is no cell at the specified location
-    #location is a str containing two letters corresponding to a grid row and grid column (example: "xY")
-    def getCellAlphgrid(self, location):
-        gridLocation= self.getNodeAlphaGrid(location)
-        if gridLocation is None:
-            return None
-        if gridLocation.isFull():
-            return gridLocation.contains
+    def getCellFromCoordinates(self, x, y):
+        if self.container[y][x].isFull():
+            return self.container[y][x].contains
         else:
             return None
 
-    #builds a wall of length wallLength (int) in direction direction("horizontal"/"h"/"H" or "vertical"/"v"/"V") starting from the top/left location (alpha notation) of topleft
-    def buildWall(self, direction, topleft, wallLength):
-        topleftNode= self.getNodeAlphaGrid(topleft)
-        if topleftNode is None:
+    #builds a wall of length wallLength (int) in direction direction("horizontal"/"h"/"H" or "vertical"/"v"/"V") starting from the top/left node @ (topleftX, topleftY)
+    def buildWall(self, direction, topleftX, topleftY, wallLength):
+        if (topleftX >= self.columns) or (topleftY >= self.rows):
+            print("top left coordinate out of bounds")
             return
+        topleftNode= self.container[topleftY][topleftX]
         if (direction == "H") or (direction == "h") or (direction == "horizontal"):
             i=0
             nextNode= topleftNode
