@@ -310,7 +310,7 @@ def convertModDisplay(mod):
 #converts movementtable value (mov) into display ready length 6 str for use in cell tracking display
 def convertMovDisplay(mov):
     color= ""
-    if (mov < 0.1) and (mov > -0.1):
+    if (mov <= 0.1) and (mov >= -0.1):
         if mov > 0:
             color= "\x1b[32m"
         if mov < 0:

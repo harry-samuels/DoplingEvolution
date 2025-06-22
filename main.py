@@ -216,15 +216,10 @@ Features to Implement:
 
 -add ability to bottleneck and kill large number of cells?
 
--add ability to add walls
 -preset walls? (ie: halves/quarters)
 -build mountain range? (over time mountain range grows and then recedes across screen? could be really neat)
 
 -secondary messengers? more messenger hormone options? (stretch goal)
-
--make food turns red on tracked cell display when cell is ten turns away from starving
-
--change collision behavior to allow cell with more food to "eat" other cell
 
 -make hormones cost food?
 
@@ -246,4 +241,7 @@ X Pedigree creation for all currently living cells
 X rename cells
 X allow cells to evolve faster "speed" to move first
 X allow cells to change their split value 
+X make food turns red on tracked cell display when cell is ten turns away from starving
+X change collision behavior to allow cell with more food to "eat" other cell
+X add ability to add walls
 """

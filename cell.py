@@ -120,8 +120,8 @@ class Cell:
                 0,0,0,
                 0,0,0,
                 food,
-                10, 10, 10, 10,
-                10, 10, 10, 10
+                0, 0, 0, 0,
+                0, 0, 0, 0
             ]
         else:
             self.valuetable= valuetable
