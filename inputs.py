@@ -14,3 +14,6 @@ FOOD_TO_SPLIT= 5
 
 #used in grid
 PAC_MAN_MODE= False
+
+USE_CUSTOM_MAP= False
+CUSTOM_MAP_FILE= "custom_maps/smileyface.json"

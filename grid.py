@@ -2,6 +2,7 @@ import cell
 import inputs
 
 import random
+import json
 
 class Node:
 
@@ -137,18 +138,38 @@ def createGrid(rows,columns):
 
         return container
 
+
+def createCustomGrid(rows, columns, customMapList):
+    container= createGrid(rows, columns)
+    for y in range(0, rows):
+        row= customMapList[y].replace(" ", "")
+        for x in range(0, columns):
+            if row[x] == "X":
+                container[y][x].makeWall()
+    return container
+            
+
+
 class Grid:
     
     def __init__(self, rows, columns):
-        self.rows= rows
-        self.columns= columns
-
-        self.container= createGrid(rows, columns)
-
         self.totalturns= 0
         self.totalcellsspawned= 0
         #contains the generation of the most recently created cell
         self.latestgeneration= 0
+        if inputs.USE_CUSTOM_MAP:
+            customMapFile= open(inputs.CUSTOM_MAP_FILE)
+            customMapJSON= json.load(customMapFile)
+            customMapList= customMapJSON["map"]
+            self.rows= len(customMapList)
+            self.columns= len(customMapList[0].replace(" ", ""))
+            self.container= createCustomGrid(self.rows, self.columns, customMapList)
+            
+        else:
+            self.rows= rows
+            self.columns= columns
+            self.container= createGrid(rows, columns)
+
 
         
     #DEPRECATED AFTER SWITCHING FROM APLPHAGRID TO COORDINATE GRID
