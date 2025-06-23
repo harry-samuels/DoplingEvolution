@@ -15,5 +15,27 @@ FOOD_TO_SPLIT= 5
 #used in grid
 PAC_MAN_MODE= False
 
-USE_CUSTOM_MAP= False
+USE_CUSTOM_MAP= True
 CUSTOM_MAP_FILE= "custom_maps/smileyface.json"
+
+
+# #defaults
+# #used in main
+# MAP_ROWS= 52
+# MAP_COLUMNS= 52
+
+# FOOD_PER_TURN= 1
+# FOOD_VALUE= 3
+
+# BASE_CELL_NUMBER= 15
+# SPAWNED_CELL_FOOD= 5
+
+# #used in cell
+# FOOD_TO_MOVE= 0.025
+# FOOD_TO_SPLIT= 5
+
+# #used in grid
+# PAC_MAN_MODE= False
+
+# USE_CUSTOM_MAP= True
+# CUSTOM_MAP_FILE= "custom_maps/smileyface.json"
