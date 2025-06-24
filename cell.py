@@ -10,18 +10,17 @@ CELLS= []
 #List of all cells that have existed or currently existy in the game. Each cell's numberID unique corresponds to its index in the list
 ALL_CELLS= []
 
+
+MESSENGERS= ["thinkin", "schemin", "plottin", "dreamin", "electin", "choosin", "decidin", "figurin", "wafflin", "waverin"][:inputs.MESSENGER_PROTEIN_NUMBER]
+
+PROTEINS= ["upin", "downin", "rightin", "leftin"]
+
 MOD_INDEX= [
     "Nempty","Nfood", "Ncell",
     "Sempty","Sfood", "Scell",
     "Eempty","Efood", "Ecell",
     "Wempty","Wfood", "Wcell",
-    "food",
-    "thinkin", "schemin", "plottin", "dreamin",
-    "upin", "downin", "rightin", "leftin"
-]
-
-MESSENGERS= ["thinkin", "schemin", "plottin", "dreamin"]
-PROTEINS= ["upin", "downin", "rightin", "leftin"]
+    "food"] + MESSENGERS + PROTEINS
 
 #adds newly generated cell to list of living Cells at the correct speed postion. CELLS is ordered from fastest (greatest speed) to slowest cells
 #This method keeps the list sorted
@@ -48,7 +47,7 @@ def generateModTable(modtable=None):
 def generateMovementTable(movementtable=None):
     if movementtable is None:
         movementtable=[]
-        for m in range(0, len(MESSENGERS)):
+        for m in range(0, inputs.MESSENGER_PROTEIN_NUMBER):
             movementtable.append([])
             for p in range(0, len(PROTEINS)):
                 movementtable[m].append(((random.uniform(0,0.5))**2)*random.choice([-1,1]))
@@ -114,15 +113,13 @@ class Cell:
         self.location.insert(self)
         
         if valuetable is None:
+            #12 sight values & food value + messenger protein values + movement protein values
             self.valuetable=[
                 0,0,0,
                 0,0,0,
                 0,0,0,
                 0,0,0,
-                food,
-                0, 0, 0, 0,
-                0, 0, 0, 0
-            ]
+                food,] + ([0] * inputs.MESSENGER_PROTEIN_NUMBER) + [0,0,0,0]
         else:
             self.valuetable= valuetable
             self.valuetable[MOD_INDEX.index("food")]= food
@@ -380,10 +377,10 @@ class Cell:
 
     def calculateMessengerMods(self):
         mods=[]  
-        for z in range(0, len(MESSENGERS)):
+        for m in range(0, inputs.MESSENGER_PROTEIN_NUMBER):
             mods.append(0)
-            for i in range(0, len(MOD_INDEX)):
-                mods[z]+= ((self.valuetable[i]) * (self.modtable[i][z]))
+            for v in range(0, len(MOD_INDEX)):
+                mods[m]+= ((self.valuetable[v]) * (self.modtable[v][m]))
         return mods
 
     def applyMessengerMods(self, messengerMods):
@@ -396,7 +393,7 @@ class Cell:
         mods=[]  
         for p in range(0, len(PROTEINS)):
             mods.append(0)
-            for m in range(0, len(MESSENGERS)):
+            for m in range(0, inputs.MESSENGER_PROTEIN_NUMBER):
                 mods[p]+= ((self.valuetable[MOD_INDEX.index(MESSENGERS[m])]) * (self.movementtable[m][p]))
         return mods
 

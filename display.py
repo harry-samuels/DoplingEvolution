@@ -261,8 +261,8 @@ def assembleModTableDisplay(trackedCell):
     for v in range(0, cell.MOD_INDEX.index("food")):
         valuesLine+= str(trackedCell.valuetable[v]) + " |"
     display.append(valuesLine)
-    display.append("In:  NE NF NC SE SF SC EE EF EC WE WF WC Fd Th Sc Pl Dr Up Dw Rt Lf")
-    messengersI=  ["Th: ", "Sc: ", "Pl: ", "Dr: "]
+    display.append("In:  NE NF NC SE SF SC EE EF EC WE WF WC Fd " + ("Th Sc Pl Dr El Ch De Fi Wf Wv "[:(inputs.MESSENGER_PROTEIN_NUMBER * 3)]) + "Up Dw Rt Lf")
+    messengersI=  ["Th: ", "Sc: ", "Pl: ", "Dr: ", "El: ", "Ch: ", "De: ", "Fi", "Wf: ", "Wv: "][:inputs.MESSENGER_PROTEIN_NUMBER]
     for m in range(len(messengersI)):
         tableLine= messengersI[m]
         for v in range(len(trackedCell.valuetable)):
@@ -274,7 +274,7 @@ def assembleModTableDisplay(trackedCell):
 #creates printable table representation of trackedCell's movementtable
 def assembleMovTableDisplay(trackedCell):
     display= []
-    display.append("In:    Th     Sc     Pl     Dr")
+    display.append("In:    Th     Sc     Pl     Dr     El     Ch     De     Fi     Wf     Wv"[:(inputs.MESSENGER_PROTEIN_NUMBER*7)+2])
     proteinsI=  ["Up: ", "Dw: ", "Rt: ", "Lf: "]
     for p in range(len(proteinsI)):
         tableLine= proteinsI[p]
@@ -376,14 +376,13 @@ def assembleTrackedCellDisplay(trackedCell):
     display.append("")
     display.append("Messenger Hormones:")
     display.append("")
-    messengerValues=[trackedCell.valuetable[cell.MOD_INDEX.index("thinkin")], trackedCell.valuetable[cell.MOD_INDEX.index("schemin")], trackedCell.valuetable[cell.MOD_INDEX.index("plottin")], trackedCell.valuetable[cell.MOD_INDEX.index("dreamin")]]
+    messengerValues= trackedCell.valuetable[cell.MOD_INDEX.index("thinkin") : (cell.MOD_INDEX.index("thinkin") + inputs.MESSENGER_PROTEIN_NUMBER)]
     messengerMax= max(messengerValues)
-    barGraph="|||||||||||||||||||||"#                                                         \/prevents divide by zero
-    display.append("Thinkin:\x1b[44m " + barGraph[:((round((messengerValues[0]/(messengerMax+.0001))*20)))] + "\x1b[0m" + str(round(messengerValues[0], 1)))
-    display.append("Schemin:\x1b[42m " + barGraph[:((round((messengerValues[1]/(messengerMax+.0001))*20)))] + "\x1b[0m" + str(round(messengerValues[1], 1)))
-    display.append("Plottin:\x1b[41m " + barGraph[:((round((messengerValues[2]/(messengerMax+.0001))*20)))] + "\x1b[0m" + str(round(messengerValues[2], 1)))
-    display.append("Dreamin:\x1b[45m " + barGraph[:((round((messengerValues[3]/(messengerMax+.0001))*20)))] + "\x1b[0m" + str(round(messengerValues[3], 1)))
-
+    capitalizedMessengers= ["Thinkin", "Schemin", "Plottin", "Dreamin", "Electin", "Choosin", "Decidin", "Figurin", "Wafflin", "Waverin"][:inputs.MESSENGER_PROTEIN_NUMBER]
+    colorTable= ["\x1b[44m ", "\x1b[42m ", "\x1b[41m ", "\x1b[45m ", "\x1b[46m ", "\x1b[43m "]
+    barGraph="|||||||||||||||||||||"                                                         
+    for m in range(0, inputs.MESSENGER_PROTEIN_NUMBER): #                                                                 \/prevents divide by zero
+        display.append(capitalizedMessengers[m] + colorTable[m%6] + barGraph[:((round((messengerValues[m]/(messengerMax+.0001))*20)))] + "\x1b[0m" + str(round(messengerValues[m], 1)))
     display.append("")
     display.append("Movement Proteins:")
     display.append("")
