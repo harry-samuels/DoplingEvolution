@@ -20,6 +20,9 @@ MOD_INDEX= [
     "upin", "downin", "rightin", "leftin"
 ]
 
+MESSENGERS= ["thinkin", "schemin", "plottin", "dreamin"]
+PROTEINS= ["upin", "downin", "rightin", "leftin"]
+
 #adds newly generated cell to list of living Cells at the correct speed postion. CELLS is ordered from fastest (greatest speed) to slowest cells
 #This method keeps the list sorted
 def addtoCELLS(newCell, cellSpeed):
@@ -30,12 +33,11 @@ def addtoCELLS(newCell, cellSpeed):
 
 #create a new modifier table, if no mod table is given determine all modifiers randomly, otherwise return the given modtable
 def generateModTable(modtable=None):
-    messengers= ["thinkin", "schemin", "plottin", "dreamin"]
     if modtable is None:
         modtable= []
         for input in range(0,len(MOD_INDEX)):
             modtable.append([])
-            for m in messengers:
+            for m in MESSENGERS:
                 modtable[input].append(((random.uniform(0,0.5))**2)*random.choice([-1,1]))
         return modtable
 
@@ -44,13 +46,11 @@ def generateModTable(modtable=None):
 
 #create a new movement table, if no movement table is given determine all modifiers randomly, otherwise return the given momovementtable
 def generateMovementTable(movementtable=None):
-    messengers= ["thinkin", "schemin", "plottin", "dreamin"]
-    proteins= ["upin", "downin", "rightin", "leftin"]
     if movementtable is None:
         movementtable=[]
-        for m in range(0, len(messengers)):
+        for m in range(0, len(MESSENGERS)):
             movementtable.append([])
-            for p in range(0, len(proteins)):
+            for p in range(0, len(PROTEINS)):
                 movementtable[m].append(((random.uniform(0,0.5))**2)*random.choice([-1,1]))
         return movementtable
     else:
@@ -379,41 +379,36 @@ class Cell:
 
 
     def calculateMessengerMods(self):
-        messengers= ["thinkin", "schemin", "plottin", "dreamin"]
         mods=[]  
-        for z in range(0, len(messengers)):
+        for z in range(0, len(MESSENGERS)):
             mods.append(0)
             for i in range(0, len(MOD_INDEX)):
                 mods[z]+= ((self.valuetable[i]) * (self.modtable[i][z]))
         return mods
 
     def applyMessengerMods(self, messengerMods):
-        messengers= ["thinkin", "schemin", "plottin", "dreamin"]
         for m in range(0, len(messengerMods)):
-            self.valuetable[MOD_INDEX.index(messengers[m])]+= messengerMods[m]
+            self.valuetable[MOD_INDEX.index(MESSENGERS[m])]+= messengerMods[m]
 
         return
 
     def calculateMovementMods(self):
-        messengers= ["thinkin", "schemin", "plottin", "dreamin"]
-        proteins= ["upin", "downin", "rightin", "leftin"]
         mods=[]  
-        for p in range(0, len(proteins)):
+        for p in range(0, len(PROTEINS)):
             mods.append(0)
-            for m in range(0, len(messengers)):
-                mods[p]+= ((self.valuetable[MOD_INDEX.index(messengers[m])]) * (self.movementtable[m][p]))
+            for m in range(0, len(MESSENGERS)):
+                mods[p]+= ((self.valuetable[MOD_INDEX.index(MESSENGERS[m])]) * (self.movementtable[m][p]))
         return mods
 
     def applyMovementMods(self, movementMods):
-        proteins= ["upin", "downin", "rightin", "leftin"]
         for p in range(0, len(movementMods)):
-            self.valuetable[MOD_INDEX.index(proteins[p])]+= movementMods[p]
+            self.valuetable[MOD_INDEX.index(PROTEINS[p])]+= movementMods[p]
         return
 
     def pickDirection(self):
         directions= ["N","S","E","W"]
-        proteins= [self.valuetable[MOD_INDEX.index("upin")],self.valuetable[MOD_INDEX.index("downin")],self.valuetable[MOD_INDEX.index("rightin")],self.valuetable[MOD_INDEX.index("leftin")]]
-        return directions[proteins.index(max(proteins))]
+        proteinValues= [self.valuetable[MOD_INDEX.index("upin")],self.valuetable[MOD_INDEX.index("downin")],self.valuetable[MOD_INDEX.index("rightin")],self.valuetable[MOD_INDEX.index("leftin")]]
+        return directions[proteinValues.index(max(proteinValues))]
 
         #check if the cell can move into Node goingTo and lyse the cell if it cannot
     def checkMoveValidity(self, goingTo):
@@ -448,46 +443,44 @@ class Cell:
             return
 
     def split(self, position):
-        messengers= ["thinkin", "schemin", "plottin", "dreamin"]
-        proteins= ["upin", "downin", "rightin", "leftin"]
         if position.isFull():
             return
         self.valuetable[MOD_INDEX.index("food")]= self.valuetable[MOD_INDEX.index("food")]/2
-        for m in messengers:
+        for m in MESSENGERS:
             self.valuetable[MOD_INDEX.index(m)]= (self.valuetable[MOD_INDEX.index(m)])/2
-        for p in proteins:
+        for p in PROTEINS:
             self.valuetable[MOD_INDEX.index(p)]= (self.valuetable[MOD_INDEX.index(p)])/2
 
         c= Cell(self.map, position, self.valuetable[MOD_INDEX.index("food")], mutate(copy.deepcopy(self.modtable), self), mutate(copy.deepcopy(self.movementtable), self), copy.deepcopy(self.valuetable), self.genealogy, mutateSplitThreshold(self.splitThreshold, self), mutateSpeed(self.speed, self))
         c.move()
         return c
 
-    def report(self):
-        messengers= ["thinkin", "schemin", "plottin", "dreamin"]
-        proteins= ["upin", "downin", "rightin", "leftin"]
-        print("\n\nREPORT: "+ self.fullname())
-        print("--------------------------------\n")
-        print("Current Location  :  " + self.location.coordDisplay + "\n")
-        #"  Siblings #: "+ str(len(self.genealogy.mother.children)-1) + (needed to remove as not compatible with sponateously generated cells)
-        print("Current Age: " + str(self.age) + "  Generation: "+ str(self.genealogy.generation) + " Children #: "+ str(len(self.genealogy.children)) + "\n")
-        print("Value Table:")
-        for i in range(0, len(MOD_INDEX)):
-            print(MOD_INDEX[i] + ":  " + str(self.valuetable[i]))
-        print("\n"+ "Mod Table:")
-        print("thinkin                        schemin                        plottin                        dreamin")
-        for table in self.modtable:
-            mods= ""
-            for val in table:
-                #truncate output to 6 digits including negative side
-                mods= mods+ str(val)[:6] +",            "
-            print(mods)
-        print("\n"+ "Movement Table:")
-        print("upin                    downin                    rightin                    leftin")
-        for table2 in self.movementtable:
-            movs= ""
-            for val2 in table2:
-                movs= movs+ str(val2)[:6] +",  "
-            print(movs)
+    # def report(self):
+    #     messengers= ["thinkin", "schemin", "plottin", "dreamin"]
+    #     proteins= ["upin", "downin", "rightin", "leftin"]
+    #     print("\n\nREPORT: "+ self.fullname())
+    #     print("--------------------------------\n")
+    #     print("Current Location  :  " + self.location.coordDisplay + "\n")
+    #     #"  Siblings #: "+ str(len(self.genealogy.mother.children)-1) + (needed to remove as not compatible with sponateously generated cells)
+    #     print("Current Age: " + str(self.age) + "  Generation: "+ str(self.genealogy.generation) + " Children #: "+ str(len(self.genealogy.children)) + "\n")
+    #     print("Value Table:")
+    #     for i in range(0, len(MOD_INDEX)):
+    #         print(MOD_INDEX[i] + ":  " + str(self.valuetable[i]))
+    #     print("\n"+ "Mod Table:")
+    #     print("thinkin                        schemin                        plottin                        dreamin")
+    #     for table in self.modtable:
+    #         mods= ""
+    #         for val in table:
+    #             #truncate output to 6 digits including negative side
+    #             mods= mods+ str(val)[:6] +",            "
+    #         print(mods)
+    #     print("\n"+ "Movement Table:")
+    #     print("upin                    downin                    rightin                    leftin")
+    #     for table2 in self.movementtable:
+    #         movs= ""
+    #         for val2 in table2:
+    #             movs= movs+ str(val2)[:6] +",  "
+    #         print(movs)
         
 
 
