@@ -401,31 +401,6 @@ def assembleTrackedCellDisplay(trackedCell):
     display.append("Key: \x1b[41m--\x1b[0m <-5  \x1b[41m-\x1b[0m <-2  \x1b[31m--\x1b[0m <-1  \x1b[31m-\x1b[0m <-0.1  \x1b[32m+\x1b[0m >0.1  \x1b[32m++\x1b[0m >1  \x1b[42m+\x1b[0m >2  \x1b[42m++\x1b[0m >5")
     display.append("")
     display.extend(assembleMovTableDisplay(trackedCell))
-    # valuesLine= " #: |"
-    # for v in range(0, cell.MOD_INDEX.index("food")):
-    #     valuesLine+= str(trackedCell.valuetable[v]) + " |"
-    # display.append(valuesLine)
-    # display.append("In:  NE NF NC SE SF SC EE EF EC WE WF WC Fd Th Sc Pl Dr Up Dw Rt Lf")
-    # messengersI=  ["Th: ", "Sc: ", "Pl: ", "Dr: "]
-    # for m in range(len(messengersI)):
-    #     tableLine= messengersI[m]
-    #     for v in range(len(trackedCell.valuetable)):
-    #         tableLine+= "|" + convertModDisplay(trackedCell.modtable[v][m])
-    #     display.append(tableLine + "|")
-
-    # #add key for + and - indicators
-    # display.append("")
-    # display.append("Key: \x1b[41m--\x1b[0m <-5  \x1b[41m-\x1b[0m <-2  \x1b[31m--\x1b[0m <-1  \x1b[31m-\x1b[0m <-0.1  \x1b[32m+\x1b[0m >0.1  \x1b[32m++\x1b[0m >1  \x1b[42m+\x1b[0m >2  \x1b[42m++\x1b[0m >5")
-
-    # display.append("")
-    # display.append("In:    Th     Sc     Pl     Dr")
-    # proteinsI=  ["Up: ", "Dw: ", "Rt: ", "Lf: "]
-    # for p in range(len(proteinsI)):
-    #     tableLine= proteinsI[p]
-    #     # next loop uses length of movement table to determine number of messenger hormones
-    #     for m in range(len(trackedCell.movementtable)):
-    #         tableLine+= "|" + convertMovDisplay(trackedCell.movementtable[m][p])
-    #     display.append(tableLine + "|")
 
     return display
 
