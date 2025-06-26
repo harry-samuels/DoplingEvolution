@@ -16,10 +16,10 @@ MESSENGERS= ["thinkin", "schemin", "plottin", "dreamin", "electin", "choosin", "
 PROTEINS= ["upin", "downin", "rightin", "leftin"]
 
 MOD_INDEX= [
-    "Nempty","Nfood", "Ncell",
-    "Sempty","Sfood", "Scell",
-    "Eempty","Efood", "Ecell",
-    "Wempty","Wfood", "Wcell",
+    "Nempty","Nfood", "Ncell", "Nsize",
+    "Sempty","Sfood", "Scell", "Ssize",
+    "Eempty","Efood", "Ecell", "Esize",
+    "Wempty","Wfood", "Wcell", "Wsize",
     "food"] + MESSENGERS + PROTEINS
 
 #adds newly generated cell to list of living Cells at the correct speed postion. CELLS is ordered from fastest (greatest speed) to slowest cells
@@ -113,12 +113,12 @@ class Cell:
         self.location.insert(self)
         
         if valuetable is None:
-            #12 sight values & food value + messenger protein values + movement protein values
+            #16 sight values & food value + messenger protein values + movement protein values
             self.valuetable=[
-                0,0,0,
-                0,0,0,
-                0,0,0,
-                0,0,0,
+                0,0,0,0,
+                0,0,0,0,
+                0,0,0,0,
+                0,0,0,0,
                 food,] + ([0] * inputs.MESSENGER_PROTEIN_NUMBER) + [0,0,0,0]
         else:
             self.valuetable= valuetable
@@ -259,16 +259,19 @@ class Cell:
                 self.valuetable[MOD_INDEX.index("Nempty")]= i
                 self.valuetable[MOD_INDEX.index("Nfood")]= 0
                 self.valuetable[MOD_INDEX.index("Ncell")]= 0
+                self.valuetable[MOD_INDEX.index("Nsize")]= 0
                 stillSearching= False
             elif nextNorth.isFood():
                 self.valuetable[MOD_INDEX.index("Nempty")]= 0
                 self.valuetable[MOD_INDEX.index("Nfood")]= i
                 self.valuetable[MOD_INDEX.index("Ncell")]= 0
+                self.valuetable[MOD_INDEX.index("Nsize")]= 0
                 stillSearching= False
             elif nextNorth.isFull():
                 self.valuetable[MOD_INDEX.index("Nempty")]= 0
                 self.valuetable[MOD_INDEX.index("Nfood")]= 0
                 self.valuetable[MOD_INDEX.index("Ncell")]= i
+                self.valuetable[MOD_INDEX.index("Nsize")]= nextNorth.contains.valuetable[MOD_INDEX.index("food")]
                 stillSearching= False
             else:
                 nextNorth= nextNorth.north
@@ -278,6 +281,7 @@ class Cell:
             self.valuetable[MOD_INDEX.index("Nempty")]= 0
             self.valuetable[MOD_INDEX.index("Nfood")]= 0
             self.valuetable[MOD_INDEX.index("Ncell")]= 0
+            self.valuetable[MOD_INDEX.index("Nsize")]= 0
             stillSearching= False
 
         #check south
@@ -289,16 +293,19 @@ class Cell:
                 self.valuetable[MOD_INDEX.index("Sempty")]= i
                 self.valuetable[MOD_INDEX.index("Sfood")]= 0
                 self.valuetable[MOD_INDEX.index("Scell")]= 0
+                self.valuetable[MOD_INDEX.index("Ssize")]= 0                
                 stillSearching= False
             elif nextSouth.isFood():
                 self.valuetable[MOD_INDEX.index("Sempty")]= 0
                 self.valuetable[MOD_INDEX.index("Sfood")]= i
                 self.valuetable[MOD_INDEX.index("Scell")]= 0
+                self.valuetable[MOD_INDEX.index("Ssize")]= 0
                 stillSearching= False
             elif nextSouth.isFull():
                 self.valuetable[MOD_INDEX.index("Sempty")]= 0
                 self.valuetable[MOD_INDEX.index("Sfood")]= 0
                 self.valuetable[MOD_INDEX.index("Scell")]= i
+                self.valuetable[MOD_INDEX.index("Ssize")]= nextSouth.contains.valuetable[MOD_INDEX.index("food")]
                 stillSearching= False
             else:
                 nextSouth= nextSouth.south
@@ -308,6 +315,7 @@ class Cell:
             self.valuetable[MOD_INDEX.index("Sempty")]= 0
             self.valuetable[MOD_INDEX.index("Sfood")]= 0
             self.valuetable[MOD_INDEX.index("Scell")]= 0
+            self.valuetable[MOD_INDEX.index("Ssize")]= 0
             stillSearching= False
 
 
@@ -320,16 +328,19 @@ class Cell:
                 self.valuetable[MOD_INDEX.index("Eempty")]= i
                 self.valuetable[MOD_INDEX.index("Efood")]= 0
                 self.valuetable[MOD_INDEX.index("Ecell")]= 0
+                self.valuetable[MOD_INDEX.index("Esize")]= 0
                 stillSearching= False
             elif nextEast.isFood():
                 self.valuetable[MOD_INDEX.index("Eempty")]= 0
                 self.valuetable[MOD_INDEX.index("Efood")]= i
                 self.valuetable[MOD_INDEX.index("Ecell")]= 0
+                self.valuetable[MOD_INDEX.index("Esize")]= 0
                 stillSearching= False
             elif nextEast.isFull():
                 self.valuetable[MOD_INDEX.index("Eempty")]= 0
                 self.valuetable[MOD_INDEX.index("Efood")]= 0
                 self.valuetable[MOD_INDEX.index("Ecell")]= i
+                self.valuetable[MOD_INDEX.index("Esize")]= nextEast.contains.valuetable[MOD_INDEX.index("food")]
                 stillSearching= False
             else:
                 nextEast= nextEast.east
@@ -339,6 +350,7 @@ class Cell:
             self.valuetable[MOD_INDEX.index("Eempty")]= 0
             self.valuetable[MOD_INDEX.index("Efood")]= 0
             self.valuetable[MOD_INDEX.index("Ecell")]= 0
+            self.valuetable[MOD_INDEX.index("Esize")]= 0
             stillSearching= False
 
         #check west
@@ -350,16 +362,19 @@ class Cell:
                 self.valuetable[MOD_INDEX.index("Wempty")]= i
                 self.valuetable[MOD_INDEX.index("Wfood")]= 0
                 self.valuetable[MOD_INDEX.index("Wcell")]= 0
+                self.valuetable[MOD_INDEX.index("Wsize")]= 0
                 stillSearching= False
             elif nextWest.isFood():
                 self.valuetable[MOD_INDEX.index("Wempty")]= 0
                 self.valuetable[MOD_INDEX.index("Wfood")]= i
                 self.valuetable[MOD_INDEX.index("Wcell")]= 0
+                self.valuetable[MOD_INDEX.index("Wsize")]= 0
                 stillSearching= False
             elif nextWest.isFull():
                 self.valuetable[MOD_INDEX.index("Wempty")]= 0
                 self.valuetable[MOD_INDEX.index("Wfood")]= 0
                 self.valuetable[MOD_INDEX.index("Wcell")]= i
+                self.valuetable[MOD_INDEX.index("Wsize")]= nextWest.contains.valuetable[MOD_INDEX.index("food")]
                 stillSearching= False
             else:
                 nextWest= nextWest.west
@@ -369,6 +384,7 @@ class Cell:
             self.valuetable[MOD_INDEX.index("Wempty")]= 0
             self.valuetable[MOD_INDEX.index("Wfood")]= 0
             self.valuetable[MOD_INDEX.index("Wcell")]= 0
+            self.valuetable[MOD_INDEX.index("Wsize")]= 0
             stillSearching= False
 
         return

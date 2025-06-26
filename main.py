@@ -233,6 +233,8 @@ Features to Implement:
 
 -make hormones cost food?
 
+-Allow cells to mutate duplicate/remove hormones
+
 
 
 

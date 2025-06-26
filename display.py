@@ -259,10 +259,10 @@ def assembleModTableDisplay(trackedCell):
     display=[]
     valuesLine= " #: |"
     for v in range(0, cell.MOD_INDEX.index("food")):
-        valuesLine+= str(trackedCell.valuetable[v]) + " |"
+        valuesLine+= str(round(trackedCell.valuetable[v])) + " |"
     display.append(valuesLine)
-    display.append("In:  NE NF NC SE SF SC EE EF EC WE WF WC Fd " + ("Th Sc Pl Dr El Ch De Fi Wf Wv "[:(inputs.MESSENGER_PROTEIN_NUMBER * 3)]) + "Up Dw Rt Lf")
-    messengersI=  ["Th: ", "Sc: ", "Pl: ", "Dr: ", "El: ", "Ch: ", "De: ", "Fi", "Wf: ", "Wv: "][:inputs.MESSENGER_PROTEIN_NUMBER]
+    display.append("In:  NE NF NC NS SE SF SC SS EE EF EC ES WE WF WC WS Fd " + ("Th Sc Pl Dr El Ch De Fi Wf Wv "[:(inputs.MESSENGER_PROTEIN_NUMBER * 3)]) + "Up Dw Rt Lf")
+    messengersI=  ["Th: ", "Sc: ", "Pl: ", "Dr: ", "El: ", "Ch: ", "De: ", "Fi: ", "Wf: ", "Wv: "][:inputs.MESSENGER_PROTEIN_NUMBER]
     for m in range(len(messengersI)):
         tableLine= messengersI[m]
         for v in range(len(trackedCell.valuetable)):
