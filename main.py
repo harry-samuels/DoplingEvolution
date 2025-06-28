@@ -100,8 +100,11 @@ while inp != "X":
             display.MULTITRACK= False
             trackIdentifier= (input("Enter the ID, beginning with '#', or the grid location ('X, Y') of the dopling to be tracked: "))
             if "#" in trackIdentifier:
-                trackID= int(trackIdentifier[1:])
-                trackedCell= cell.ALL_CELLS[trackID]
+                try:
+                    trackID= int(trackIdentifier[1:])
+                    trackedCell= cell.ALL_CELLS[trackID]
+                except(ValueError, IndexError):
+                    print("Improper cell ID #")
             else:
                 try:
                     trackX= int(trackIdentifier[:trackIdentifier.index(',')])
