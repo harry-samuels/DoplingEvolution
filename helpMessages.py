@@ -111,15 +111,15 @@ Reading the \x1b[32mactivation\x1b[0m/\x1b[31minhibition\x1b[0m table (\x1b[36mi
 
 -the messenger activation/inhibition table shown by the tracked dopling's display looks like this:
 
- #: |5 |0 |0 |0 |0 |0 |1 |0 |0 |0 |3 |0 |
-In:  NE NF NC SE SF SC EE EF EC WE WF WC Fd Th Sc Pl Dr Up Dw Rt Lf
-Th: |0 |\x1b[31m-\x1b[0m |0 |0 |\x1b[32m+\x1b[0m |0 |0 |0 |0 |0 |0 |0 |\x1b[32m+\x1b[0m |0 |\x1b[31m-\x1b[0m |0 |0 |0 |0 |0 |0 |
-Sc: |0 |0 |\x1b[32m+\x1b[0m |0 |0 |0 |\x1b[32m+\x1b[0m |0 |0 |0 |0 |0 |0 |0 |0 |0 |0 |0 |0 |\x1b[32m+\x1b[0m |0 |
-Pl: |\x1b[32m+\x1b[0m |0 |0 |0 |0 |0 |0 |\x1b[31m-\x1b[0m |0 |0 |0 |0 |0 |\x1b[31m-\x1b[0m |0 |\x1b[32m+\x1b[0m |0 |0 |0 |0 |0 |
-Dr: |0 |\x1b[32m+\x1b[0m |0 |0 |0 |0 |0 |0 |0 |\x1b[31m-\x1b[0m |0 |\x1b[31m-\x1b[0m |0 |0 |0 |0 |0 |\x1b[31m+\x1b[0m |0 |0 |0 |
+ #: |5 |0 |0 |0 |0 |0 |1 |0 |0 |0 |3 |0 |0 |0 |0 |0 |5 | 
+In:  NE NF NC NS SE SF SC SS EE EF EC SS WE WF WC WS Fd Th Sc Pl Dr Up Dw Rt Lf
+Th: |0 |\x1b[31m-\x1b[0m |0 |0 |\x1b[32m+\x1b[0m |0 |0 |0 |0 |0 |0 |0 |\x1b[32m+\x1b[0m |0 |\x1b[31m-\x1b[0m |0 |0 |0 |0 |0 |0 |0 |0 |0 |0 |
+Sc: |0 |0 |\x1b[32m+\x1b[0m |0 |0 |0 |\x1b[32m+\x1b[0m |0 |0 |0 |0 |0 |0 |0 |0 |0 |0 |0 |0 |\x1b[32m+\x1b[0m |0 |0 |0 |0 |0 |0 |0 |
+Pl: |\x1b[32m+\x1b[0m |0 |0 |0 |0 |0 |0 |\x1b[31m-\x1b[0m |0 |0 |0 |0 |0 |\x1b[31m-\x1b[0m |0 |\x1b[32m+\x1b[0m |0 |0 |0 |0 |0 |0 |0 |0 |0 |0 |0 |
+Dr: |0 |\x1b[32m+\x1b[0m |0 |0 |0 |0 |0 |0 |0 |\x1b[31m-\x1b[0m |0 |\x1b[31m-\x1b[0m |0 |0 |0 |0 |0 |\x1b[31m+\x1b[0m |0 |0 |0 |0 |0 |0 |0 |0 |0 |
 
 -the second row lists each of the inputs (In) that can activate and inhibit each of the 4 messenger proteins
-    -NE, NF, & NC stand for North Edge (the end of the grid), North Food, and North Cell (another dopling)
+    -NE, NF, NC, & NS stand for North Edge (the end of the grid), North Food, North Cell (another dopling), and North Size (the size of that)
     -S, E, and W stand for South, East and West respectively
     -Fd is "food", and the last 8 (Th Sc Pl Dr Up Dw Rt Lf) are the 8 proteins
 -the first row shows the values that represent what the dopling sees

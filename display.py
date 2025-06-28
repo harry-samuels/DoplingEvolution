@@ -103,7 +103,7 @@ def assembleExpandedSpeciesDisplay():
 
     #this list will contain all currently extant species
     currentSpecies= []
-    #this list will contain the number of the extant species at the matchiong index in currentSpecies
+    #this list will contain the number of the extant species at the matching index in currentSpecies
     currentSpeciesCount= []
     #this loop checks each living cell and adds their species to the list of extant species, or adds 1 to the count for that sopecies if it is already listed
 
@@ -258,14 +258,13 @@ def assembleMultitrackDisplay():
 def assembleModTableDisplay(trackedCell):
     display=[]
     valuesLine= " #: |"
-    for v in range(0, cell.MOD_INDEX.index("food")):
+    for v in cell.BASE_MOD_INDEX:
         valuesLine+= str(round(trackedCell.valuetable[v])) + " |"
     display.append(valuesLine)
-    display.append("In:  NE NF NC NS SE SF SC SS EE EF EC ES WE WF WC WS Fd " + ("Th Sc Pl Dr El Ch De Fi Wf Wv "[:(inputs.MESSENGER_PROTEIN_NUMBER * 3)]) + "Up Dw Rt Lf")
-    messengersI=  ["Th: ", "Sc: ", "Pl: ", "Dr: ", "El: ", "Ch: ", "De: ", "Fi: ", "Wf: ", "Wv: "][:inputs.MESSENGER_PROTEIN_NUMBER]
-    for m in range(len(messengersI)):
-        tableLine= messengersI[m]
-        for v in range(len(trackedCell.valuetable)):
+    display.append("In:  NE NF NC NS SE SF SC SS EE EF EC ES WE WF WC WS Fd "+ allAbreviatedMessengers(trackedCell, " ") + "Up Dw Rt Lf")
+    for m in trackedCell.messengers:
+        tableLine= abreviateMessengerTwoChar(m) + ": "
+        for v in trackedCell.modIndex:
             tableLine+= "|" + convertModDisplay(trackedCell.modtable[v][m])
         display.append(tableLine + "|")
 
@@ -274,13 +273,12 @@ def assembleModTableDisplay(trackedCell):
 #creates printable table representation of trackedCell's movementtable
 def assembleMovTableDisplay(trackedCell):
     display= []
-    display.append("In:    Th     Sc     Pl     Dr     El     Ch     De     Fi     Wf     Wv"[:(inputs.MESSENGER_PROTEIN_NUMBER*7)+2])
+    display.append("In:    " + allAbreviatedMessengers(trackedCell, "     "))
     proteinsI=  ["Up: ", "Dw: ", "Rt: ", "Lf: "]
     for p in range(len(proteinsI)):
         tableLine= proteinsI[p]
-        # next loop uses length of movement table to determine number of messenger hormones
-        for m in range(len(trackedCell.movementtable)):
-            tableLine+= "|" + convertMovDisplay(trackedCell.movementtable[m][p])
+        for m in trackedCell.messengers:
+            tableLine+= "|" + convertMovDisplay(trackedCell.movementtable[m][trackedCell.proteins[p]])
         display.append(tableLine + "|")
 
     return display
@@ -341,6 +339,19 @@ def convertMovDisplay(mov):
         printableMov= spacers[mLen][0] + printableMov + spacers[mLen][1]
     return color + printableMov + "\x1b[0m"
 
+def abreviateMessengerTwoChar(messenger):
+    if len(messenger) > 7:
+        abreviation= messenger[0] + messenger[-1]
+    else:
+        abreviation= messenger[:2]
+    return abreviation.capitalize()
+
+def allAbreviatedMessengers(trackedCell, spacer):
+    mString= ""
+    for m in trackedCell.messengers:
+        mString+= abreviateMessengerTwoChar(m) + spacer
+    return mString
+
 
 #adds relevent strings to list display for displaying trackedCell information and returns the display
 def assembleTrackedCellDisplay(trackedCell):
@@ -364,9 +375,9 @@ def assembleTrackedCellDisplay(trackedCell):
 
     display.append("")
     foodAlert= ""
-    if trackedCell.valuetable[cell.MOD_INDEX.index("food")]/inputs.FOOD_TO_MOVE < 20:
+    if trackedCell.valuetable["food"]/trackedCell.speed < 20:
         foodAlert= "\x1b[31m"
-    display.append("Food: " + foodAlert + str(trackedCell.valuetable[cell.MOD_INDEX.index("food")])[:5] + "\x1b[0m" + " | Split @ " + str(trackedCell.splitThreshold)[:5] + " | Speed: " + str(trackedCell.speed)[:5])
+    display.append("Food: " + foodAlert + str(trackedCell.valuetable["food"])[:5] + "\x1b[0m" + " | Split @ " + str(trackedCell.splitThreshold)[:5] + " | Speed: " + str(trackedCell.speed)[:5])
     display.append("Age: " + str(trackedCell.age) + " | Ate " + str(trackedCell.cellsEaten) + " other doplings")
     display.append("Generation: " + str(trackedCell.genealogy.generation))
     display.append("Children: " + str(len(trackedCell.genealogy.children)))
@@ -376,22 +387,24 @@ def assembleTrackedCellDisplay(trackedCell):
     display.append("")
     display.append("Messenger Hormones:")
     display.append("")
-    messengerValues= trackedCell.valuetable[cell.MOD_INDEX.index("thinkin") : (cell.MOD_INDEX.index("thinkin") + inputs.MESSENGER_PROTEIN_NUMBER)]
+    messengerValues=[]
+    for m in trackedCell.messengers:
+        messengerValues.append(trackedCell.valuetable[m])
     messengerMax= max(messengerValues)
-    capitalizedMessengers= ["Thinkin", "Schemin", "Plottin", "Dreamin", "Electin", "Choosin", "Decidin", "Figurin", "Wafflin", "Waverin"][:inputs.MESSENGER_PROTEIN_NUMBER]
+    #capitalizedMessengers= ["Thinkin", "Schemin", "Plottin", "Dreamin", "Electin", "Choosin", "Decidin", "Figurin", "Wafflin", "Waverin"][:inputs.MESSENGER_PROTEIN_NUMBER]
     colorTable= ["\x1b[44m ", "\x1b[42m ", "\x1b[41m ", "\x1b[45m ", "\x1b[46m ", "\x1b[43m "]
     barGraph="|||||||||||||||||||||"                                                         
-    for m in range(0, inputs.MESSENGER_PROTEIN_NUMBER): #                                                                 \/prevents divide by zero
-        display.append(capitalizedMessengers[m] + colorTable[m%6] + barGraph[:((round((messengerValues[m]/(messengerMax+.0001))*20)))] + "\x1b[0m" + str(round(messengerValues[m], 1)))
+    for m in range(0, len(trackedCell.messengers)): #                                                                           \/prevents divide by zero
+        display.append((trackedCell.messengers[m].capitalize()).rjust(30, " ") + ":" + colorTable[m%6] + barGraph[:((round((messengerValues[m]/(messengerMax+.0001))*20)))] + "\x1b[0m" + str(round(messengerValues[m], 1)))
     display.append("")
     display.append("Movement Proteins:")
     display.append("")
-    movementValues=[trackedCell.valuetable[cell.MOD_INDEX.index("upin")], trackedCell.valuetable[cell.MOD_INDEX.index("downin")], trackedCell.valuetable[cell.MOD_INDEX.index("rightin")], trackedCell.valuetable[cell.MOD_INDEX.index("leftin")]]
+    movementValues=[trackedCell.valuetable["upin"], trackedCell.valuetable["downin"], trackedCell.valuetable["rightin"], trackedCell.valuetable["leftin"]]
     movementMax= max(movementValues)
-    display.append("Upin   :\x1b[47m " + barGraph[:((round((movementValues[0]/(movementMax+.0001))*20)))] + "\x1b[0m" + str(round(movementValues[0], 1)))
-    display.append("Downin :\x1b[43m " + barGraph[:((round((movementValues[1]/(movementMax+.0001))*20)))] + "\x1b[0m" + str(round(movementValues[1], 1)))
-    display.append("Rightin:\x1b[47m " + barGraph[:((round((movementValues[2]/(movementMax+.0001))*20)))] + "\x1b[0m" + str(round(movementValues[2], 1)))
-    display.append("Leftin :\x1b[43m " + barGraph[:((round((movementValues[3]/(movementMax+.0001))*20)))] + "\x1b[0m" + str(round(movementValues[3], 1)))
+    display.append("                       Upin   :\x1b[47m " + barGraph[:((round((movementValues[0]/(movementMax+.0001))*20)))] + "\x1b[0m" + str(round(movementValues[0], 1)))
+    display.append("                       Downin :\x1b[43m " + barGraph[:((round((movementValues[1]/(movementMax+.0001))*20)))] + "\x1b[0m" + str(round(movementValues[1], 1)))
+    display.append("                       Rightin:\x1b[47m " + barGraph[:((round((movementValues[2]/(movementMax+.0001))*20)))] + "\x1b[0m" + str(round(movementValues[2], 1)))
+    display.append("                       Leftin :\x1b[43m " + barGraph[:((round((movementValues[3]/(movementMax+.0001))*20)))] + "\x1b[0m" + str(round(movementValues[3], 1)))
 
     display.append("")
     display.extend(assembleModTableDisplay(trackedCell))

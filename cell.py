@@ -15,12 +15,20 @@ MESSENGERS= ["thinkin", "schemin", "plottin", "dreamin", "electin", "choosin", "
 
 PROTEINS= ["upin", "downin", "rightin", "leftin"]
 
-MOD_INDEX= [
+BASE_MOD_INDEX= [
     "Nempty","Nfood", "Ncell", "Nsize",
     "Sempty","Sfood", "Scell", "Ssize",
     "Eempty","Efood", "Ecell", "Esize",
     "Wempty","Wfood", "Wcell", "Wsize",
-    "food"] + MESSENGERS + PROTEINS
+    "food"]
+
+MOD_INDEX= BASE_MOD_INDEX + MESSENGERS + PROTEINS
+
+DEFAULT_VALUE_TABLE= dict.fromkeys(MOD_INDEX, 0)
+
+NUM_GENE_ADD_DELETE= 0 #DEBUG
+NUM_FULL_GENE_DUPES= 0 #DEBUG
+NUM_MEGAMUTATIONS= 0 #DEBUG
 
 #adds newly generated cell to list of living Cells at the correct speed postion. CELLS is ordered from fastest (greatest speed) to slowest cells
 #This method keeps the list sorted
@@ -30,40 +38,72 @@ def addtoCELLS(newCell, cellSpeed):
         i+= 1
     CELLS.insert(i, newCell)
 
-#create a new modifier table, if no mod table is given determine all modifiers randomly, otherwise return the given modtable
-def generateModTable(modtable=None):
-    if modtable is None:
-        modtable= []
-        for input in range(0,len(MOD_INDEX)):
-            modtable.append([])
-            for m in MESSENGERS:
-                modtable[input].append(((random.uniform(0,0.5))**2)*random.choice([-1,1]))
-        return modtable
+#mutates, mod, mov, and value table and returns them. Also processes gene/genome duplication
+def mutateGenome(modtable, movementtable, valuetable, parent):
+    modtable= mutate(modtable, parent)
+    movementtable= mutate(movementtable, parent)
+    proteinInfo= {}
+    if random.randint(0, 2000) < (len(parent.messengers)):
+        parent.nextchildmegamutation= True
+        new_messengers= copy.deepcopy(parent.messengers)
+        if random.randint(0,10) == 0: #random.randint(0,4) == 0:
+            #full genome duplication
+            #print("FULL GENOME DUPE!!!!!!!!!!!!!!!!!!!!!!!!!! ! ! ! ! ! ! ") #DEBUG
+            #global NUM_FULL_GENE_DUPES #DEBUG
+            #NUM_FULL_GENE_DUPES+= 1 #DEBUG
+            for duplicatedMessenger in parent.messengers:
+                newMessenger= nameDuplicatedGene(duplicatedMessenger)
+                new_messengers.insert(new_messengers.index(duplicatedMessenger), newMessenger)
+                modtable, movementtable, valuetable= duplicateGene(newMessenger, duplicatedMessenger, modtable, movementtable, valuetable)
+
+        else:
+            global NUM_GENE_ADD_DELETE #DEBUG
+            NUM_GENE_ADD_DELETE+= 1 #DEBUG
+            if random.randint(0,1) == 0:
+                #print("DUPLICATION OF GENE!!!!!") #DEBUG
+                #single gene duplication
+                duplicatedMessengerIndex= random.randint(0, len(parent.messengers)-1)
+                duplicatedMessenger= parent.messengers[duplicatedMessengerIndex]
+                newMessenger= nameDuplicatedGene(duplicatedMessenger)
+
+                new_messengers.insert(duplicatedMessengerIndex, newMessenger)
+                modtable, movementtable, valuetable= duplicateGene(newMessenger, duplicatedMessenger, modtable, movementtable, valuetable)
+
+            else:
+                #print("DELETION OF GENE!!!!!") #DEBUG
+                #single gene removal
+                removedMessengerIndex= random.randint(0, len(parent.messengers)-1)
+                removedMessenger= parent.messengers[removedMessengerIndex]
+
+                new_messengers.pop(removedMessengerIndex)
+                modtable, movementtable, valuetable= removeGene(removedMessenger, modtable, movementtable, valuetable)
+
+            #print(str(NUM_FULL_GENE_DUPES) + " " + str(NUM_GENE_ADD_DELETE) + " " + str(NUM_MEGAMUTATIONS)) #DEBUG
+
+        #print(len(ALL_CELLS)) #DEBUG
+        proteinInfo["messengers"]= new_messengers
+        proteinInfo["proteins"]= parent.proteins
+        proteinInfo["index"]= BASE_MOD_INDEX + new_messengers + parent.proteins
+
 
     else:
-        return modtable
+        proteinInfo["messengers"]= parent.messengers
+        proteinInfo["proteins"]= parent.proteins
+        proteinInfo["index"]= parent.modIndex
+  
+    return (modtable, movementtable, valuetable, proteinInfo)
 
-#create a new movement table, if no movement table is given determine all modifiers randomly, otherwise return the given momovementtable
-def generateMovementTable(movementtable=None):
-    if movementtable is None:
-        movementtable=[]
-        for m in range(0, inputs.MESSENGER_PROTEIN_NUMBER):
-            movementtable.append([])
-            for p in range(0, len(PROTEINS)):
-                movementtable[m].append(((random.uniform(0,0.5))**2)*random.choice([-1,1]))
-        return movementtable
-    else:
-        return movementtable 
-
-#add mutations to a given 2-D mod or movement table
+#add mutations to a given 2-D dictionary mod or movement table
 def mutate(table, parent):
-    for r in range(0, len(table)):
-        for c in range(0, len(table[r])):
+    for r in table:
+        for c in table[r]:
             if random.randint(0, 100) <5:
                 if random.randint(0,100) == 1:
                     table[r][c]= table[r][c] * (random.uniform(-5, 5))
                     #this will allow the newly created cell to have a different color from the mother cell using its genealogy init
                     parent.genealogy.nextchildmegamutation= True
+                    global NUM_MEGAMUTATIONS#DEBUG
+                    NUM_MEGAMUTATIONS+= 1 #DEBUG
                 else:
                     table[r][c]= table[r][c] + (random.uniform(-0.99, 0.99))
     return table
@@ -90,11 +130,38 @@ def mutateSpeed(speed, parent):
         speed= inputs.FOOD_TO_MOVE
     return speed
 
+def nameDuplicatedGene(oldName):
+    #WILL NEED TO CHANGE THIS LATER TO BE LESS LONG AFTER 2+ duplications
+    newName= oldName + "-" + str(len(ALL_CELLS))
+    return newName
+
+
+#adds newGene (str) to the modtable, movementable, and valuetable by duplicating oldGene (str)
+def duplicateGene(newGene, oldGene, modtable, movementtable, valuetable):
+    #add newGene as copy of oldGene for all mods in modtable
+    for v in modtable:
+        modtable[v][newGene]= copy.deepcopy(modtable[v][oldGene])
+    #add newGene as value in modtable and copy oldGene mods which now include newGene
+    modtable[newGene]= copy.deepcopy(modtable[oldGene])
+    movementtable[newGene]= copy.deepcopy(movementtable[oldGene])
+    valuetable[newGene]= copy.deepcopy(valuetable[oldGene])
+    return(modtable, movementtable, valuetable)
+
+def removeGene(removedGene, modtable, movementtable, valuetable):
+    #remove removedGene key from all modtable dictionaries
+    for v in modtable:
+        del modtable[v][removedGene]
+    #remove removedGene dictionary from modtable
+    del modtable[removedGene]
+    del movementtable[removedGene]
+    del valuetable[removedGene]
+    return (modtable, movementtable, valuetable)
+
 
 class Cell:
     SPLIT_SPEED_RATIO= inputs.FOOD_TO_SPLIT / inputs.FOOD_TO_MOVE
     #Grid: map, Node: location, int: food, []: modtable, []: movementtable, []: valuetable
-    def __init__(self, map, location, food, modtable=None, movementtable=None, valuetable=None, mothergenealogy=None, splitThreshold=None, speed=None):
+    def __init__(self, map, location, food, modtable=None, movementtable=None, valuetable=None, proteinInfo=None, mothergenealogy=None, splitThreshold=None, speed=None):
 
         self.age= 0
         self.name= (random.choice(["ba", "po", "li", "re", "xi", "shu", "cra", "psy", "tri", "fro", "woo", "do", "ki", "epi", "ono", "uba", "aro", "immo", "qui", "gra", "hu", "mi", "vee", "yoo", "zo"]) + 
@@ -111,21 +178,25 @@ class Cell:
 
         self.location= location
         self.location.insert(self)
+
+        if proteinInfo == None:
+            self.messengers= MESSENGERS
+            self.proteins= PROTEINS
+            self.modIndex= MOD_INDEX
+        else:
+            self.messengers= proteinInfo["messengers"]
+            self.proteins= proteinInfo["proteins"]
+            self.modIndex= proteinInfo["index"]
         
         if valuetable is None:
-            #16 sight values & food value + messenger protein values + movement protein values
-            self.valuetable=[
-                0,0,0,0,
-                0,0,0,0,
-                0,0,0,0,
-                0,0,0,0,
-                food,] + ([0] * inputs.MESSENGER_PROTEIN_NUMBER) + [0,0,0,0]
+            self.valuetable= copy.deepcopy(DEFAULT_VALUE_TABLE)
+            self.valuetable["food"]= food
         else:
             self.valuetable= valuetable
-            self.valuetable[MOD_INDEX.index("food")]= food
+            self.valuetable["food"]= food
 
-        self.modtable= generateModTable(modtable)
-        self.movementtable= generateMovementTable(movementtable)
+        self.modtable= self.generateModTable(modtable)
+        self.movementtable= self.generateMovementTable(movementtable)
 
         self.genealogy= genealogy.Genealogy(self, mothergenealogy)
 
@@ -163,6 +234,31 @@ class Cell:
         else:
             return "\x1b[" + self.genealogy.color + "m" + self.genealogy.tracking + alpha[classification] + "\x1b[0m"
 
+    #create a new modifier table, if no mod table is given determine all modifiers randomly, otherwise return the given modtable
+    def generateModTable(self, modtable=None):
+        if modtable is None:
+            modtable= {}
+            for v in self.modIndex:
+                modtable[v]= {}
+                for m in self.messengers:
+                    modtable[v][m]= ((random.uniform(0,0.5))**2)*random.choice([-1,1])
+            return modtable
+
+        else:
+            return modtable
+
+    #create a new movement table, if no movement table is given determine all modifiers randomly, otherwise return the given momovementtable
+    def generateMovementTable(self,movementtable=None):
+        if movementtable is None:
+            movementtable={}
+            for m in self.messengers:
+                movementtable[m]= {}
+                for p in self.proteins:
+                    movementtable[m][p]= ((random.uniform(0,0.5))**2)*random.choice([-1,1])
+            return movementtable
+        else:
+            return movementtable 
+
     #lyse the cell if it is not already lysed, spawn a food object at current location with value equal to own food value
     def lyse(self, deathmessage="adios ;)"):
         if self.lysed:
@@ -170,8 +266,8 @@ class Cell:
         self.deathmessage= ("'" + deathmessage + "'")
         self.deathdate= self.map.totalturns
         self.location.clear()
-        if self.valuetable[MOD_INDEX.index("food")] > 0:
-            self.map.spawnFood(self.valuetable[MOD_INDEX.index("food")], self.location)
+        if self.valuetable["food"] > 0:
+            self.map.spawnFood(self.valuetable["food"], self.location)
         self.genealogy.taxon.addDeadMember()
         #self.location= None -->need to keep this value for tracking/report output
         #self.valuetable[MOD_INDEX.index("food")]=0 ---> want to keep this value for tracking as well
@@ -183,8 +279,8 @@ class Cell:
         self.age+= 1
         goingTo= None
         #food cost to move
-        self.valuetable[MOD_INDEX.index("food")]-= self.speed 
-        if self.valuetable[MOD_INDEX.index("food")] <= 0:
+        self.valuetable["food"]-= self.speed 
+        if self.valuetable["food"] <= 0:
             self.lyse("hungry :(")
 
         #ensure the cell is still alive
@@ -195,21 +291,18 @@ class Cell:
         messengerMods= self.calculateMessengerMods()
         self.applyMessengerMods(messengerMods)
 
-        #set negative messenger/protein values to zero
-        for vindex in range(MOD_INDEX.index("thinkin"), len(MOD_INDEX)):
-            if self.valuetable[vindex] < 0:
-                #print("corrected negative:" + MOD_INDEX[vindex] + ": " + str(self.valuetable[vindex]))
-                self.valuetable[vindex]= 0
+        #set negative messenger values to zero
+        for m in self.messengers:
+            if self.valuetable[m] < 0:
+                self.valuetable[m]= 0
 
         movementMods= self.calculateMovementMods()
         self.applyMovementMods(movementMods)
 
-        #BUG subzero va;ues are still being used in calculations
-        for vindex in range(MOD_INDEX.index("thinkin"), len(MOD_INDEX)):
-            if self.valuetable[vindex] < 0:
-                #print("hormal imbalance of " + MOD_INDEX[vindex] + ":" + str(self.valuetable[vindex]) + " ~ " + self.name)
-                self.valuetable[vindex]= 0
-                #self.lyse("hormal imbalance of " + MOD_INDEX[self.valuetable.index(value)] + ":" + str(value))
+        #set negative messenger values to zero
+        for p in self.proteins:
+            if self.valuetable[p] < 0:
+                self.valuetable[p]= 0
 
         #pick direction
         #IDEA GPT suggests probabilistic movement, this is a good idea but does go against my belief that cells are governed purely by physics
@@ -238,7 +331,7 @@ class Cell:
             return
         
         #check if ready to split
-        if self.valuetable[MOD_INDEX.index("food")] > self.splitThreshold:
+        if self.valuetable["food"] > self.splitThreshold:
             self.split(goingTo)
         else:
             #this was above the if statement but i moved it down, this has stimmied evolution it appears
@@ -256,32 +349,32 @@ class Cell:
         nextNorth= self.location.north
         while i > 0 and stillSearching:
             if nextNorth is None or nextNorth.isWall():
-                self.valuetable[MOD_INDEX.index("Nempty")]= i
-                self.valuetable[MOD_INDEX.index("Nfood")]= 0
-                self.valuetable[MOD_INDEX.index("Ncell")]= 0
-                self.valuetable[MOD_INDEX.index("Nsize")]= 0
+                self.valuetable["Nempty"]= i
+                self.valuetable["Nfood"]= 0
+                self.valuetable["Ncell"]= 0
+                self.valuetable["Nsize"]= 0
                 stillSearching= False
             elif nextNorth.isFood():
-                self.valuetable[MOD_INDEX.index("Nempty")]= 0
-                self.valuetable[MOD_INDEX.index("Nfood")]= i
-                self.valuetable[MOD_INDEX.index("Ncell")]= 0
-                self.valuetable[MOD_INDEX.index("Nsize")]= 0
+                self.valuetable["Nempty"]= 0
+                self.valuetable["Nfood"]= i
+                self.valuetable["Ncell"]= 0
+                self.valuetable["Nsize"]= 0
                 stillSearching= False
             elif nextNorth.isFull():
-                self.valuetable[MOD_INDEX.index("Nempty")]= 0
-                self.valuetable[MOD_INDEX.index("Nfood")]= 0
-                self.valuetable[MOD_INDEX.index("Ncell")]= i
-                self.valuetable[MOD_INDEX.index("Nsize")]= nextNorth.contains.valuetable[MOD_INDEX.index("food")]
+                self.valuetable["Nempty"]= 0
+                self.valuetable["Nfood"]= 0
+                self.valuetable["Ncell"]= i
+                self.valuetable["Nsize"]= nextNorth.contains.valuetable["food"]
                 stillSearching= False
             else:
                 nextNorth= nextNorth.north
                 i= i - 1
 
         if stillSearching:
-            self.valuetable[MOD_INDEX.index("Nempty")]= 0
-            self.valuetable[MOD_INDEX.index("Nfood")]= 0
-            self.valuetable[MOD_INDEX.index("Ncell")]= 0
-            self.valuetable[MOD_INDEX.index("Nsize")]= 0
+            self.valuetable["Nempty"]= 0
+            self.valuetable["Nfood"]= 0
+            self.valuetable["Ncell"]= 0
+            self.valuetable["Nsize"]= 0
             stillSearching= False
 
         #check south
@@ -290,32 +383,32 @@ class Cell:
         nextSouth= self.location.south
         while i > 0 and stillSearching:
             if nextSouth is None or nextSouth.isWall():
-                self.valuetable[MOD_INDEX.index("Sempty")]= i
-                self.valuetable[MOD_INDEX.index("Sfood")]= 0
-                self.valuetable[MOD_INDEX.index("Scell")]= 0
-                self.valuetable[MOD_INDEX.index("Ssize")]= 0                
+                self.valuetable["Sempty"]= i
+                self.valuetable["Sfood"]= 0
+                self.valuetable["Scell"]= 0
+                self.valuetable["Ssize"]= 0                
                 stillSearching= False
             elif nextSouth.isFood():
-                self.valuetable[MOD_INDEX.index("Sempty")]= 0
-                self.valuetable[MOD_INDEX.index("Sfood")]= i
-                self.valuetable[MOD_INDEX.index("Scell")]= 0
-                self.valuetable[MOD_INDEX.index("Ssize")]= 0
+                self.valuetable["Sempty"]= 0
+                self.valuetable["Sfood"]= i
+                self.valuetable["Scell"]= 0
+                self.valuetable["Ssize"]= 0
                 stillSearching= False
             elif nextSouth.isFull():
-                self.valuetable[MOD_INDEX.index("Sempty")]= 0
-                self.valuetable[MOD_INDEX.index("Sfood")]= 0
-                self.valuetable[MOD_INDEX.index("Scell")]= i
-                self.valuetable[MOD_INDEX.index("Ssize")]= nextSouth.contains.valuetable[MOD_INDEX.index("food")]
+                self.valuetable["Sempty"]= 0
+                self.valuetable["Sfood"]= 0
+                self.valuetable["Scell"]= i
+                self.valuetable["Ssize"]= nextSouth.contains.valuetable["food"]
                 stillSearching= False
             else:
                 nextSouth= nextSouth.south
                 i= i - 1
 
         if stillSearching:
-            self.valuetable[MOD_INDEX.index("Sempty")]= 0
-            self.valuetable[MOD_INDEX.index("Sfood")]= 0
-            self.valuetable[MOD_INDEX.index("Scell")]= 0
-            self.valuetable[MOD_INDEX.index("Ssize")]= 0
+            self.valuetable["Sempty"]= 0
+            self.valuetable["Sfood"]= 0
+            self.valuetable["Scell"]= 0
+            self.valuetable["Ssize"]= 0
             stillSearching= False
 
 
@@ -325,32 +418,32 @@ class Cell:
         nextEast= self.location.east
         while i > 0 and stillSearching:
             if nextEast is None or nextEast.isWall():
-                self.valuetable[MOD_INDEX.index("Eempty")]= i
-                self.valuetable[MOD_INDEX.index("Efood")]= 0
-                self.valuetable[MOD_INDEX.index("Ecell")]= 0
-                self.valuetable[MOD_INDEX.index("Esize")]= 0
+                self.valuetable["Eempty"]= i
+                self.valuetable["Efood"]= 0
+                self.valuetable["Ecell"]= 0
+                self.valuetable["Esize"]= 0
                 stillSearching= False
             elif nextEast.isFood():
-                self.valuetable[MOD_INDEX.index("Eempty")]= 0
-                self.valuetable[MOD_INDEX.index("Efood")]= i
-                self.valuetable[MOD_INDEX.index("Ecell")]= 0
-                self.valuetable[MOD_INDEX.index("Esize")]= 0
+                self.valuetable["Eempty"]= 0
+                self.valuetable["Efood"]= i
+                self.valuetable["Ecell"]= 0
+                self.valuetable["Esize"]= 0
                 stillSearching= False
             elif nextEast.isFull():
-                self.valuetable[MOD_INDEX.index("Eempty")]= 0
-                self.valuetable[MOD_INDEX.index("Efood")]= 0
-                self.valuetable[MOD_INDEX.index("Ecell")]= i
-                self.valuetable[MOD_INDEX.index("Esize")]= nextEast.contains.valuetable[MOD_INDEX.index("food")]
+                self.valuetable["Eempty"]= 0
+                self.valuetable["Efood"]= 0
+                self.valuetable["Ecell"]= i
+                self.valuetable["Esize"]= nextEast.contains.valuetable["food"]
                 stillSearching= False
             else:
                 nextEast= nextEast.east
                 i= i - 1
 
         if stillSearching:
-            self.valuetable[MOD_INDEX.index("Eempty")]= 0
-            self.valuetable[MOD_INDEX.index("Efood")]= 0
-            self.valuetable[MOD_INDEX.index("Ecell")]= 0
-            self.valuetable[MOD_INDEX.index("Esize")]= 0
+            self.valuetable["Eempty"]= 0
+            self.valuetable["Efood"]= 0
+            self.valuetable["Ecell"]= 0
+            self.valuetable["Esize"]= 0
             stillSearching= False
 
         #check west
@@ -359,32 +452,32 @@ class Cell:
         nextWest= self.location.west
         while i > 0 and stillSearching:
             if nextWest is None or nextWest.isWall():
-                self.valuetable[MOD_INDEX.index("Wempty")]= i
-                self.valuetable[MOD_INDEX.index("Wfood")]= 0
-                self.valuetable[MOD_INDEX.index("Wcell")]= 0
-                self.valuetable[MOD_INDEX.index("Wsize")]= 0
+                self.valuetable["Wempty"]= i
+                self.valuetable["Wfood"]= 0
+                self.valuetable["Wcell"]= 0
+                self.valuetable["Wsize"]= 0
                 stillSearching= False
             elif nextWest.isFood():
-                self.valuetable[MOD_INDEX.index("Wempty")]= 0
-                self.valuetable[MOD_INDEX.index("Wfood")]= i
-                self.valuetable[MOD_INDEX.index("Wcell")]= 0
-                self.valuetable[MOD_INDEX.index("Wsize")]= 0
+                self.valuetable["Wempty"]= 0
+                self.valuetable["Wfood"]= i
+                self.valuetable["Wcell"]= 0
+                self.valuetable["Wsize"]= 0
                 stillSearching= False
             elif nextWest.isFull():
-                self.valuetable[MOD_INDEX.index("Wempty")]= 0
-                self.valuetable[MOD_INDEX.index("Wfood")]= 0
-                self.valuetable[MOD_INDEX.index("Wcell")]= i
-                self.valuetable[MOD_INDEX.index("Wsize")]= nextWest.contains.valuetable[MOD_INDEX.index("food")]
+                self.valuetable["Wempty"]= 0
+                self.valuetable["Wfood"]= 0
+                self.valuetable["Wcell"]= i
+                self.valuetable["Wsize"]= nextWest.contains.valuetable["food"]
                 stillSearching= False
             else:
                 nextWest= nextWest.west
                 i= i - 1
 
         if stillSearching:
-            self.valuetable[MOD_INDEX.index("Wempty")]= 0
-            self.valuetable[MOD_INDEX.index("Wfood")]= 0
-            self.valuetable[MOD_INDEX.index("Wcell")]= 0
-            self.valuetable[MOD_INDEX.index("Wsize")]= 0
+            self.valuetable["Wempty"]= 0
+            self.valuetable["Wfood"]= 0
+            self.valuetable["Wcell"]= 0
+            self.valuetable["Wsize"]= 0
             stillSearching= False
 
         return
@@ -392,35 +485,34 @@ class Cell:
 
 
     def calculateMessengerMods(self):
-        mods=[]  
-        for m in range(0, inputs.MESSENGER_PROTEIN_NUMBER):
-            mods.append(0)
-            for v in range(0, len(MOD_INDEX)):
+        mods={}  
+        for m in self.messengers:
+            mods[m]= 0
+            for v in self.modIndex:
                 mods[m]+= ((self.valuetable[v]) * (self.modtable[v][m]))
         return mods
 
     def applyMessengerMods(self, messengerMods):
-        for m in range(0, len(messengerMods)):
-            self.valuetable[MOD_INDEX.index(MESSENGERS[m])]+= messengerMods[m]
-
+        for m in self.messengers:
+            self.valuetable[m]+= messengerMods[m]
         return
 
     def calculateMovementMods(self):
-        mods=[]  
-        for p in range(0, len(PROTEINS)):
-            mods.append(0)
-            for m in range(0, inputs.MESSENGER_PROTEIN_NUMBER):
-                mods[p]+= ((self.valuetable[MOD_INDEX.index(MESSENGERS[m])]) * (self.movementtable[m][p]))
+        mods={}  
+        for p in self.proteins:
+            mods[p]= 0
+            for m in self.messengers:
+                mods[p]+= ((self.valuetable[m]) * (self.movementtable[m][p]))
         return mods
 
     def applyMovementMods(self, movementMods):
-        for p in range(0, len(movementMods)):
-            self.valuetable[MOD_INDEX.index(PROTEINS[p])]+= movementMods[p]
+        for p in self.proteins:
+            self.valuetable[p]+= movementMods[p]
         return
 
     def pickDirection(self):
         directions= ["N","S","E","W"]
-        proteinValues= [self.valuetable[MOD_INDEX.index("upin")],self.valuetable[MOD_INDEX.index("downin")],self.valuetable[MOD_INDEX.index("rightin")],self.valuetable[MOD_INDEX.index("leftin")]]
+        proteinValues= [self.valuetable["upin"],self.valuetable["downin"],self.valuetable["rightin"],self.valuetable["leftin"]]
         return directions[proteinValues.index(max(proteinValues))]
 
         #check if the cell can move into Node goingTo and lyse the cell if it cannot
@@ -437,8 +529,8 @@ class Cell:
     
     # process collision between two cells (this cell which is attempting to move into the node occupied by the collidee)
     def collide(self, collidee):
-        selfFood= self.valuetable[MOD_INDEX.index("food")]
-        collideeFood= collidee.valuetable[MOD_INDEX.index("food")]
+        selfFood= self.valuetable["food"]
+        collideeFood= collidee.valuetable["food"]
         #if collidee is at least 50% bigger than this cell: lyse this cell
         if collideeFood > selfFood * 0.5:
             self.lyse("collision")
@@ -450,7 +542,7 @@ class Cell:
 
     def checkFood(self, goingTo):
         if goingTo.isFood():
-            self.valuetable[MOD_INDEX.index("food")]+= goingTo.contains.value
+            self.valuetable["food"]+= goingTo.contains.value
             return
         else:
             return
@@ -458,13 +550,16 @@ class Cell:
     def split(self, position):
         if position.isFull():
             return
-        self.valuetable[MOD_INDEX.index("food")]= self.valuetable[MOD_INDEX.index("food")]/2
-        for m in MESSENGERS:
-            self.valuetable[MOD_INDEX.index(m)]= (self.valuetable[MOD_INDEX.index(m)])/2
-        for p in PROTEINS:
-            self.valuetable[MOD_INDEX.index(p)]= (self.valuetable[MOD_INDEX.index(p)])/2
+        self.valuetable["food"]= self.valuetable["food"]/2
+        for m in self.messengers:
+            self.valuetable[m]= (self.valuetable[m])/2
+        for p in self.proteins:
+            self.valuetable[p]= (self.valuetable[p])/2
 
-        c= Cell(self.map, position, self.valuetable[MOD_INDEX.index("food")], mutate(copy.deepcopy(self.modtable), self), mutate(copy.deepcopy(self.movementtable), self), copy.deepcopy(self.valuetable), self.genealogy, mutateSplitThreshold(self.splitThreshold, self), mutateSpeed(self.speed, self))
+        new_modtable, new_movementtable, new_valuetable, new_proteinInfo= mutateGenome(copy.deepcopy(self.modtable), copy.deepcopy(self.movementtable), copy.deepcopy(self.valuetable), self)
+
+
+        c= Cell(self.map, position, self.valuetable["food"], new_modtable, new_movementtable, new_valuetable, new_proteinInfo, self.genealogy, mutateSplitThreshold(self.splitThreshold, self), mutateSpeed(self.speed, self))
         c.move()
         return c
 
