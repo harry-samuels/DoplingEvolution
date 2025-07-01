@@ -532,7 +532,7 @@ class Cell:
         selfFood= self.valuetable["food"]
         collideeFood= collidee.valuetable["food"]
         #if collidee is at least 50% bigger than this cell: lyse this cell
-        if collideeFood > selfFood * 0.5:
+        if collideeFood > selfFood * 0.75:
             self.lyse("collision")
         #if this cell is the bigger one, the other cell lyses (and this cell then moves into it's space, "eating it"), tie goes to the runner
         else:
