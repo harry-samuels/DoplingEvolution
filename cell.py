@@ -4,6 +4,7 @@ import inputs
 
 import random
 import copy
+import json
 
 #List of all current living cells
 CELLS= []
@@ -12,6 +13,8 @@ ALL_CELLS= []
 
 
 MESSENGERS= ["thinkin", "schemin", "plottin", "dreamin", "electin", "choosin", "decidin", "figurin", "wafflin", "waverin"][:inputs.MESSENGER_PROTEIN_NUMBER]
+
+SECONDARIES= ["wAntin", "gEttin", "mUllin", "pIckin"][:inputs.SECONDARY_MESSENGER_NUMBER]
 
 PROTEINS= ["upin", "downin", "rightin", "leftin"]
 
@@ -22,13 +25,9 @@ BASE_MOD_INDEX= [
     "Wempty","Wfood", "Wcell", "Wsize",
     "food"]
 
-MOD_INDEX= BASE_MOD_INDEX + MESSENGERS + PROTEINS
+MOD_INDEX= BASE_MOD_INDEX + MESSENGERS + SECONDARIES + PROTEINS
 
 DEFAULT_VALUE_TABLE= dict.fromkeys(MOD_INDEX, 0)
-
-NUM_GENE_ADD_DELETE= 0 #DEBUG
-NUM_FULL_GENE_DUPES= 0 #DEBUG
-NUM_MEGAMUTATIONS= 0 #DEBUG
 
 #adds newly generated cell to list of living Cells at the correct speed postion. CELLS is ordered from fastest (greatest speed) to slowest cells
 #This method keeps the list sorted
@@ -39,61 +38,94 @@ def addtoCELLS(newCell, cellSpeed):
     CELLS.insert(i, newCell)
 
 #mutates, mod, mov, and value table and returns them. Also processes gene/genome duplication
-def mutateGenome(modtable, movementtable, valuetable, parent):
+def mutateGenome(modtable, secondarytable, movementtable, valuetable, parent):
     modtable= mutate(modtable, parent)
+    secondarytable= mutate(secondarytable, parent)
     movementtable= mutate(movementtable, parent)
     proteinInfo= {}
-    if random.randint(0, 2000) < (len(parent.messengers)):
+
+    #messenger impact
+    if random.randint(0, 2000) < (len(parent.messengers) + len(parent.secondaries)):
         parent.nextchildmegamutation= True
-        new_messengers= copy.deepcopy(parent.messengers)
+
+        #full genome duplication
         if random.randint(0,10) == 0: #random.randint(0,4) == 0:
-            #full genome duplication
-            #print("FULL GENOME DUPE!!!!!!!!!!!!!!!!!!!!!!!!!! ! ! ! ! ! ! ") #DEBUG
-            #global NUM_FULL_GENE_DUPES #DEBUG
-            #NUM_FULL_GENE_DUPES+= 1 #DEBUG
+            new_messengers= copy.deepcopy(parent.messengers)
+            new_secondaries= copy.deepcopy(parent.secondaries)
             for duplicatedMessenger in parent.messengers:
                 newMessenger= nameDuplicatedGene(duplicatedMessenger)
                 new_messengers.insert(new_messengers.index(duplicatedMessenger), newMessenger)
-                modtable, movementtable, valuetable= duplicateGene(newMessenger, duplicatedMessenger, modtable, movementtable, valuetable)
+                modtable, secondarytable, movementtable, valuetable= duplicateGene(newMessenger, duplicatedMessenger, modtable, secondarytable, movementtable, valuetable)
+            for duplicatedSecondary in parent.secondaries:
+                newSecondary= nameDuplicatedGene(duplicatedSecondary)
+                new_secondaries.insert(new_secondaries.index(duplicatedSecondary), newSecondary)
+                modtable, secondarytable, valuetable= duplicateSecondary(newSecondary, duplicatedSecondary, modtable, secondarytable, valuetable)
+            proteinInfo["messengers"]= new_messengers
+            proteinInfo["secondaries"]= new_secondaries
+            proteinInfo["proteins"]= parent.proteins
+            proteinInfo["index"]= BASE_MOD_INDEX + new_messengers + new_secondaries + parent.proteins
 
-        else:
-            global NUM_GENE_ADD_DELETE #DEBUG
-            NUM_GENE_ADD_DELETE+= 1 #DEBUG
+        #messenger protein alteration
+        elif random.randint(0,1) == 0 or not parent.secondaries:
+            new_messengers= copy.deepcopy(parent.messengers)
             if random.randint(0,1) == 0:
-                #print("DUPLICATION OF GENE!!!!!") #DEBUG
                 #single gene duplication
                 duplicatedMessengerIndex= random.randint(0, len(parent.messengers)-1)
                 duplicatedMessenger= parent.messengers[duplicatedMessengerIndex]
                 newMessenger= nameDuplicatedGene(duplicatedMessenger)
 
                 new_messengers.insert(duplicatedMessengerIndex, newMessenger)
-                modtable, movementtable, valuetable= duplicateGene(newMessenger, duplicatedMessenger, modtable, movementtable, valuetable)
+                modtable, secondarytable, movementtable, valuetable= duplicateGene(newMessenger, duplicatedMessenger, modtable, secondarytable, movementtable, valuetable)
 
             else:
-                #print("DELETION OF GENE!!!!!") #DEBUG
                 #single gene removal
                 removedMessengerIndex= random.randint(0, len(parent.messengers)-1)
                 removedMessenger= parent.messengers[removedMessengerIndex]
 
                 new_messengers.pop(removedMessengerIndex)
-                modtable, movementtable, valuetable= removeGene(removedMessenger, modtable, movementtable, valuetable)
+                modtable, secondarytable, movementtable, valuetable= removeGene(removedMessenger, modtable, secondarytable, movementtable, valuetable)
 
-            #print(str(NUM_FULL_GENE_DUPES) + " " + str(NUM_GENE_ADD_DELETE) + " " + str(NUM_MEGAMUTATIONS)) #DEBUG
+            proteinInfo["messengers"]= new_messengers
+            proteinInfo["secondaries"]= parent.secondaries
+            proteinInfo["proteins"]= parent.proteins
+            proteinInfo["index"]= BASE_MOD_INDEX + new_messengers + parent.secondaries + parent.proteins
 
-        #print(len(ALL_CELLS)) #DEBUG
-        proteinInfo["messengers"]= new_messengers
-        proteinInfo["proteins"]= parent.proteins
-        proteinInfo["index"]= BASE_MOD_INDEX + new_messengers + parent.proteins
+      
+        #secondary messenger duplication
+        else:
+            new_secondaries= copy.deepcopy(parent.secondaries)
+            if random.randint(0,1) == 0:
+                #single gene duplication
+                duplicatedSecondaryIndex= random.randint(0, len(parent.secondaries)-1)
+                duplicatedSecondary= parent.secondaries[duplicatedSecondaryIndex]
+                newSecondary= nameDuplicatedGene(duplicatedSecondary)
 
+                new_secondaries.insert(duplicatedSecondaryIndex, newSecondary)
+                modtable, secondarytable, valuetable= duplicateSecondary(newSecondary, duplicatedSecondary, modtable, secondarytable, valuetable)
+
+            else:
+                #single gene removal
+                removedSecondaryIndex= random.randint(0, len(parent.secondaries)-1)
+                removedSecondary= parent.secondaries[removedSecondaryIndex]
+
+                new_secondaries.pop(removedSecondaryIndex)
+                modtable, secondarytable, valuetable= removeSecondary(removedSecondary, modtable, secondarytable, valuetable)
+
+
+            proteinInfo["messengers"]= parent.messengers
+            proteinInfo["secondaries"]= new_secondaries
+            proteinInfo["proteins"]= parent.proteins
+            proteinInfo["index"]= BASE_MOD_INDEX + parent.messengers + new_secondaries + parent.proteins
 
     else:
         proteinInfo["messengers"]= parent.messengers
+        proteinInfo["secondaries"]= parent.secondaries
         proteinInfo["proteins"]= parent.proteins
         proteinInfo["index"]= parent.modIndex
   
-    return (modtable, movementtable, valuetable, proteinInfo)
+    return (modtable, secondarytable, movementtable, valuetable, proteinInfo)
 
-#add mutations to a given 2-D dictionary mod or movement table
+#add mutations to a given 2-D dictionary mod, secondary, or movement table
 def mutate(table, parent):
     for r in table:
         for c in table[r]:
@@ -102,8 +134,6 @@ def mutate(table, parent):
                     table[r][c]= table[r][c] * (random.uniform(-5, 5))
                     #this will allow the newly created cell to have a different color from the mother cell using its genealogy init
                     parent.genealogy.nextchildmegamutation= True
-                    global NUM_MEGAMUTATIONS#DEBUG
-                    NUM_MEGAMUTATIONS+= 1 #DEBUG
                 else:
                     table[r][c]= table[r][c] + (random.uniform(-0.99, 0.99))
     return table
@@ -136,32 +166,50 @@ def nameDuplicatedGene(oldName):
     return newName
 
 
-#adds newGene (str) to the modtable, movementable, and valuetable by duplicating oldGene (str)
-def duplicateGene(newGene, oldGene, modtable, movementtable, valuetable):
+#adds MESSENGER newGene (str) to the modtable, movementable, and valuetable by duplicating MESSENGER oldGene (str)
+def duplicateGene(newGene, oldGene, modtable, secondarytable, movementtable, valuetable):
     #add newGene as copy of oldGene for all mods in modtable
     for v in modtable:
         modtable[v][newGene]= copy.deepcopy(modtable[v][oldGene])
     #add newGene as value in modtable and copy oldGene mods which now include newGene
     modtable[newGene]= copy.deepcopy(modtable[oldGene])
+    secondarytable[newGene]= copy.deepcopy(secondarytable[oldGene])
     movementtable[newGene]= copy.deepcopy(movementtable[oldGene])
     valuetable[newGene]= copy.deepcopy(valuetable[oldGene])
-    return(modtable, movementtable, valuetable)
+    return(modtable, secondarytable, movementtable, valuetable)
 
-def removeGene(removedGene, modtable, movementtable, valuetable):
+#removes MESSENGER removedGene (str)
+def removeGene(removedGene, modtable, secondarytable, movementtable, valuetable):
     #remove removedGene key from all modtable dictionaries
     for v in modtable:
         del modtable[v][removedGene]
     #remove removedGene dictionary from modtable
     del modtable[removedGene]
+    del secondarytable[removedGene]
     del movementtable[removedGene]
     del valuetable[removedGene]
-    return (modtable, movementtable, valuetable)
+    return (modtable, secondarytable, movementtable, valuetable)
+
+def duplicateSecondary(newSecondary, oldSecondary, modtable, secondarytable, valuetable):
+    modtable[newSecondary]= copy.deepcopy(modtable[oldSecondary])
+    for m in secondarytable:
+        #possible that this DOESNT need to be deepcopy?
+        secondarytable[m][newSecondary]= copy.deepcopy(secondarytable[m][oldSecondary])
+    valuetable[newSecondary]= copy.deepcopy(valuetable[oldSecondary])
+    return(modtable, secondarytable, valuetable)
+
+def removeSecondary(removedSecondary, modtable, secondarytable, valuetable):
+    del modtable[removedSecondary]
+    for m in secondarytable:
+        del secondarytable[m][removedSecondary]
+    del valuetable[removedSecondary]
+    return(modtable, secondarytable, valuetable)
 
 
 class Cell:
     SPLIT_SPEED_RATIO= inputs.FOOD_TO_SPLIT / inputs.FOOD_TO_MOVE
     #Grid: map, Node: location, int: food, []: modtable, []: movementtable, []: valuetable
-    def __init__(self, map, location, food, modtable=None, movementtable=None, valuetable=None, proteinInfo=None, mothergenealogy=None, splitThreshold=None, speed=None):
+    def __init__(self, map, location, food, modtable=None, secondarytable=None, movementtable=None, valuetable=None, proteinInfo=None, mothergenealogy=None, splitThreshold=None, speed=None):
 
         self.age= 0
         self.name= (random.choice(["ba", "po", "li", "re", "xi", "shu", "cra", "psy", "tri", "fro", "woo", "do", "ki", "epi", "ono", "uba", "aro", "immo", "qui", "gra", "hu", "mi", "vee", "yoo", "zo"]) + 
@@ -181,10 +229,12 @@ class Cell:
 
         if proteinInfo == None:
             self.messengers= MESSENGERS
+            self.secondaries= SECONDARIES
             self.proteins= PROTEINS
             self.modIndex= MOD_INDEX
         else:
             self.messengers= proteinInfo["messengers"]
+            self.secondaries= proteinInfo["secondaries"]
             self.proteins= proteinInfo["proteins"]
             self.modIndex= proteinInfo["index"]
         
@@ -196,6 +246,7 @@ class Cell:
             self.valuetable["food"]= food
 
         self.modtable= self.generateModTable(modtable)
+        self.secondarytable= self.generateSecondaryTable(secondarytable)
         self.movementtable= self.generateMovementTable(movementtable)
 
         self.genealogy= genealogy.Genealogy(self, mothergenealogy)
@@ -247,6 +298,18 @@ class Cell:
         else:
             return modtable
 
+    #create a new secondary table, if no secondary table is given determine all modifiers randomly, otherwise return the given secondarytable
+    def generateSecondaryTable(self,secondarytable=None):
+        if secondarytable is None:
+            secondarytable={}
+            for m in self.messengers:
+                secondarytable[m]= {}
+                for s in self.secondaries:
+                    secondarytable[m][s]= ((random.uniform(0,0.5))**2)*random.choice([-1,1])
+            return secondarytable
+        else:
+            return secondarytable
+
     #create a new movement table, if no movement table is given determine all modifiers randomly, otherwise return the given momovementtable
     def generateMovementTable(self,movementtable=None):
         if movementtable is None:
@@ -295,6 +358,13 @@ class Cell:
         for m in self.messengers:
             if self.valuetable[m] < 0:
                 self.valuetable[m]= 0
+
+        secondaryMods= self.calculateSecondaryMods()
+        self.applySecondaryMods(secondaryMods)
+
+        for s in self.secondaries:
+            if self.valuetable[s] < 0:
+                self.valuetable[s]= 0
 
         movementMods= self.calculateMovementMods()
         self.applyMovementMods(movementMods)
@@ -497,6 +567,19 @@ class Cell:
             self.valuetable[m]+= messengerMods[m]
         return
 
+    def calculateSecondaryMods(self):
+        mods={}  
+        for s in self.secondaries:
+            mods[s]= 0
+            for m in self.messengers:
+                mods[s]+= ((self.valuetable[m]) * (self.secondarytable[m][s]))
+        return mods
+
+    def applySecondaryMods(self, secondaryMods):
+        for s in self.secondaries:
+            self.valuetable[s]+= secondaryMods[s]
+        return
+
     def calculateMovementMods(self):
         mods={}  
         for p in self.proteins:
@@ -556,10 +639,10 @@ class Cell:
         for p in self.proteins:
             self.valuetable[p]= (self.valuetable[p])/2
 
-        new_modtable, new_movementtable, new_valuetable, new_proteinInfo= mutateGenome(copy.deepcopy(self.modtable), copy.deepcopy(self.movementtable), copy.deepcopy(self.valuetable), self)
+        new_modtable, new_secondarytable, new_movementtable, new_valuetable, new_proteinInfo= mutateGenome(copy.deepcopy(self.modtable), copy.deepcopy(self.secondarytable), copy.deepcopy(self.movementtable), copy.deepcopy(self.valuetable), self)
 
 
-        c= Cell(self.map, position, self.valuetable["food"], new_modtable, new_movementtable, new_valuetable, new_proteinInfo, self.genealogy, mutateSplitThreshold(self.splitThreshold, self), mutateSpeed(self.speed, self))
+        c= Cell(self.map, position, self.valuetable["food"], new_modtable, new_secondarytable, new_movementtable, new_valuetable, new_proteinInfo, self.genealogy, mutateSplitThreshold(self.splitThreshold, self), mutateSpeed(self.speed, self))
         c.move()
         return c
 

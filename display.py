@@ -249,7 +249,7 @@ def assembleMultitrackDisplay():
         #remove valuline from track cell display
         display.extend(assembleModTableDisplay(multitrackedCell)[1:])
         display.append("")
-        display.extend(assembleMovTableDisplay(multitrackedCell))
+        display.extend(stitchDisplays(assembleMovTableDisplay(multitrackedCell), assembleSecTableDisplay(multitrackedCell)))
         display.append("")
         numDisplays+=1
     return display
@@ -261,11 +261,22 @@ def assembleModTableDisplay(trackedCell):
     for v in cell.BASE_MOD_INDEX:
         valuesLine+= str(round(trackedCell.valuetable[v])) + " |"
     display.append(valuesLine)
-    display.append("In:  NE NF NC NS SE SF SC SS EE EF EC ES WE WF WC WS Fd "+ allAbreviatedMessengers(trackedCell, " ") + "Up Dw Rt Lf")
+    display.append("In:  NE NF NC NS SE SF SC SS EE EF EC ES WE WF WC WS Fd "+ allAbreviatedMessengers(trackedCell, " ") + allAbreviatedSecondaries(trackedCell, " ") + "Up Dw Rt Lf")
     for m in trackedCell.messengers:
         tableLine= abreviateMessengerTwoChar(m) + ": "
         for v in trackedCell.modIndex:
             tableLine+= "|" + convertModDisplay(trackedCell.modtable[v][m])
+        display.append(tableLine + "|")
+
+    return display
+
+def assembleSecTableDisplay(trackedCell):
+    display= []
+    display.append("In:  " + allAbreviatedMessengers(trackedCell, "     "))
+    for s in trackedCell.secondaries:
+        tableLine= abbreviateSecondaryTwoChar(s) + ": "
+        for m in trackedCell.messengers:
+            tableLine+= "|" + convertMovDisplay(trackedCell.secondarytable[m][s])
         display.append(tableLine + "|")
 
     return display
@@ -352,6 +363,18 @@ def allAbreviatedMessengers(trackedCell, spacer):
         mString+= abreviateMessengerTwoChar(m) + spacer
     return mString
 
+def abbreviateSecondaryTwoChar(secondary):
+    if len(secondary) > 6:
+        abreviation= secondary[0] + secondary[-1]
+    else:
+        abreviation= secondary[:2]
+    return abreviation
+
+def allAbreviatedSecondaries(trackedCell, spacer):
+    sString= ""
+    for s in trackedCell.secondaries:
+        sString+= abbreviateSecondaryTwoChar(s) + spacer
+    return sString
 
 #adds relevent strings to list display for displaying trackedCell information and returns the display
 def assembleTrackedCellDisplay(trackedCell):
@@ -397,6 +420,15 @@ def assembleTrackedCellDisplay(trackedCell):
     for m in range(0, len(trackedCell.messengers)): #                                                                           \/prevents divide by zero
         display.append((trackedCell.messengers[m].capitalize()).rjust(30, " ") + ":" + colorTable[m%6] + barGraph[:((round((messengerValues[m]/(messengerMax+.0001))*20)))] + "\x1b[0m" + str(round(messengerValues[m], 1)))
     display.append("")
+    display.append("Secondary Messengers:")
+    display.append("")
+    secondaryValues=[]
+    for s in trackedCell.secondaries:
+        secondaryValues.append(trackedCell.valuetable[s])
+    secondaryMax= max(secondaryValues)
+    for s in range(0, len(trackedCell.secondaries)):
+        display.append((trackedCell.secondaries[s]).rjust(30, " ") + ":" + colorTable[s%6] + barGraph[:((round((secondaryValues[s]/(secondaryMax+.0001))*20)))] + "\x1b[0m" + str(round(secondaryValues[s], 1)))
+    display.append("")
     display.append("Movement Proteins:")
     display.append("")
     movementValues=[trackedCell.valuetable["upin"], trackedCell.valuetable["downin"], trackedCell.valuetable["rightin"], trackedCell.valuetable["leftin"]]
@@ -412,7 +444,7 @@ def assembleTrackedCellDisplay(trackedCell):
     display.append("")
     display.append("Key: \x1b[41m--\x1b[0m <-5  \x1b[41m-\x1b[0m <-2  \x1b[31m--\x1b[0m <-1  \x1b[31m-\x1b[0m <-0.1  \x1b[32m+\x1b[0m >0.1  \x1b[32m++\x1b[0m >1  \x1b[42m+\x1b[0m >2  \x1b[42m++\x1b[0m >5")
     display.append("")
-    display.extend(assembleMovTableDisplay(trackedCell))
+    display.extend(stitchDisplays(assembleMovTableDisplay(trackedCell), assembleSecTableDisplay(trackedCell)))
 
     return display
 
