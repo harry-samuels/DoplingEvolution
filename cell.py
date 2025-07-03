@@ -674,6 +674,45 @@ class Cell:
     #         print(movs)
         
 
+    def saveCell(self):
+        cellData= {}
+        cellData["name"]= self.name
+        cellData["color"]= self.genealogy.color
+
+        cellData["split"]= self.splitThreshold
+        cellData["speed"]= self.speed
+
+        proteinInfo= {}
+        proteinInfo["messengers"]= self.messengers
+        proteinInfo["secondaries"]= self.secondaries
+        proteinInfo["proteins"]= self.proteins
+        proteinInfo["index"]= self.modIndex
+
+        cellData["proteinInfo"]= proteinInfo
+
+        cellData["modtable"]= self.modtable
+        cellData["secondarytable"]= self.secondarytable
+        cellData["movementtable"]= self.movementtable
+
+
+
+        with open("saved_cells/" + self.name + ".json", "w") as cellFile:
+            cellFile.write(json.dumps(cellData, indent=4))
+
+#spawn cell saved in cellFile (json filepath) in map (grid) at location (Node)
+def loadCell(cellFile, map, location):
+    cellData= json.load(open(cellFile))
+    loadedCell= Cell(map, location, (cellData["split"] * 0.75), cellData["modtable"], cellData["secondarytable"], cellData["movementtable"], dict.fromkeys(cellData["proteinInfo"]["index"], 0), cellData["proteinInfo"])
+    #give cell correct name and corrected taxon + color
+    loadedCell.name= cellData["name"]
+    loadedCell.genealogy.color= cellData["color"]
+    loadedCell.genealogy.taxon= genealogy.Taxon(loadedCell.genealogy)
+    #ignore splith speed ratio restrictions
+    loadedCell.splitThreshold= cellData["split"]
+    loadedCell.speed= cellData["speed"]
+
+    return loadedCell
+
 
 
 

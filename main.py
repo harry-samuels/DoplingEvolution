@@ -133,13 +133,38 @@ while inp != "X":
             else:
                 print("\nno dopling currently tracked, please track the dopling to be renamed")
 
+        #saving tracked cell
+        if inp == "save":
+            if trackedCell:
+                trackedCell.saveCell()
+                print("saved " + trackedCell.name)
+            else:
+                print("No current tracked cell to be saved")
+
         if inp == "multitrack":
             genealogy.untrackAll()
             trackedCell= None
             if input("Type 'species' to view the top 3 species: ") == "species":
                 display.MULTITRACK= True
             
+        if inp == "load":
+            cellFile= input("Please enter the filepath for the saved Cell: ")
+            spawnCoords= input("Please enter the desired grid location ('X, Y') of the dopling to be loaded: ")
+            spawnLocation= None
+            try:
+                    spawnX= int(spawnCoords[:spawnCoords.index(',')])
+                    spawnY= int(spawnCoords[spawnCoords.index(',') +1:])
+                    spawnLocation= MAP.getNode(spawnX, spawnY)
+            except(ValueError, IndexError):
+                print("Incorrect coordinate input, please be sure to include both x and y separated by a comma ','")
+            if spawnLocation:
+                loadedCell= cell.loadCell(cellFile, MAP, spawnLocation)
+                genealogy.untrackAll()
+                #track the newly loaded cell
+                trackedCell= loadedCell
+                trackedCell.genealogy.track("main")
 
+                
 
         #toggle moving phylogeny display from right side to bottom
         if inp == "bottom":
