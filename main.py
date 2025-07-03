@@ -178,8 +178,8 @@ while inp != "X":
 
 
         if inp == "wall":
-            buildDestroy= input("Enter 'build' to build walls or 'destroy' to remove all walls: ")
-            if buildDestroy == "build":
+            buildRemoveDestroy= input("Enter 'build' to build walls, 'remove' to remove walls, or 'destroy' to remove all walls: ")
+            if buildRemoveDestroy == "build":
                 direction= input("Enter 'H' for a horizontal wall or 'V' for a vertical wall: ")
                 topleft= input("Enter the grid location of the top/left of the wall (X,Y): ")
                 try:
@@ -193,9 +193,22 @@ while inp != "X":
                 except(ValueError, IndexError):
                     print("Incorrect coordinate input, please be sure to include both x and y separated by a comma ','")
 
-            elif buildDestroy == "destroy":
-                MAP.removeWalls()
-
+            elif buildRemoveDestroy == "remove":
+                direction= input("Enter 'H' for a horizontal removal or 'V' for a vertical removal: ")
+                topleft= input("Enter the grid location of the top/left of the removal (X,Y): ")
+                try:
+                    topleftX= int(topleft[:topleft.index(',')])
+                    topleftY= int(topleft[topleft.index(',') +1:])
+                    try:
+                        removeLength= int(input("Enter how many spaces of wall should be removed: "))
+                        MAP.removeWalls(direction, topleftX, topleftY, removeLength)
+                    except (ValueError):
+                        print("non-numeric entry for remove length")
+                except(ValueError, IndexError):
+                    print("Incorrect coordinate input, please be sure to include both x and y separated by a comma ','")
+                
+            elif buildRemoveDestroy == "destroy":
+                MAP.destroyWalls()
         #double check if input is to end simulation       
         if inp == "X":
             doubleCheck= input("Are you sure you want to end the simulation? Type 'X' to end, or anything else to continue:")
@@ -217,6 +230,8 @@ while inp != "X":
         i-= 1
 
 
+
+#def runTurn(MAP)
 
 
 """

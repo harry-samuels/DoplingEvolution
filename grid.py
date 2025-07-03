@@ -231,7 +231,39 @@ class Grid:
             print("invalid wall directional input")
             return
 
-    def removeWalls(self):
+    def removeWalls(self, direction, topleftX, topleftY, removeLength):
+        if (topleftX >= self.columns) or (topleftY >= self.rows):
+            print("top left coordinate out of bounds")
+            return
+        topleftNode= self.container[topleftY][topleftX]
+        if (direction == "H") or (direction == "h") or (direction == "horizontal"):
+            i=0
+            nextNode= topleftNode
+            while i< removeLength:
+                if nextNode is None:
+                    return
+                else:
+                    nextNode.removeWall()
+                    nextNode= nextNode.east
+                i+= 1
+
+        elif (direction == "V") or (direction == "v") or (direction == "vertical"):
+            i=0
+            nextNode= topleftNode
+            while i< removeLength:
+                if nextNode is None:
+                    return
+                else:
+                    nextNode.removeWall()
+                    nextNode= nextNode.south
+                i+= 1
+
+        else:
+            print("invalid wall directional input")
+            return
+
+
+    def destroyWalls(self):
         for row in self.container:
             for node in row:
                 node.removeWall()
@@ -265,6 +297,7 @@ class Grid:
 
         else:
             cell.Cell(self, location, food)
+
 
 
                 
