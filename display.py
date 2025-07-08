@@ -420,15 +420,17 @@ def assembleTrackedCellDisplay(trackedCell):
     for m in range(0, len(trackedCell.messengers)): #                                                                           \/prevents divide by zero
         display.append((trackedCell.messengers[m].capitalize()).rjust(30, " ") + ":" + colorTable[m%6] + barGraph[:((round((messengerValues[m]/(messengerMax+.0001))*20)))] + "\x1b[0m" + str(round(messengerValues[m], 1)))
     display.append("")
-    display.append("Secondary Messengers:")
-    display.append("")
-    secondaryValues=[]
-    for s in trackedCell.secondaries:
-        secondaryValues.append(trackedCell.valuetable[s])
-    secondaryMax= max(secondaryValues)
-    for s in range(0, len(trackedCell.secondaries)):
-        display.append((trackedCell.secondaries[s]).rjust(30, " ") + ":" + colorTable[s%6] + barGraph[:((round((secondaryValues[s]/(secondaryMax+.0001))*20)))] + "\x1b[0m" + str(round(secondaryValues[s], 1)))
-    display.append("")
+    #if there are secondary messengers:
+    if trackedCell.secondaries:
+        display.append("Secondary Messengers:")
+        display.append("")
+        secondaryValues=[]
+        for s in trackedCell.secondaries:
+            secondaryValues.append(trackedCell.valuetable[s])
+        secondaryMax= max(secondaryValues)
+        for s in range(0, len(trackedCell.secondaries)):
+            display.append((trackedCell.secondaries[s]).rjust(30, " ") + ":" + colorTable[s%6] + barGraph[:((round((secondaryValues[s]/(secondaryMax+.0001))*20)))] + "\x1b[0m" + str(round(secondaryValues[s], 1)))
+        display.append("")
     display.append("Movement Proteins:")
     display.append("")
     movementValues=[trackedCell.valuetable["upin"], trackedCell.valuetable["downin"], trackedCell.valuetable["rightin"], trackedCell.valuetable["leftin"]]
