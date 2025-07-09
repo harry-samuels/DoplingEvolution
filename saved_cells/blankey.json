@@ -1,0 +1,285 @@
+{
+    "name": "blankey",
+    "color": "31",
+    "split": 5,
+    "speed": 0.025,
+    "proteinInfo": {
+        "messengers": [
+            "thinkin",
+            "schemin",
+            "plottin",
+            "dreamin"
+        ],
+        "secondaries": [
+            "wAntin",
+            "gEttin",
+            "mUllin",
+            "pIckin"
+        ],
+        "proteins": [
+            "upin",
+            "downin",
+            "rightin",
+            "leftin"
+        ],
+        "index": [
+            "Nempty",
+            "Nfood",
+            "Ncell",
+            "Nsize",
+            "Sempty",
+            "Sfood",
+            "Scell",
+            "Ssize",
+            "Eempty",
+            "Efood",
+            "Ecell",
+            "Esize",
+            "Wempty",
+            "Wfood",
+            "Wcell",
+            "Wsize",
+            "food",
+            "thinkin",
+            "schemin",
+            "plottin",
+            "dreamin",
+            "wAntin",
+            "gEttin",
+            "mUllin",
+            "pIckin",
+            "upin",
+            "downin",
+            "rightin",
+            "leftin"
+        ]
+    },
+    "modtable": {
+        "Nempty": {
+            "thinkin": 0,
+            "schemin": 0,
+            "plottin": 0,
+            "dreamin": 0
+        },
+        "Nfood": {
+            "thinkin": 0,
+            "schemin": 0,
+            "plottin": 0,
+            "dreamin": 0
+        },
+        "Ncell": {
+            "thinkin": 0,
+            "schemin": 0,
+            "plottin": 0,
+            "dreamin": 0
+        },
+        "Nsize": {
+            "thinkin": 0,
+            "schemin": 0,
+            "plottin": 0,
+            "dreamin": 0
+        },
+        "Sempty": {
+            "thinkin": 0,
+            "schemin": 0,
+            "plottin": 0,
+            "dreamin": 0
+        },
+        "Sfood": {
+            "thinkin": 0,
+            "schemin": 0,
+            "plottin": 0,
+            "dreamin": 0
+        },
+        "Scell": {
+            "thinkin": 0,
+            "schemin": 0,
+            "plottin": 0,
+            "dreamin": 0
+        },
+        "Ssize": {
+            "thinkin": 0,
+            "schemin": 0,
+            "plottin": 0,
+            "dreamin": 0
+        },
+        "Eempty": {
+            "thinkin": 0,
+            "schemin": 0,
+            "plottin": 0,
+            "dreamin": 0
+        },
+        "Efood": {
+            "thinkin": 0,
+            "schemin": 0,
+            "plottin": 0,
+            "dreamin": 0
+        },
+        "Ecell": {
+            "thinkin": 0,
+            "schemin": 0,
+            "plottin": 0,
+            "dreamin": 0
+        },
+        "Esize": {
+            "thinkin": 0,
+            "schemin": 0,
+            "plottin": 0,
+            "dreamin": 0
+        },
+        "Wempty": {
+            "thinkin": 0,
+            "schemin": 0,
+            "plottin": 0,
+            "dreamin": 0
+        },
+        "Wfood": {
+            "thinkin": 0,
+            "schemin": 0,
+            "plottin": 0,
+            "dreamin": 0
+        },
+        "Wcell": {
+            "thinkin": 0,
+            "schemin": 0,
+            "plottin": 0,
+            "dreamin": 0
+        },
+        "Wsize": {
+            "thinkin": 0,
+            "schemin": 0,
+            "plottin": 0,
+            "dreamin": 0
+        },
+        "food": {
+            "thinkin": 0,
+            "schemin": 0,
+            "plottin": 0,
+            "dreamin": 0
+        },
+        "thinkin": {
+            "thinkin": 0,
+            "schemin": 0,
+            "plottin": 0,
+            "dreamin": 0
+        },
+        "schemin": {
+            "thinkin": 0,
+            "schemin": 0,
+            "plottin": 0,
+            "dreamin": 0
+        },
+        "plottin": {
+            "thinkin": 0,
+            "schemin": 0,
+            "plottin": 0,
+            "dreamin": 0
+        },
+        "dreamin": {
+            "thinkin": 0,
+            "schemin": 0,
+            "plottin": 0,
+            "dreamin": 0
+        },
+        "wAntin": {
+            "thinkin": 0,
+            "schemin": 0,
+            "plottin": 0,
+            "dreamin": 0
+        },
+        "gEttin": {
+            "thinkin": 0,
+            "schemin": 0,
+            "plottin": 0,
+            "dreamin": 0
+        },
+        "mUllin": {
+            "thinkin": 0,
+            "schemin": 0,
+            "plottin": 0,
+            "dreamin": 0
+        },
+        "pIckin": {
+            "thinkin": 0,
+            "schemin": 0,
+            "plottin": 0,
+            "dreamin": 0
+        },
+        "upin": {
+            "thinkin": 0,
+            "schemin": 0,
+            "plottin": 0,
+            "dreamin": 0
+        },
+        "downin": {
+            "thinkin": 0,
+            "schemin": 0,
+            "plottin": 0,
+            "dreamin": 0
+        },
+        "rightin": {
+            "thinkin": 0,
+            "schemin": 0,
+            "plottin": 0,
+            "dreamin": 0
+        },
+        "leftin": {
+            "thinkin": 0,
+            "schemin": 0,
+            "plottin": 0,
+            "dreamin": 0
+        }
+    },
+    "secondarytable": {
+        "thinkin": {
+            "wAntin": 0,
+            "gEttin": 0,
+            "mUllin": 0,
+            "pIckin": 0
+        },
+        "schemin": {
+            "wAntin": 0,
+            "gEttin": 0,
+            "mUllin": 0,
+            "pIckin": 0
+        },
+        "plottin": {
+            "wAntin": 0,
+            "gEttin": 0,
+            "mUllin": 0,
+            "pIckin": 0
+        },
+        "dreamin": {
+            "wAntin": 0,
+            "gEttin": 0,
+            "mUllin": 0,
+            "pIckin": 0
+        }
+    },
+    "movementtable": {
+        "thinkin": {
+            "upin": 0,
+            "downin": 0,
+            "rightin": 0,
+            "leftin": 0
+        },
+        "schemin": {
+            "upin": 0,
+            "downin": 0,
+            "rightin": 0,
+            "leftin": 0
+        },
+        "plottin": {
+            "upin": 0,
+            "downin": 0,
+            "rightin": 0,
+            "leftin": 0
+        },
+        "dreamin": {
+            "upin": 0,
+            "downin": 0,
+            "rightin": 0,
+            "leftin": 0
+        }
+    }
+}
