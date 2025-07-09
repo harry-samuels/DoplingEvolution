@@ -1,5 +1,4 @@
 /.DS_Store
 /__pycache__/*
 testMain.py
-saved_cells/ubavillonco.json
-saved_cells/corrUPto.json
+saved_cells/*
