@@ -12,9 +12,9 @@ BOTTOM_DISPLAY= []
 
 MULTITRACK= False
 
-def printDisplay(map, trackedCell):
+def printDisplay(map):
     BOTTOM_DISPLAY.clear()
-    dataDisplay= assembleDataDisplay(map, trackedCell)
+    dataDisplay= assembleDataDisplay(map)
     mapDisplay= assembleMapDisplay(map)
     finalDisplay= stitchDisplays(mapDisplay, dataDisplay)
     if PHYLOGENYBOTTOMDISPLAY:
@@ -48,17 +48,17 @@ def assembleMapDisplay(map):
         display.append(line)
     return display
 
-def assembleDataDisplay(map, trackedCell):
+def assembleDataDisplay(map):
     display= [" Total Turns:  " + str(map.totalturns) + "  |  Total Doplings:  " + str(map.totalcellsspawned),
         " Living Doplings: " + str(len(cell.CELLS)) + "  |  Latest Generation: " + str(map.latestgeneration)]
-    if trackedCell is None:
+    if map.trackedCell is None:
         if MULTITRACK:
             genealogy.untrackAll()
             display.extend(assembleMultitrackDisplay())
         else:
             display.extend(assembleExpandedSpeciesDisplay())
     else:
-        display.extend(assembleTrackedCellDisplay(trackedCell))
+        display.extend(assembleTrackedCellDisplay(map.trackedCell))
     
     return display
 

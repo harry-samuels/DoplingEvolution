@@ -157,6 +157,7 @@ class Grid:
         self.totalcellsspawned= 0
         #contains the generation of the most recently created cell
         self.latestgeneration= 0
+        self.trackedCell= None
         if inputs.USE_CUSTOM_MAP:
             customMapFile= open(inputs.CUSTOM_MAP_FILE)
             customMapJSON= json.load(customMapFile)
@@ -169,6 +170,7 @@ class Grid:
             self.rows= rows
             self.columns= columns
             self.container= createGrid(rows, columns)
+
 
 
         
