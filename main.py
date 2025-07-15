@@ -470,6 +470,12 @@ Features to Implement:
 
 -make hormones cost food?
 
+-different "eras" with respective food value/amount? different split/speed ratios?\\
+
+-create splittin? allow cells to choose when to split rather than have set value?
+
+-adjust speed calculation so all cells have base speed based on split size and then also an additional amount added on to become faster
+
 
 
 
