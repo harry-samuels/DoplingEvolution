@@ -6,6 +6,7 @@ import helpMessages
 import inputs
 
 import random
+import os
 
 
 # helpMessages.displayStartupMessages()
@@ -376,7 +377,23 @@ def multitrack(MAP):
 
 
 def load(MAP):
-    cellFile= input("Please enter the filepath for the saved Cell: ")
+    print("")
+    print("Saved Doplings: ")
+    print("")
+    cellFileList= os.listdir("saved_cells")
+    fileIndex= 0
+    for cFile in cellFileList:
+        print(str(fileIndex).ljust(3, " ") + " -   " + cFile)
+        print("")
+        fileIndex+= 1
+    try:
+        cellFileIndex= int(input("Please enter the corresponding number of the dopling file to be loaded: "))
+        cellFile= "saved_cells/" + cellFileList[cellFileIndex]
+
+    except (ValueError, IndexError):
+        print("Integer entry not recognized, please enter only the corresponding integer value for the desired file")
+        return
+
     spawnCoords= input("Please enter the desired grid location ('X, Y') of the dopling to be loaded: ")
     spawnLocation= None
     try:
@@ -385,6 +402,7 @@ def load(MAP):
             spawnLocation= MAP.getNode(spawnX, spawnY)
     except(ValueError, IndexError):
         print("Incorrect coordinate input, please be sure to include both x and y separated by a comma ','")
+        return
     if spawnLocation:
         loadedCell= cell.loadCell(cellFile, MAP, spawnLocation)
         genealogy.untrackAll(MAP)
