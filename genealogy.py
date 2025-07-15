@@ -77,7 +77,6 @@ class Genealogy:
             #if cell has mother apply ancestor tracking to all prior cells in lineage
             if not (self.mother is None):
                     self.mother.track("ancestor")
-            return
         elif tracktype == "offspring":
             self.tracktype= "offspring"
             self.tracking= "\x1b[46m"
@@ -85,21 +84,27 @@ class Genealogy:
             #Apply offspring tracking to all decendents of this cell using DFS
             for c in self.children:
                 c.track("offspring")
-            return
         elif tracktype == "ancestor":
             self.tracktype= "ancestor"
             self.tracking= "\x1b[45m"
-
             #track all ancestor cells of this cell
             if not (self.mother is None):
                 #prevents recusion error by stopping after dead ancestor is found
                 if not self.mother.cell.lysed:             
                     self.mother.track("ancestor")
-            return
         elif tracktype == "multitrack":
             self.tracktype= "multitrack"
             #underline
             self.tracking= "\x1b[4m"
+        elif tracktype == "species1":
+            self.tracktype == "species1"
+            self.tracking= "\x1b[47m"
+        elif tracktype == "species2":
+            self.tracktype == "specie2"
+            self.tracking= "\x1b[46m"
+        elif tracktype == "species3":
+            self.tracktype == "species3"
+            self.tracking= "\x1b[45m"
 
 
     #stop tracking cell
@@ -112,7 +117,7 @@ class Genealogy:
     #only able to be used on cells that were not spontaneously generated (ie: were split from another cell)
     def initializeTracking(self):
         #if mother cell is not being tracked, both values are the empty string
-        if self.mother.tracking == "" or self.mother.tracking == "multitrack":
+        if self.mother.tracking == "":
             self.tracking= ""
             self.tracktype= ""
             return
@@ -125,17 +130,21 @@ class Genealogy:
         elif self.mother.tracktype == "main" or self.mother.tracktype == "offspring":
             self.track("offspring")
             return
-        #edge case which should not occur
+        #non-heritable tracktypes
         else:
             self.tracking= ""
             self.tracktype= ""
 
 
 #untrack all cells being tracked
-def untrackAll():
-    rev= len(TRACKED_CELLS) -1
+def untrackAll(map):
+    map.trackedCell= None
     for tracked_cell in range(0,len(TRACKED_CELLS)):
-        TRACKED_CELLS[rev - tracked_cell].untrack()
+        TRACKED_CELLS[tracked_cell].tracking= ""
+        TRACKED_CELLS[tracked_cell].tracktype= ""
+    TRACKED_CELLS.clear()
+
+
 
 
 

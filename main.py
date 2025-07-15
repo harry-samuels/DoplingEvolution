@@ -325,7 +325,6 @@ def jumpstart(MAP, numGenerationsInput):
         runTurn(MAP)
 
 def track(MAP):
-    display.MULTITRACK= False
     trackedCell= None
     trackIdentifier= (input("Enter the ID, beginning with '#', or the grid location ('X, Y') of the dopling to be tracked: "))
     if "#" in trackIdentifier:
@@ -345,15 +344,15 @@ def track(MAP):
     if trackedCell is None:
         print("No dopling found @" + str(trackIdentifier))
     else:
-        genealogy.untrackAll()
+        display.MULTITRACK_TYPE= ""
+        genealogy.untrackAll(MAP)
         trackedCell.genealogy.track("main")
         MAP.trackedCell= trackedCell
        
 def untrack(MAP):
-    MAP.trackedCell= None
-    display.MULTITRACK= False
+    display.MULTITRACK_TYPE= ""
     trackedTotal= len(genealogy.TRACKED_CELLS)
-    genealogy.untrackAll()
+    genealogy.untrackAll(MAP)
     print(str(trackedTotal) + " cells untracked")
 
 def name(MAP):
@@ -370,10 +369,11 @@ def save(MAP):
         print("No current tracked cell to be saved")
 
 def multitrack(MAP):
-    genealogy.untrackAll()
-    MAP.trackedCell= None
+    genealogy.untrackAll(MAP)
+    display.MULTITRACK_TYPE= ""
     if input("Type 'species' to view the top 3 species: ") == "species":
-        display.MULTITRACK= True
+        display.MULTITRACK_TYPE= "topSpecies"
+
 
 def load(MAP):
     cellFile= input("Please enter the filepath for the saved Cell: ")
@@ -387,7 +387,7 @@ def load(MAP):
         print("Incorrect coordinate input, please be sure to include both x and y separated by a comma ','")
     if spawnLocation:
         loadedCell= cell.loadCell(cellFile, MAP, spawnLocation)
-        genealogy.untrackAll()
+        genealogy.untrackAll(MAP)
         #track the newly loaded cell
         MAP.trackedCell= loadedCell
         loadedCell.genealogy.track("main")
@@ -470,11 +470,8 @@ Features to Implement:
 -preset walls? (ie: halves/quarters)
 -build mountain range? (over time mountain range grows and then recedes across screen? could be really neat)
 
--secondary messengers? more messenger hormone options? (stretch goal)
-
 -make hormones cost food?
 
--Allow cells to mutate duplicate/remove hormones
 
 
 
@@ -498,4 +495,6 @@ X make food turns red on tracked cell display when cell is ten turns away from s
 X change collision behavior to allow cell with more food to "eat" other cell
 X add ability to add walls
 X track number of generations for all cells (make jumpstart work better?)
+X secondary messengers? more messenger hormone options? (stretch goal)
+X Allow cells to mutate duplicate/remove hormones
 """

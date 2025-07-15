@@ -10,7 +10,7 @@ import re
 PHYLOGENYBOTTOMDISPLAY= False
 BOTTOM_DISPLAY= []
 
-MULTITRACK= False
+MULTITRACK_TYPE= ""
 
 def printDisplay(map):
     BOTTOM_DISPLAY.clear()
@@ -52,9 +52,9 @@ def assembleDataDisplay(map):
     display= [" Total Turns:  " + str(map.totalturns) + "  |  Total Doplings:  " + str(map.totalcellsspawned),
         " Living Doplings: " + str(len(cell.CELLS)) + "  |  Latest Generation: " + str(map.latestgeneration)]
     if map.trackedCell is None:
-        if MULTITRACK:
-            genealogy.untrackAll()
-            display.extend(assembleMultitrackDisplay())
+        if MULTITRACK_TYPE:
+            genealogy.untrackAll(map)
+            display.extend(assembleMultitrackDisplay(MULTITRACK_TYPE))
         else:
             display.extend(assembleExpandedSpeciesDisplay())
     else:
@@ -213,37 +213,44 @@ def assemblePhylogenyDisplay(gcaTaxon, displayedSpecies):
     return display
 
 #tracks multiple cells and returns display
-def assembleMultitrackDisplay():
+def assembleMultitrackDisplay(trackType):
+    multitrackList= []
+    if trackType == "topSpecies":
+        currentSpecies= []
+        for liveCell in cell.CELLS:
+            taxon= liveCell.genealogy.taxon
+            if not taxon in currentSpecies:
+                i= 0
+                taxonLivingCells= len(taxon.memberlist) - taxon.deadMembers
+                while i < len(currentSpecies) and (taxonLivingCells < (len(currentSpecies[i].memberlist) - currentSpecies[i].deadMembers)):
+                    i+= 1
+                currentSpecies.insert(i, taxon)
     
-    #list that will contain all extant species in order from most to least living members
-    currentSpecies= []
-    for liveCell in cell.CELLS:
-        taxon= liveCell.genealogy.taxon
-        if not taxon in currentSpecies:
-            i= 0
-            taxonLivingCells= len(taxon.memberlist) - taxon.deadMembers
-            while i < len(currentSpecies) and (taxonLivingCells < (len(currentSpecies[i].memberlist) - currentSpecies[i].deadMembers)):
-                i+= 1
-            currentSpecies.insert(i, taxon)
+        #get the oldest representative of each top species
+        numTracked= 0
+        while numTracked < 3 and numTracked < len(currentSpecies):
+            taxon= currentSpecies[numTracked]
+            for member in taxon.memberlist:
+                member.genealogy.track("species" + str(numTracked +1))
+            memberIndex= 0
+            stillSearching= True
+            #find the oldest member of the taxon
+            while stillSearching and memberIndex < len(taxon.memberlist) -1:
+                if taxon.memberlist[memberIndex].lysed:
+                    memberIndex+= 1
+                else:
+                    stillSearching= False
+            multitrackedCell= taxon.memberlist[memberIndex]
+            multitrackList.append(multitrackedCell)
+            numTracked+=1
 
-
-    display=[]
-    #add key for + and - indicators
-    display.append("")
-    display.append("Key: \x1b[41m--\x1b[0m <-5  \x1b[41m-\x1b[0m <-2  \x1b[31m--\x1b[0m <-1  \x1b[31m-\x1b[0m <-0.1  \x1b[32m+\x1b[0m >0.1  \x1b[32m++\x1b[0m >1  \x1b[42m+\x1b[0m >2  \x1b[42m++\x1b[0m >5")
-    display.append("")
-    numDisplays= 0
-    while numDisplays < 3 and numDisplays < len(currentSpecies):
-        taxon= currentSpecies[numDisplays]
-        memberIndex= 0
-        stillSearching= True
-        while stillSearching and memberIndex < len(taxon.memberlist) -1:
-            if taxon.memberlist[memberIndex].lysed:
-                memberIndex+= 1
-            else:
-                stillSearching= False
-        multitrackedCell= taxon.memberlist[memberIndex]
-        multitrackedCell.genealogy.track("multitrack")
+    display= []
+    for multitrackedCell in multitrackList:
+        taxon= multitrackedCell.genealogy.taxon
+        #add key for + and - indicators
+        display.append(taxon.originator.genealogy.tracking + "   \x1b[0m")
+        display.append("Key: \x1b[41m--\x1b[0m <-5  \x1b[41m-\x1b[0m <-2  \x1b[31m--\x1b[0m <-1  \x1b[31m-\x1b[0m <-0.1  \x1b[32m+\x1b[0m >0.1  \x1b[32m++\c >1  \x1b[42m+\x1b[0m >2  \x1b[42m++\x1b[0m >5")
+        display.append("")
         display.append("\x1b[" + taxon.color + "m" + taxon.genus + " " + taxon.species + "\x1b[0m" + " ~ " + str(len(taxon.memberlist) - taxon.deadMembers) + " Alive ~ " + str(taxon.generations) + " Generations over "+ str(multitrackedCell.map.totalturns - taxon.advent) + " Turns")
         display.append("Rep: " + "\x1b[" + multitrackedCell.genealogy.color + "m" + multitrackedCell.fullname() + "\x1b[0m" + " ~ " + str(multitrackedCell) + " ~ Gen: " + str(multitrackedCell.genealogy.generation) + " ~ Spl: " + str(multitrackedCell.splitThreshold)[:5] + " ~ Spd: " + str(multitrackedCell.speed)[:5])
         #remove valuline from track cell display
@@ -251,7 +258,7 @@ def assembleMultitrackDisplay():
         display.append("")
         display.extend(stitchDisplays(assembleMovTableDisplay(multitrackedCell), assembleSecTableDisplay(multitrackedCell)))
         display.append("")
-        numDisplays+=1
+
     return display
 
 #creates printable table representation of trackedCell's modtable and partial valuetable with key
@@ -272,12 +279,13 @@ def assembleModTableDisplay(trackedCell):
 
 def assembleSecTableDisplay(trackedCell):
     display= []
-    display.append("In:  " + allAbreviatedMessengers(trackedCell, "     "))
-    for s in trackedCell.secondaries:
-        tableLine= abbreviateSecondaryTwoChar(s) + ": "
-        for m in trackedCell.messengers:
-            tableLine+= "|" + convertMovDisplay(trackedCell.secondarytable[m][s])
-        display.append(tableLine + "|")
+    if trackedCell.secondaries:
+        display.append("In:  " + allAbreviatedMessengers(trackedCell, "     "))
+        for s in trackedCell.secondaries:
+            tableLine= abbreviateSecondaryTwoChar(s) + ": "
+            for m in trackedCell.messengers:
+                tableLine+= "|" + convertMovDisplay(trackedCell.secondarytable[m][s])
+            display.append(tableLine + "|")
 
     return display
 
