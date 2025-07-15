@@ -445,7 +445,6 @@ Features to Implement:
 7) refactored/cleaner report output (use tracked cell display)
 
 10) add status window to right of map with current oldest cell, extant species, etc.
--add cell "thoughts" to traking HUD  
 
 -Track total number of megamutations and mutations? in lineage
 
@@ -460,7 +459,6 @@ Features to Implement:
 -add cell to favorites (yellow highlights)
 -ability to rebirth favorited cell?
 
--save cells as csv for ressurection
 
 
 -----SIMULATION FEATURES
@@ -485,6 +483,7 @@ X Backround highlight tracking for all of cell's ancestors
 X add color to Elder (&) cells
 X cell.numberID based lookup for living and dead cells
 X add ability to speed through rounds until enough cells exist to indicate intelligent life
+X add cell "thoughts" to traking HUD
 X add death message to track page after death (will need to condense death messages)
 X add taxonomy (genus, species, etc.)
 X Pedigree creation for all currently living cells
@@ -497,4 +496,6 @@ X add ability to add walls
 X track number of generations for all cells (make jumpstart work better?)
 X secondary messengers? more messenger hormone options? (stretch goal)
 X Allow cells to mutate duplicate/remove hormones
+X save cells as json for ressurection
+
 """
