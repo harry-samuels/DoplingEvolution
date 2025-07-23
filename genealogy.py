@@ -205,6 +205,20 @@ class Taxon:
             self.isExtinct= True
 
 
+# returns a list of Taxon's, ordered from most to least living members, that are present in the current population of doplings
+def getCurrentSpecies():
+    currentSpecies= []
+    for liveCell in cellModule.CELLS:
+        taxon= liveCell.genealogy.taxon
+        if not taxon in currentSpecies:
+            i= 0
+            taxonLivingCells= len(taxon.memberlist) - taxon.deadMembers
+            while i < len(currentSpecies) and (taxonLivingCells < (len(currentSpecies[i].memberlist) - currentSpecies[i].deadMembers)):
+                i+= 1
+            currentSpecies.insert(i, taxon)
+    return currentSpecies
+
+
 #returns the originator of the taxon which represents the greatest common ancestor of all cells in list cellList, returns None if no GCA exists
 #cellList is a list of Cell objects
 def getGCA(cellList):

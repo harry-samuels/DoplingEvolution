@@ -216,15 +216,7 @@ def assemblePhylogenyDisplay(gcaTaxon, displayedSpecies):
 def assembleMultitrackDisplay(trackType):
     multitrackList= []
     if trackType == "topSpecies":
-        currentSpecies= []
-        for liveCell in cell.CELLS:
-            taxon= liveCell.genealogy.taxon
-            if not taxon in currentSpecies:
-                i= 0
-                taxonLivingCells= len(taxon.memberlist) - taxon.deadMembers
-                while i < len(currentSpecies) and (taxonLivingCells < (len(currentSpecies[i].memberlist) - currentSpecies[i].deadMembers)):
-                    i+= 1
-                currentSpecies.insert(i, taxon)
+        currentSpecies= genealogy.getCurrentSpecies()
     
         #get the oldest representative of each top species
         numTracked= 0
