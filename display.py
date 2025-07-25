@@ -215,36 +215,80 @@ def assemblePhylogenyDisplay(gcaTaxon, displayedSpecies):
 #tracks multiple cells and returns display
 def assembleMultitrackDisplay(trackType):
     multitrackList= []
+    cellDisplayInfo= {}
+
     if trackType == "topSpecies":
         currentSpecies= genealogy.getCurrentSpecies()
-    
         #get the oldest representative of each top species
         numTracked= 0
         while numTracked < 3 and numTracked < len(currentSpecies):
             taxon= currentSpecies[numTracked]
-            for member in taxon.memberlist:
-                member.genealogy.track("species" + str(numTracked +1))
-            memberIndex= 0
-            stillSearching= True
-            #find the oldest member of the taxon
-            while stillSearching and memberIndex < len(taxon.memberlist) -1:
-                if taxon.memberlist[memberIndex].lysed:
-                    memberIndex+= 1
-                else:
-                    stillSearching= False
-            multitrackedCell= taxon.memberlist[memberIndex]
-            multitrackList.append(multitrackedCell)
+            trackTaxon(taxon, "species" + str(numTracked +1))
+            oldestMember= taxon.getOldestMember()
+            multitrackList.append(oldestMember)
+            cellDisplayInfo[oldestMember]= ["\x1b[" + taxon.color + "m" + taxon.genus + " " + taxon.species + "\x1b[0m" + " ~ " + str(len(taxon.memberlist) - taxon.deadMembers) + " Alive ~ " + str(taxon.generations) + " Generations over "+ str(oldestMember.map.totalturns - taxon.advent) + " Turns", 
+                "Rep: " + "\x1b[" + oldestMember.genealogy.color + "m" + oldestMember.fullname() + "\x1b[0m" + " ~ " + str(oldestMember) + " ~ Gen: " + str(oldestMember.genealogy.generation) + " ~ Spl: " + str(oldestMember.splitThreshold)[:5] + " ~ Spd: " + str(oldestMember.speed)[:5]]
             numTracked+=1
 
+    elif type(trackType) == genealogy.Taxon:
+        taxon= trackType
+        trackTaxon(taxon, "species1")
+        multitrackList.append(taxon.originator)
+        multitrackList.append(taxon.getOldestMember())
+        multitrackList.append(taxon.memberlist[-1])
+
+    elif trackType == "oldestCells":
+        oldestCellsList= []
+        cellIndex= 0
+        while cellIndex < len(cell.CELLS):
+            if len(oldestCellsList) == 0:
+                oldestCellsList.append(cell.CELLS[cellIndex])
+            #the final list will include 3 cells
+            elif len(oldestCellsList) < 3:
+                oldestIndex= 0
+                while oldestIndex < len(oldestCellsList) and cell.CELLS[cellIndex].age < oldestCellsList[oldestIndex].age:
+                    oldestIndex+= 1
+                oldestCellsList.insert(oldestIndex, cell.CELLS[cellIndex])
+            else:
+                if cell.CELLS[cellIndex].age > oldestCellsList[-1].age:
+                    oldestIndex= 2
+                    while oldestIndex > 0 and cell.CELLS[cellIndex].age > oldestCellsList[oldestIndex -1].age:
+                        oldestIndex-= 1
+                    oldestCellsList.insert(oldestIndex, cell.CELLS[cellIndex])
+                    oldestCellsList.pop()
+            cellIndex+= 1
+        oldPosition= 1
+        for oldCell in oldestCellsList:
+            oldCell.genealogy.track("species" + str(oldPosition))
+            oldPosition+= 1
+            taxon= oldCell.genealogy.taxon
+            cellDisplayInfo[oldCell]= ["\x1b[" + taxon.color + "m" + taxon.genus + " " + taxon.species + "\x1b[0m" + " ~ " + str(len(taxon.memberlist) - taxon.deadMembers) + " Alive ~ " + str(taxon.generations) + " Generations over "+ str(oldCell.map.totalturns - taxon.advent) + " Turns",
+                "\x1b[" + oldCell.genealogy.color + "m" + oldCell.fullname() + "\x1b[0m" + " ~ " + str(oldCell) + " ~ Age: " + str(oldCell.age) + " ~ Gen: " + str(oldCell.genealogy.generation) + " ~ Spl: " + str(oldCell.splitThreshold)[:5] + " ~ Spd: " + str(oldCell.speed)[:5]]
+        multitrackList.extend(oldestCellsList)
+
+
     display= []
+
+    #if singleSpecies tracking is being used: add ther species info at the top of the display and add display lines for each cell
+    if type(trackType) == genealogy.Taxon:
+        taxon= trackType
+        display.append("")
+        display.append("\x1b[" + taxon.color + "m" + taxon.genus + " " + taxon.species + "\x1b[0m" + " ~ " + str(len(taxon.memberlist) - taxon.deadMembers) + " Alive ~ " + str(taxon.generations) + " Generations over "+ str(taxon.originator.map.totalturns - taxon.advent) + " Turns")
+        display.append("")
+        for multitrackedCell in multitrackList:
+            status= "\x1b[32mAlive\x1b[0m" 
+            if multitrackedCell.lysed:
+                status="\x1b[31mDead\x1b[0m (Turn "+ str(multitrackedCell.deathdate) + ") " + multitrackedCell.deathmessage
+            cellDisplayInfo[multitrackedCell]= ["\x1b[" + multitrackedCell.genealogy.color + "m" + multitrackedCell.fullname() + "\x1b[0m" + " ~ " + str(multitrackedCell) + " ~ Gen: " + str(multitrackedCell.genealogy.generation) + " ~ Spl: " + str(multitrackedCell.splitThreshold)[:5] + " ~ Spd: " + str(multitrackedCell.speed)[:5],
+            "     Age: " + str(multitrackedCell.age) + " ~ Status: " + status + " ~ Location: " + multitrackedCell.location.coordDisplay]
+        
     for multitrackedCell in multitrackList:
         taxon= multitrackedCell.genealogy.taxon
         #add key for + and - indicators
-        display.append(taxon.originator.genealogy.tracking + "   \x1b[0m")
-        display.append("Key: \x1b[41m--\x1b[0m <-5  \x1b[41m-\x1b[0m <-2  \x1b[31m--\x1b[0m <-1  \x1b[31m-\x1b[0m <-0.1  \x1b[32m+\x1b[0m >0.1  \x1b[32m++\c >1  \x1b[42m+\x1b[0m >2  \x1b[42m++\x1b[0m >5")
+        #display.append(taxon.originator.genealogy.tracking + "   \x1b[0m")
+        display.append("Key: \x1b[41m--\x1b[0m <-5  \x1b[41m-\x1b[0m <-2  \x1b[31m--\x1b[0m <-1  \x1b[31m-\x1b[0m <-0.1  \x1b[32m+\x1b[0m >0.1  \x1b[32m++\x1b[0m >1  \x1b[42m+\x1b[0m >2  \x1b[42m++\x1b[0m >5")
         display.append("")
-        display.append("\x1b[" + taxon.color + "m" + taxon.genus + " " + taxon.species + "\x1b[0m" + " ~ " + str(len(taxon.memberlist) - taxon.deadMembers) + " Alive ~ " + str(taxon.generations) + " Generations over "+ str(multitrackedCell.map.totalturns - taxon.advent) + " Turns")
-        display.append("Rep: " + "\x1b[" + multitrackedCell.genealogy.color + "m" + multitrackedCell.fullname() + "\x1b[0m" + " ~ " + str(multitrackedCell) + " ~ Gen: " + str(multitrackedCell.genealogy.generation) + " ~ Spl: " + str(multitrackedCell.splitThreshold)[:5] + " ~ Spd: " + str(multitrackedCell.speed)[:5])
+        display.extend(cellDisplayInfo[multitrackedCell])
         #remove valuline from track cell display
         display.extend(assembleModTableDisplay(multitrackedCell)[1:])
         display.append("")
@@ -252,6 +296,11 @@ def assembleMultitrackDisplay(trackType):
         display.append("")
 
     return display
+
+def trackTaxon(taxon, tracktype):
+    for member in taxon.memberlist:
+        member.genealogy.track(tracktype)
+
 
 #creates printable table representation of trackedCell's modtable and partial valuetable with key
 def assembleModTableDisplay(trackedCell):

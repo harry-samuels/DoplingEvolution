@@ -204,6 +204,17 @@ class Taxon:
         if self.deadMembers == len(self.memberlist):
             self.isExtinct= True
 
+    #returns the oldest living member of this taxon if one exists, or returns the most recently spawned member if there are no living members
+    def getOldestMember(self):
+        memberIndex= 0
+        while memberIndex < len(self.memberlist) -1:
+            taxonMember= self.memberlist[memberIndex]
+            if taxonMember.lysed:
+                memberIndex+= 1
+            else:
+                return taxonMember
+        return self.memberlist[-1]
+       
 
 # returns a list of Taxon's, ordered from most to least living members, that are present in the current population of doplings
 def getCurrentSpecies():
