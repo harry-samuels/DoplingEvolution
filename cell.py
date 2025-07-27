@@ -46,7 +46,7 @@ def mutateGenome(modtable, secondarytable, movementtable, valuetable, parent):
 
     #messenger impact
     if random.randint(0, 2000) < (len(parent.messengers) + len(parent.secondaries)):
-        parent.nextchildmegamutation= True
+        parent.genealogy.nextchildmegamutation= True
 
         #full genome duplication
         if random.randint(0,10) == 0: #random.randint(0,4) == 0:
@@ -66,7 +66,7 @@ def mutateGenome(modtable, secondarytable, movementtable, valuetable, parent):
             proteinInfo["index"]= BASE_MOD_INDEX + new_messengers + new_secondaries + parent.proteins
 
         #messenger protein alteration
-        elif random.randint(0,1) == 0 or not parent.secondaries:
+        elif random.randint(0,1) == 0:
             new_messengers= copy.deepcopy(parent.messengers)
             if random.randint(0,1) == 0:
                 #single gene duplication
@@ -91,25 +91,33 @@ def mutateGenome(modtable, secondarytable, movementtable, valuetable, parent):
             proteinInfo["index"]= BASE_MOD_INDEX + new_messengers + parent.secondaries + parent.proteins
 
       
-        #secondary messenger duplication
+        #secondary messenger alteration
         else:
-            new_secondaries= copy.deepcopy(parent.secondaries)
-            if random.randint(0,1) == 0:
-                #single gene duplication
-                duplicatedSecondaryIndex= random.randint(0, len(parent.secondaries)-1)
-                duplicatedSecondary= parent.secondaries[duplicatedSecondaryIndex]
-                newSecondary= nameDuplicatedGene(duplicatedSecondary)
+            #if there are secondary messengers to duplicate/remove:
+            if parent.secondaries:
+                new_secondaries= copy.deepcopy(parent.secondaries)
+                if random.randint(0,1) == 0:
+                    #single gene duplication
+                    duplicatedSecondaryIndex= random.randint(0, len(parent.secondaries)-1)
+                    duplicatedSecondary= parent.secondaries[duplicatedSecondaryIndex]
+                    newSecondary= nameDuplicatedGene(duplicatedSecondary)
 
-                new_secondaries.insert(duplicatedSecondaryIndex, newSecondary)
-                modtable, secondarytable, valuetable= duplicateSecondary(newSecondary, duplicatedSecondary, modtable, secondarytable, valuetable)
+                    new_secondaries.insert(duplicatedSecondaryIndex, newSecondary)
+                    modtable, secondarytable, valuetable= duplicateSecondary(newSecondary, duplicatedSecondary, modtable, secondarytable, valuetable)
 
+                else:
+                    #single gene removal
+                    removedSecondaryIndex= random.randint(0, len(parent.secondaries)-1)
+                    removedSecondary= parent.secondaries[removedSecondaryIndex]
+
+                    new_secondaries.pop(removedSecondaryIndex)
+                    modtable, secondarytable, valuetable= removeSecondary(removedSecondary, modtable, secondarytable, valuetable)
+            #no current secondary messengers --> create new secondary from movement protein
             else:
-                #single gene removal
-                removedSecondaryIndex= random.randint(0, len(parent.secondaries)-1)
-                removedSecondary= parent.secondaries[removedSecondaryIndex]
-
-                new_secondaries.pop(removedSecondaryIndex)
-                modtable, secondarytable, valuetable= removeSecondary(removedSecondary, modtable, secondarytable, valuetable)
+                newSecondary= nameDuplicatedGene(random.choice(["wAntin", "gEttin", "mUllin", "pIckin"]))
+                new_secondaries= [newSecondary]
+                copiedMovementProtein= random.choice(parent.proteins)
+                modtable, secondarytable, valuetable= newSecondaryFromMovement(newSecondary, copiedMovementProtein, modtable, secondarytable, valuetable, parent)
 
 
             proteinInfo["messengers"]= parent.messengers
@@ -203,6 +211,14 @@ def removeSecondary(removedSecondary, modtable, secondarytable, valuetable):
     for m in secondarytable:
         del secondarytable[m][removedSecondary]
     del valuetable[removedSecondary]
+    return(modtable, secondarytable, valuetable)
+
+#creates a new secondary messenger from a movement protein
+def newSecondaryFromMovement(newSecondary, copiedMovementProtein, modtable, secondarytable, valuetable, parent):
+    modtable[newSecondary]= copy.deepcopy(modtable[copiedMovementProtein])
+    for m in secondarytable:
+        secondarytable[m][newSecondary]= parent.movementtable[m][copiedMovementProtein]
+    valuetable[newSecondary]= copy.deepcopy(valuetable[copiedMovementProtein])
     return(modtable, secondarytable, valuetable)
 
 
