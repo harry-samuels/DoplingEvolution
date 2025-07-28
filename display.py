@@ -227,7 +227,7 @@ def assembleMultitrackDisplay(trackType):
             oldestMember= taxon.getOldestMember()
             multitrackList.append(oldestMember)
             cellDisplayInfo[oldestMember]= ["\x1b[" + taxon.color + "m" + taxon.genus + " " + taxon.species + "\x1b[0m" + " ~ " + str(len(taxon.memberlist) - taxon.deadMembers) + " Alive ~ " + str(taxon.generations) + " Generations over "+ str(oldestMember.map.totalturns - taxon.advent) + " Turns", 
-                "Rep: " + "\x1b[" + oldestMember.genealogy.color + "m" + oldestMember.fullname() + "\x1b[0m" + " ~ " + str(oldestMember) + " ~ Gen: " + str(oldestMember.genealogy.generation) + " ~ Spl: " + str(oldestMember.splitThreshold)[:5] + " ~ Spd: " + str(oldestMember.speed)[:5]]
+                "Rep: " + "\x1b[" + oldestMember.genealogy.color + "m" + oldestMember.fullname() + "\x1b[0m" + " ~ " + str(oldestMember) + " ~ Gen: " + str(oldestMember.genealogy.generation) + " ~ Spd: " + str(oldestMember.speed)[:5]]
             numTracked+=1
 
     elif type(trackType) == genealogy.Taxon:
@@ -263,7 +263,7 @@ def assembleMultitrackDisplay(trackType):
             oldPosition+= 1
             taxon= oldCell.genealogy.taxon
             cellDisplayInfo[oldCell]= ["\x1b[" + taxon.color + "m" + taxon.genus + " " + taxon.species + "\x1b[0m" + " ~ " + str(len(taxon.memberlist) - taxon.deadMembers) + " Alive ~ " + str(taxon.generations) + " Generations over "+ str(oldCell.map.totalturns - taxon.advent) + " Turns",
-                "\x1b[" + oldCell.genealogy.color + "m" + oldCell.fullname() + "\x1b[0m" + " ~ " + str(oldCell) + " ~ Age: " + str(oldCell.age) + " ~ Gen: " + str(oldCell.genealogy.generation) + " ~ Spl: " + str(oldCell.splitThreshold)[:5] + " ~ Spd: " + str(oldCell.speed)[:5]]
+                "\x1b[" + oldCell.genealogy.color + "m" + oldCell.fullname() + "\x1b[0m" + " ~ " + str(oldCell) + " ~ Age: " + str(oldCell.age) + " ~ Gen: " + str(oldCell.genealogy.generation) + " ~ Spd: " + str(oldCell.speed)[:5]]
         multitrackList.extend(oldestCellsList)
 
 
@@ -279,7 +279,7 @@ def assembleMultitrackDisplay(trackType):
             status= "\x1b[32mAlive\x1b[0m" 
             if multitrackedCell.lysed:
                 status="\x1b[31mDead\x1b[0m (Turn "+ str(multitrackedCell.deathdate) + ") " + multitrackedCell.deathmessage
-            cellDisplayInfo[multitrackedCell]= ["\x1b[" + multitrackedCell.genealogy.color + "m" + multitrackedCell.fullname() + "\x1b[0m" + " ~ " + str(multitrackedCell) + " ~ Gen: " + str(multitrackedCell.genealogy.generation) + " ~ Spl: " + str(multitrackedCell.splitThreshold)[:5] + " ~ Spd: " + str(multitrackedCell.speed)[:5],
+            cellDisplayInfo[multitrackedCell]= ["\x1b[" + multitrackedCell.genealogy.color + "m" + multitrackedCell.fullname() + "\x1b[0m" + " ~ " + str(multitrackedCell) + " ~ Gen: " + str(multitrackedCell.genealogy.generation) + " ~ Spd: " + str(multitrackedCell.speed)[:5],
             "     Age: " + str(multitrackedCell.age) + " ~ Status: " + status + " ~ Location: " + multitrackedCell.location.coordDisplay]
         
     for multitrackedCell in multitrackList:
@@ -309,7 +309,7 @@ def assembleModTableDisplay(trackedCell):
     for v in cell.BASE_MOD_INDEX:
         valuesLine+= str(round(trackedCell.valuetable[v])) + " |"
     display.append(valuesLine)
-    display.append("In:  NE NF NC NS SE SF SC SS EE EF EC ES WE WF WC WS Fd "+ allAbreviatedMessengers(trackedCell, " ") + allAbreviatedSecondaries(trackedCell, " ") + "Up Dw Rt Lf")
+    display.append("In:  NE NF NC NS SE SF SC SS EE EF EC ES WE WF WC WS Fd "+ allAbreviatedMessengers(trackedCell, " ") + allAbreviatedSecondaries(trackedCell, " ") + "Up Dw Rt Lf Sp")
     for m in trackedCell.messengers:
         tableLine= abreviateMessengerTwoChar(m) + ": "
         for v in trackedCell.modIndex:
@@ -334,7 +334,7 @@ def assembleSecTableDisplay(trackedCell):
 def assembleMovTableDisplay(trackedCell):
     display= []
     display.append("In:    " + allAbreviatedMessengers(trackedCell, "     "))
-    proteinsI=  ["Up: ", "Dw: ", "Rt: ", "Lf: "]
+    proteinsI=  ["Up: ", "Dw: ", "Rt: ", "Lf: ", "Sp: "]
     for p in range(len(proteinsI)):
         tableLine= proteinsI[p]
         for m in trackedCell.messengers:
@@ -449,7 +449,7 @@ def assembleTrackedCellDisplay(trackedCell):
     foodAlert= ""
     if trackedCell.valuetable["food"]/trackedCell.speed < 20:
         foodAlert= "\x1b[31m"
-    display.append("Food: " + foodAlert + str(trackedCell.valuetable["food"])[:5] + "\x1b[0m" + " | Split @ " + str(trackedCell.splitThreshold)[:5] + " | Speed: " + str(trackedCell.speed)[:5])
+    display.append("Food: " + foodAlert + str(trackedCell.valuetable["food"])[:5] + "\x1b[0m" + " | Speed: " + str(trackedCell.speed)[:5])
     display.append("Age: " + str(trackedCell.age) + " | Ate " + str(trackedCell.cellsEaten) + " other doplings")
     display.append("Generation: " + str(trackedCell.genealogy.generation))
     display.append("Children: " + str(len(trackedCell.genealogy.children)))
@@ -482,12 +482,13 @@ def assembleTrackedCellDisplay(trackedCell):
         display.append("")
     display.append("Movement Proteins:")
     display.append("")
-    movementValues=[trackedCell.valuetable["upin"], trackedCell.valuetable["downin"], trackedCell.valuetable["rightin"], trackedCell.valuetable["leftin"]]
+    movementValues=[trackedCell.valuetable["upin"], trackedCell.valuetable["downin"], trackedCell.valuetable["rightin"], trackedCell.valuetable["leftin"], trackedCell.valuetable["splittin"]]
     movementMax= max(movementValues)
     display.append("                       Upin   :\x1b[47m " + barGraph[:((round((movementValues[0]/(movementMax+.0001))*20)))] + "\x1b[0m" + str(round(movementValues[0], 1)))
     display.append("                       Downin :\x1b[43m " + barGraph[:((round((movementValues[1]/(movementMax+.0001))*20)))] + "\x1b[0m" + str(round(movementValues[1], 1)))
     display.append("                       Rightin:\x1b[47m " + barGraph[:((round((movementValues[2]/(movementMax+.0001))*20)))] + "\x1b[0m" + str(round(movementValues[2], 1)))
     display.append("                       Leftin :\x1b[43m " + barGraph[:((round((movementValues[3]/(movementMax+.0001))*20)))] + "\x1b[0m" + str(round(movementValues[3], 1)))
+    display.append("                     Splittin :\x1b[44m " + barGraph[:((round((movementValues[4]/(movementMax+.0001))*20)))] + "\x1b[0m" + str(round(movementValues[4], 1)))
 
     display.append("")
     display.extend(assembleModTableDisplay(trackedCell))

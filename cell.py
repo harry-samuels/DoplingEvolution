@@ -16,7 +16,7 @@ MESSENGERS= ["thinkin", "schemin", "plottin", "dreamin", "electin", "choosin", "
 
 SECONDARIES= ["wAntin", "gEttin", "mUllin", "pIckin"][:inputs.SECONDARY_MESSENGER_NUMBER]
 
-PROTEINS= ["upin", "downin", "rightin", "leftin"]
+PROTEINS= ["upin", "downin", "rightin", "leftin", "splittin"]
 
 BASE_MOD_INDEX= [
     "Nempty","Nfood", "Ncell", "Nsize",
@@ -147,14 +147,14 @@ def mutate(table, parent):
     return table
 
 #add mutation to splitThreshold
-def mutateSplitThreshold(splitThreshold, parent):
-    if random.randint(0, 100) < 5:
-        if random.randint(0, 100) == 1:
-            splitThreshold= splitThreshold * random.choice([random.uniform(0.2, 0.5), random.uniform(2, 5)])
-            parent.genealogy.nextchildmegamutation= True
-        else:
-            splitThreshold= splitThreshold * random.uniform(0.9, 1.1)
-    return splitThreshold
+# def mutateSplitThreshold(splitThreshold, parent):
+#     if random.randint(0, 100) < 5:
+#         if random.randint(0, 100) == 1:
+#             splitThreshold= splitThreshold * random.choice([random.uniform(0.2, 0.5), random.uniform(2, 5)])
+#             parent.genealogy.nextchildmegamutation= True
+#         else:
+#             splitThreshold= splitThreshold * random.uniform(0.9, 1.1)
+#     return splitThreshold
 
 def mutateSpeed(speed, parent):
     if random.randint(0, 100) < 5:
@@ -223,9 +223,9 @@ def newSecondaryFromMovement(newSecondary, copiedMovementProtein, modtable, seco
 
 
 class Cell:
-    SPLIT_SPEED_RATIO= inputs.FOOD_TO_SPLIT / inputs.FOOD_TO_MOVE
+    # SPLIT_SPEED_RATIO= inputs.FOOD_TO_SPLIT / inputs.FOOD_TO_MOVE
     #Grid: map, Node: location, int: food, []: modtable, []: movementtable, []: valuetable
-    def __init__(self, map, location, food, modtable=None, secondarytable=None, movementtable=None, valuetable=None, proteinInfo=None, mothergenealogy=None, splitThreshold=None, speed=None):
+    def __init__(self, map, location, food, modtable=None, secondarytable=None, movementtable=None, valuetable=None, proteinInfo=None, mothergenealogy=None, speed=None):
 
         self.age= 0
         self.name= (random.choice(["ba", "po", "li", "re", "xi", "shu", "cra", "psy", "tri", "fro", "woo", "do", "ki", "epi", "ono", "uba", "aro", "immo", "qui", "gra", "hu", "mi", "vee", "yoo", "zo"]) + 
@@ -270,13 +270,13 @@ class Cell:
         #how many other cells this cell has eaten
         self.cellsEaten= 0
 
-        if splitThreshold is None:
-            splitThreshold= inputs.FOOD_TO_SPLIT
-        self.splitThreshold= splitThreshold
+        # if splitThreshold is None:
+        #     splitThreshold= inputs.FOOD_TO_SPLIT
+        # self.splitThreshold= splitThreshold
         if speed is None:
             speed= inputs.FOOD_TO_MOVE
-        if (splitThreshold / speed) > Cell.SPLIT_SPEED_RATIO:
-            speed= splitThreshold / Cell.SPLIT_SPEED_RATIO
+        # if (splitThreshold / speed) > Cell.SPLIT_SPEED_RATIO:
+        #     speed= splitThreshold / Cell.SPLIT_SPEED_RATIO
         self.speed= speed
 
         
@@ -392,7 +392,7 @@ class Cell:
 
         #pick direction
         #IDEA GPT suggests probabilistic movement, this is a good idea but does go against my belief that cells are governed purely by physics
-        direction= self.pickDirection()
+        direction, isSplitting= self.pickDirection()
 
         #ensure the cell is still alive
         if self.lysed:
@@ -416,8 +416,8 @@ class Cell:
         if self.lysed:
             return
         
-        #check if ready to split
-        if self.valuetable["food"] > self.splitThreshold:
+        #check if ready to split and ensure cell was not just spawned
+        if isSplitting and (self.age > 1):
             self.split(goingTo)
         else:
             #this was above the if statement but i moved it down, this has stimmied evolution it appears
@@ -612,7 +612,8 @@ class Cell:
     def pickDirection(self):
         directions= ["N","S","E","W"]
         proteinValues= [self.valuetable["upin"],self.valuetable["downin"],self.valuetable["rightin"],self.valuetable["leftin"]]
-        return directions[proteinValues.index(max(proteinValues))]
+        movementMax= max(proteinValues)
+        return (directions[proteinValues.index(movementMax)], (self.valuetable["splittin"] > (movementMax)))
 
         #check if the cell can move into Node goingTo and lyse the cell if it cannot
     def checkMoveValidity(self, goingTo):
@@ -649,6 +650,7 @@ class Cell:
     def split(self, position):
         if position.isFull():
             return
+        #BUG splitting onto food does not give food
         self.valuetable["food"]= self.valuetable["food"]/2
         for m in self.messengers:
             self.valuetable[m]= (self.valuetable[m])/2
@@ -658,7 +660,7 @@ class Cell:
         new_modtable, new_secondarytable, new_movementtable, new_valuetable, new_proteinInfo= mutateGenome(copy.deepcopy(self.modtable), copy.deepcopy(self.secondarytable), copy.deepcopy(self.movementtable), copy.deepcopy(self.valuetable), self)
 
 
-        c= Cell(self.map, position, self.valuetable["food"], new_modtable, new_secondarytable, new_movementtable, new_valuetable, new_proteinInfo, self.genealogy, mutateSplitThreshold(self.splitThreshold, self), mutateSpeed(self.speed, self))
+        c= Cell(self.map, position, self.valuetable["food"], new_modtable, new_secondarytable, new_movementtable, new_valuetable, new_proteinInfo, self.genealogy, mutateSpeed(self.speed, self))
         c.move()
         return c
 
@@ -695,7 +697,7 @@ class Cell:
         cellData["name"]= self.name
         cellData["color"]= self.genealogy.color
 
-        cellData["split"]= self.splitThreshold
+        #cellData["split"]= self.splitThreshold
         cellData["speed"]= self.speed
 
         proteinInfo= {}
@@ -718,13 +720,13 @@ class Cell:
 #spawn cell saved in cellFile (json filepath) in map (grid) at location (Node)
 def loadCell(cellFile, map, location):
     cellData= json.load(open(cellFile))
-    loadedCell= Cell(map, location, (cellData["split"] * 0.75), cellData["modtable"], cellData["secondarytable"], cellData["movementtable"], dict.fromkeys(cellData["proteinInfo"]["index"], 0), cellData["proteinInfo"])
+    loadedCell= Cell(map, location, inputs.SPAWNED_CELL_FOOD, cellData["modtable"], cellData["secondarytable"], cellData["movementtable"], dict.fromkeys(cellData["proteinInfo"]["index"], 0), cellData["proteinInfo"])
     #give cell correct name and corrected taxon + color
     loadedCell.name= cellData["name"]
     loadedCell.genealogy.color= cellData["color"]
     loadedCell.genealogy.taxon= genealogy.Taxon(loadedCell.genealogy)
     #ignore splith speed ratio restrictions
-    loadedCell.splitThreshold= cellData["split"]
+    #loadedCell.splitThreshold= cellData["split"]
     loadedCell.speed= cellData["speed"]
 
     return loadedCell

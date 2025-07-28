@@ -12,7 +12,7 @@ import os
 
 def runSimulation():
     helpMessages.displayStartupMessages()
-    cell.Cell.SPLIT_SPEED_RATIO= inputs.FOOD_TO_SPLIT/inputs.FOOD_TO_MOVE  #make this an actual input value?
+    #cell.Cell.SPLIT_SPEED_RATIO= inputs.FOOD_TO_SPLIT/inputs.FOOD_TO_MOVE  #make this an actual input value?
     MAP= grid.Grid(inputs.MAP_ROWS, inputs.MAP_COLUMNS) # max size 999x999 
 
     SIMULATING= True
@@ -169,7 +169,7 @@ def multitrack(MAP):
             print("Non-numeric or incompatiable input, unable to match to listed taxon")
             return
         display.MULTITRACK_TYPE= trackedTaxon
-        
+
     elif multitrackType == "3" or multitrackType == "oldest doplings":
         display.MULTITRACK_TYPE= "oldestCells"
     return
