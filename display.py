@@ -447,7 +447,7 @@ def assembleTrackedCellDisplay(trackedCell):
 
     display.append("")
     foodAlert= ""
-    if trackedCell.valuetable["food"]/trackedCell.speed < 20:
+    if trackedCell.valuetable["food"]/(trackedCell.speed + inputs.FOOD_TO_MOVE) < 20:
         foodAlert= "\x1b[31m"
     display.append("Food: " + foodAlert + str(trackedCell.valuetable["food"])[:5] + "\x1b[0m" + " | Speed: " + str(trackedCell.speed)[:5])
     display.append("Age: " + str(trackedCell.age) + " | Ate " + str(trackedCell.cellsEaten) + " other doplings")

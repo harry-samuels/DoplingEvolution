@@ -162,10 +162,10 @@ def mutateSpeed(speed, parent):
             speed= speed * random.choice([random.uniform(0.2, 0.5), random.uniform(2, 5)])
             parent.genealogy.nextchildmegamutation= True
         else:
-            speed= speed * random.uniform(0.9, 1.1)
+            speed= random.choice([speed * random.uniform(0.9, 1.1), speed + random.uniform(.001, 0.01)])
     #prevent speed form going below default value
-    if speed < inputs.FOOD_TO_MOVE:
-        speed= inputs.FOOD_TO_MOVE
+    if speed < 0:
+        speed= 0
     return speed
 
 def nameDuplicatedGene(oldName):
@@ -274,7 +274,7 @@ class Cell:
         #     splitThreshold= inputs.FOOD_TO_SPLIT
         # self.splitThreshold= splitThreshold
         if speed is None:
-            speed= inputs.FOOD_TO_MOVE
+            speed= 0
         # if (splitThreshold / speed) > Cell.SPLIT_SPEED_RATIO:
         #     speed= splitThreshold / Cell.SPLIT_SPEED_RATIO
         self.speed= speed
@@ -358,7 +358,10 @@ class Cell:
         self.age+= 1
         goingTo= None
         #food cost to move
-        self.valuetable["food"]-= self.speed 
+        self.valuetable["food"]-= (self.speed + inputs.FOOD_TO_MOVE + ((0.05*self.valuetable["food"])**5))
+        # else:
+        #     self.valuetable["food"]-= (self.speed + ((0.316 * self.valuetable["food"])**2))
+            
         if self.valuetable["food"] <= 0:
             self.lyse("hungry :(")
 
@@ -419,6 +422,7 @@ class Cell:
         #check if ready to split and ensure cell was not just spawned
         if isSplitting and (self.age > 1):
             self.split(goingTo)
+            #BUG!!! Splitting onto food does not give the mother cell or daughter cell the food
         else:
             #this was above the if statement but i moved it down, this has stimmied evolution it appears
             self.checkFood(goingTo) # <-----
@@ -575,7 +579,8 @@ class Cell:
         for m in self.messengers:
             mods[m]= 0
             for v in self.modIndex:
-                mods[m]+= ((self.valuetable[v]) * (self.modtable[v][m]))
+                if self.valuetable[v] > 0:
+                    mods[m]+= ((self.valuetable[v]) * (self.modtable[v][m]))
         return mods
 
     def applyMessengerMods(self, messengerMods):
@@ -631,7 +636,7 @@ class Cell:
     def collide(self, collidee):
         selfFood= self.valuetable["food"]
         collideeFood= collidee.valuetable["food"]
-        #if collidee is at least 50% bigger than this cell: lyse this cell
+        #if collidee is at least 75% bigger than this cell: lyse this cell
         if collideeFood > selfFood * 0.75:
             self.lyse("collision")
         #if this cell is the bigger one, the other cell lyses (and this cell then moves into it's space, "eating it"), tie goes to the runner
