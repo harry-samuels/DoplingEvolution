@@ -251,7 +251,7 @@ def wall(MAP):
 
 runSimulation()
 
-#cProfile.run('runSimulation()', sort='ncalls')
+#cProfile.run('runSimulation()', sort='tottime')
 """
 Features to Implement:
 -----------------------
@@ -264,13 +264,9 @@ Features to Implement:
 
 7) refactored/cleaner report output (use tracked cell display)
 
-10) add status window to right of map with current oldest cell, extant species, etc.
-
 -Track total number of megamutations and mutations? in lineage
 
 -add ability to adjust ranges for track cell mod table via input
-
--add ability to view mod/mov tables of multiple cells within species/across species
 
 
 
@@ -290,14 +286,9 @@ Features to Implement:
 
 -make hormones cost food?
 
--different "eras" with respective food value/amount? different split/speed ratios?\\
+-different "eras" with respective food value/amount? different split/speed ratios?
 
--create splittin? allow cells to choose when to split rather than have set value?
-
--adjust speed calculation so all cells have base speed based on split size and then also an additional amount added on to become faster
-
-
-
+-refactor inputs for speed control (add second input variable for equation?)
 
 
 
@@ -323,5 +314,9 @@ X track number of generations for all cells (make jumpstart work better?)
 X secondary messengers? more messenger hormone options? (stretch goal)
 X Allow cells to mutate duplicate/remove hormones
 X save cells as json for ressurection
+X add status window to right of map with current oldest cell, extant species, etc.
+X add ability to view mod/mov tables of multiple cells within species/across species
+X create splittin? allow cells to choose when to split rather than have set value?
+X adjust speed calculation so all cells have base speed and then also an additional amount added on to become faster
 
 """
