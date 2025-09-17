@@ -63,6 +63,7 @@ def mutateGenome(modtable, secondarytable, movementtable, valuetable, parent):
             proteinInfo["messengers"]= new_messengers
             proteinInfo["secondaries"]= new_secondaries
             proteinInfo["proteins"]= parent.proteins
+            proteinInfo["index"]= BASE_MOD_INDEX + new_messengers + new_secondaries + parent.proteins
 
         #messenger protein alteration
         elif random.randint(0,1) == 0:
@@ -87,6 +88,7 @@ def mutateGenome(modtable, secondarytable, movementtable, valuetable, parent):
             proteinInfo["messengers"]= new_messengers
             proteinInfo["secondaries"]= parent.secondaries
             proteinInfo["proteins"]= parent.proteins
+            proteinInfo["index"]= BASE_MOD_INDEX + new_messengers + parent.secondaries + parent.proteins
 
       
         #secondary messenger alteration
@@ -121,11 +123,13 @@ def mutateGenome(modtable, secondarytable, movementtable, valuetable, parent):
             proteinInfo["messengers"]= parent.messengers
             proteinInfo["secondaries"]= new_secondaries
             proteinInfo["proteins"]= parent.proteins
+            proteinInfo["index"]= BASE_MOD_INDEX + parent.messengers + new_secondaries + parent.proteins
 
     else:
         proteinInfo["messengers"]= parent.messengers
         proteinInfo["secondaries"]= parent.secondaries
         proteinInfo["proteins"]= parent.proteins
+        proteinInfo["index"]= parent.modIndex
   
     return (modtable, secondarytable, movementtable, valuetable, proteinInfo)
 
@@ -243,10 +247,12 @@ class Cell:
             self.messengers= MESSENGERS
             self.secondaries= SECONDARIES
             self.proteins= PROTEINS
+            self.modIndex= MOD_INDEX
         else:
             self.messengers= proteinInfo["messengers"]
             self.secondaries= proteinInfo["secondaries"]
             self.proteins= proteinInfo["proteins"]
+            self.modIndex= proteinInfo["index"]
         
         if valuetable is None:
             self.valuetable= copy.deepcopy(DEFAULT_VALUE_TABLE)
@@ -299,7 +305,7 @@ class Cell:
     def generateModTable(self, modtable=None):
         if modtable is None:
             modtable= {}
-            for v in self.valuetable:
+            for v in self.modIndex:
                 modtable[v]= {}
                 for m in self.messengers:
                     modtable[v][m]= ((random.uniform(0,0.5))**2)*random.choice([-1,1])
@@ -566,22 +572,16 @@ class Cell:
 
         return
 
+
+
     def calculateMessengerMods(self):
-        mods= dict.fromkeys(self.messengers, 0)
-        for v in self.valuetable:
-            if self.valuetable[v] > 0:
-                for m in self.messengers:
+        mods={}  
+        for m in self.messengers:
+            mods[m]= 0
+            for v in self.modIndex:
+                if self.valuetable[v] > 0:
                     mods[m]+= ((self.valuetable[v]) * (self.modtable[v][m]))
         return mods
-
-    # def calculateMessengerMods(self):
-    #     mods={}  
-    #     for m in self.messengers:
-    #         mods[m]= 0
-    #         for v in self.modIndex:
-    #             if self.valuetable[v] > 0:
-    #                 mods[m]+= ((self.valuetable[v]) * (self.modtable[v][m]))
-    #     return mods
 
     def applyMessengerMods(self, messengerMods):
         for m in self.messengers:
@@ -709,6 +709,7 @@ class Cell:
         proteinInfo["messengers"]= self.messengers
         proteinInfo["secondaries"]= self.secondaries
         proteinInfo["proteins"]= self.proteins
+        proteinInfo["index"]= self.modIndex
 
         cellData["proteinInfo"]= proteinInfo
 
@@ -724,8 +725,7 @@ class Cell:
 #spawn cell saved in cellFile (json filepath) in map (grid) at location (Node)
 def loadCell(cellFile, map, location):
     cellData= json.load(open(cellFile))
-    cellIndex= BASE_MOD_INDEX + cellData["proteinInfo"]["messengers"] + cellData["proteinInfo"]["secondaries"] + cellData["proteinInfo"]["proteins"]
-    loadedCell= Cell(map, location, inputs.SPAWNED_CELL_FOOD, cellData["modtable"], cellData["secondarytable"], cellData["movementtable"], dict.fromkeys(cellIndex, 0), cellData["proteinInfo"])
+    loadedCell= Cell(map, location, inputs.SPAWNED_CELL_FOOD, cellData["modtable"], cellData["secondarytable"], cellData["movementtable"], dict.fromkeys(cellData["proteinInfo"]["index"], 0), cellData["proteinInfo"])
     #give cell correct name and corrected taxon + color
     loadedCell.name= cellData["name"]
     loadedCell.genealogy.color= cellData["color"]
