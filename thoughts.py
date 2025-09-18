@@ -171,6 +171,7 @@ TOPICS=[
     "Fly Fishing",
     "Bedazzling",
     "Solitaire",
+    "Magic the Gathering",
     #food
     "Brewing Kombucha",
     "Sourdough Bread",
