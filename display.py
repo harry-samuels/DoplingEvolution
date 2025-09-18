@@ -312,7 +312,8 @@ def assembleModTableDisplay(trackedCell):
     display.append("In:  NE NF NC NS SE SF SC SS EE EF EC ES WE WF WC WS Fd "+ allAbreviatedMessengers(trackedCell, " ") + allAbreviatedSecondaries(trackedCell, " ") + "Up Dw Rt Lf Sp")
     for m in trackedCell.messengers:
         tableLine= abreviateMessengerTwoChar(m) + ": "
-        for v in trackedCell.modIndex:
+        cellValueIndex= cell.BASE_MOD_INDEX + trackedCell.messengers + trackedCell.secondaries + trackedCell.proteins
+        for v in cellValueIndex:
             tableLine+= "|" + convertModDisplay(trackedCell.modtable[v][m])
         display.append(tableLine + "|")
 
