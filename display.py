@@ -312,6 +312,7 @@ def assembleModTableDisplay(trackedCell):
     display.append("In:  NE NF NC NS SE SF SC SS EE EF EC ES WE WF WC WS Fd "+ allAbreviatedMessengers(trackedCell, " ") + allAbreviatedSecondaries(trackedCell, " ") + "Up Dw Rt Lf Sp")
     for m in trackedCell.messengers:
         tableLine= abreviateMessengerTwoChar(m) + ": "
+        #the valuetable does not have a reliable key return order so this ensures that the correct values shlow up in the correct order in the display table
         cellValueIndex= cell.BASE_MOD_INDEX + trackedCell.messengers + trackedCell.secondaries + trackedCell.proteins
         for v in cellValueIndex:
             tableLine+= "|" + convertModDisplay(trackedCell.modtable[v][m])
