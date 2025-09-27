@@ -129,6 +129,7 @@ TOPICS=[
     "Casablanca",
     "Bakugan",
     "Power Rangers",
+    "The Snorks",
     #Books
     "The Hunger Games",
     "Diary of a Wimpy Kid",
@@ -203,7 +204,7 @@ TOPICS=[
     #Misc
     "Monsanto",
     "Walgreens",
-    "Fubu TV",
+    "Fubo TV",
     "Astrology",
     "Polka-Dots",
     "The Former Yugoslavia",
