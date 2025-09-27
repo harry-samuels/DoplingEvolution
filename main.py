@@ -200,10 +200,10 @@ def multitrack(MAP):
     genealogy.untrackAll(MAP)
     display.MULTITRACK_TYPE= ""
     print("")
-    print("1  -  Top Species\n2  -  Single Species\n3  -  Oldest Doplings")
+    print("1  -  Top 3 Species\n2  -  Single Species\n3  -  Oldest Doplings")
     print("")
     multitrackType= input("Please enter the number of the desired tracking catergory: ")
-    if multitrackType == "1" or multitrackType == "top species":
+    if multitrackType == "1" or multitrackType == "top 3 species":
         display.MULTITRACK_TYPE= "topSpecies"
 
     elif multitrackType == "2" or multitrackType == "single species":
