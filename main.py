@@ -36,7 +36,7 @@ def runTurn(MAP):
     while len(cell.CELLS)< inputs.BASE_CELL_NUMBER:
         MAP.spawnCell(food=inputs.SPAWNED_CELL_FOOD)
     #set latest generation to most recently created cell's generation
-    MAP.latestgeneration= cell.ALL_CELLS[-1].genealogy.generation
+    #MAP.latestgeneration= cell.ALL_CELLS[-1].genealogy.generation
 
 #processes user input and returns True if the simulation will continue, False if it should end
 def processInput(MAP, inp):  
@@ -98,7 +98,7 @@ def jumpstart(MAP, numGenerationsInput):
     
     while MAP.latestgeneration < jumpstartCutoff:
         if MAP.totalturns%5000==0:
-            print("Total Turns: " + str(MAP.totalturns) + "  Doplings generated: " + str(len(cell.ALL_CELLS)) + "  Doplings Alive: " + str(len(cell.CELLS)) + "  Latest Generation: " + str(MAP.latestgeneration))
+            print("Total Turns: " + str(MAP.totalturns) + "  Doplings generated: " + str(MAP.totalcellsspawned) + "  Doplings Alive: " + str(len(cell.CELLS)) + "  Latest Generation: " + str(MAP.latestgeneration))
         runTurn(MAP)
 
 def track(MAP):
@@ -107,7 +107,8 @@ def track(MAP):
     if "#" in trackIdentifier:
         try:
             trackID= int(trackIdentifier[1:])
-            trackedCell= cell.ALL_CELLS[trackID]
+            #trackedCell= cell.ALL_CELLS[trackID]
+            trackedCell= cell.getCell(trackID)
         except(ValueError, IndexError):
             print("Improper cell ID #")
     else:

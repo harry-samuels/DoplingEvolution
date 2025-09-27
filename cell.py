@@ -9,7 +9,7 @@ import json
 #List of all current living cells
 CELLS= []
 #List of all cells that have existed or currently existy in the game. Each cell's numberID unique corresponds to its index in the list
-ALL_CELLS= []
+#ALL_CELLS= []
 
 
 MESSENGERS= ["thinkin", "schemin", "plottin", "dreamin", "electin", "choosin", "decidin", "figurin", "wafflin", "waverin"][:inputs.MESSENGER_PROTEIN_NUMBER]
@@ -37,6 +37,13 @@ def addtoCELLS(newCell, cellSpeed):
         i+= 1
     CELLS.insert(i, newCell)
 
+#return living cell with numberID id (int), return None if no living cell has that numberID
+def getCell(id):
+    for c in CELLS:
+        if c.numberID == id:
+            return c
+    return None
+
 #mutates, mod, mov, and value table and returns them. Also processes gene/genome duplication
 def mutateGenome(modtable, secondarytable, movementtable, valuetable, parent):
     modtable= mutate(modtable, parent)
@@ -53,11 +60,11 @@ def mutateGenome(modtable, secondarytable, movementtable, valuetable, parent):
             new_messengers= copy.deepcopy(parent.messengers)
             new_secondaries= copy.deepcopy(parent.secondaries)
             for duplicatedMessenger in parent.messengers:
-                newMessenger= nameDuplicatedGene(duplicatedMessenger)
+                newMessenger= nameDuplicatedGene(duplicatedMessenger, parent.map)
                 new_messengers.insert(new_messengers.index(duplicatedMessenger), newMessenger)
                 modtable, secondarytable, movementtable, valuetable= duplicateGene(newMessenger, duplicatedMessenger, modtable, secondarytable, movementtable, valuetable)
             for duplicatedSecondary in parent.secondaries:
-                newSecondary= nameDuplicatedGene(duplicatedSecondary)
+                newSecondary= nameDuplicatedGene(duplicatedSecondary, parent.map)
                 new_secondaries.insert(new_secondaries.index(duplicatedSecondary), newSecondary)
                 modtable, secondarytable, valuetable= duplicateSecondary(newSecondary, duplicatedSecondary, modtable, secondarytable, valuetable)
             proteinInfo["messengers"]= new_messengers
@@ -71,7 +78,7 @@ def mutateGenome(modtable, secondarytable, movementtable, valuetable, parent):
                 #single gene duplication
                 duplicatedMessengerIndex= random.randint(0, len(parent.messengers)-1)
                 duplicatedMessenger= parent.messengers[duplicatedMessengerIndex]
-                newMessenger= nameDuplicatedGene(duplicatedMessenger)
+                newMessenger= nameDuplicatedGene(duplicatedMessenger, parent.map)
 
                 new_messengers.insert(duplicatedMessengerIndex, newMessenger)
                 modtable, secondarytable, movementtable, valuetable= duplicateGene(newMessenger, duplicatedMessenger, modtable, secondarytable, movementtable, valuetable)
@@ -98,7 +105,7 @@ def mutateGenome(modtable, secondarytable, movementtable, valuetable, parent):
                     #single gene duplication
                     duplicatedSecondaryIndex= random.randint(0, len(parent.secondaries)-1)
                     duplicatedSecondary= parent.secondaries[duplicatedSecondaryIndex]
-                    newSecondary= nameDuplicatedGene(duplicatedSecondary)
+                    newSecondary= nameDuplicatedGene(duplicatedSecondary, parent.map)
 
                     new_secondaries.insert(duplicatedSecondaryIndex, newSecondary)
                     modtable, secondarytable, valuetable= duplicateSecondary(newSecondary, duplicatedSecondary, modtable, secondarytable, valuetable)
@@ -112,7 +119,7 @@ def mutateGenome(modtable, secondarytable, movementtable, valuetable, parent):
                     modtable, secondarytable, valuetable= removeSecondary(removedSecondary, modtable, secondarytable, valuetable)
             #no current secondary messengers --> create new secondary from movement protein
             else:
-                newSecondary= nameDuplicatedGene(random.choice(["wAntin", "gEttin", "mUllin", "pIckin"]))
+                newSecondary= nameDuplicatedGene(random.choice(["wAntin", "gEttin", "mUllin", "pIckin"]), parent.map)
                 new_secondaries= [newSecondary]
                 copiedMovementProtein= random.choice(parent.proteins)
                 modtable, secondarytable, valuetable= newSecondaryFromMovement(newSecondary, copiedMovementProtein, modtable, secondarytable, valuetable, parent)
@@ -164,9 +171,9 @@ def mutateSpeed(speed, parent):
         speed= 0
     return speed
 
-def nameDuplicatedGene(oldName):
+def nameDuplicatedGene(oldName, map):
     #WILL NEED TO CHANGE THIS LATER TO BE LESS LONG AFTER 2+ duplications
-    newName= oldName + "-" + str(len(ALL_CELLS))
+    newName= oldName + "-" + str(map.totalcellsspawned)
     return newName
 
 
@@ -260,6 +267,7 @@ class Cell:
         self.movementtable= self.generateMovementTable(movementtable)
 
         self.genealogy= genealogy.Genealogy(self, mothergenealogy)
+        self.map.latestgeneration= self.genealogy.generation
 
         #how many other cells this cell has eaten
         self.cellsEaten= 0
@@ -277,10 +285,11 @@ class Cell:
 
         #add cell to the list of living cells
         addtoCELLS(self, self.speed)
+
         #add cell tio list of all cells that have existed
-        ALL_CELLS.append(self)
+       # ALL_CELLS.append(self)
         #set unique identification number corresponding to ALL_CELLS index
-        self.numberID= len(ALL_CELLS)-1
+        self.numberID= self.map.totalcellsspawned
         
 
 
