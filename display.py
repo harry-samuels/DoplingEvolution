@@ -465,7 +465,7 @@ def assembleTrackedCellDisplay(trackedCell):
     for m in trackedCell.messengers:
         messengerValues.append(trackedCell.valuetable[m])
     messengerMax= max(messengerValues)
-    #capitalizedMessengers= ["Thinkin", "Schemin", "Plottin", "Dreamin", "Electin", "Choosin", "Decidin", "Figurin", "Wafflin", "Waverin"][:inputs.MESSENGER_PROTEIN_NUMBER]
+    #capitalizedMessengers= ["Thinkin", "Schemin", "Plottin", "Dreamin", "Choosin", "Electin", "Decidin", "Figurin", "Wafflin", "Waverin"][:inputs.MESSENGER_PROTEIN_NUMBER]
     colorTable= ["\x1b[44m ", "\x1b[42m ", "\x1b[41m ", "\x1b[45m ", "\x1b[46m ", "\x1b[43m "]
     barGraph="|||||||||||||||||||||"                                                         
     for m in range(0, len(trackedCell.messengers)): #                                                                           \/prevents divide by zero

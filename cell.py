@@ -12,7 +12,7 @@ CELLS= []
 #ALL_CELLS= []
 
 
-MESSENGERS= ["thinkin", "schemin", "plottin", "dreamin", "electin", "choosin", "decidin", "figurin", "wafflin", "waverin"][:inputs.MESSENGER_PROTEIN_NUMBER]
+MESSENGERS= ["thinkin", "schemin", "plottin", "dreamin", "choosin", "electin", "decidin", "figurin", "wafflin", "waverin"][:inputs.MESSENGER_PROTEIN_NUMBER]
 
 SECONDARIES= ["wAntin", "gEttin", "mUllin", "pIckin"][:inputs.SECONDARY_MESSENGER_NUMBER]
 
