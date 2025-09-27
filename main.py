@@ -55,6 +55,10 @@ def processInput(MAP, inp):
         track(MAP)
     elif inp == "untrack":
         untrack(MAP)
+    elif inp == "children":
+        children(MAP)
+    elif inp == "parent":
+        parent(MAP)
     elif inp == "name":
         name(MAP)
     elif inp == "save":
@@ -133,11 +137,57 @@ def untrack(MAP):
     genealogy.untrackAll(MAP)
     print(str(trackedTotal) + " cells untracked")
 
+def parent(MAP):
+    if MAP.trackedCell:
+        try:
+            goBackGens= int(input("How many generations would you like to go back?: "))
+        except(ValueError):
+            print("Incompatible value entered. Please use an integer value for the desired number of generations.")
+            return
+        reversedGens= 0
+        parentCell= MAP.trackedCell
+        while reversedGens < goBackGens and parentCell.genealogy.mother:
+            parentCell= parentCell.genealogy.mother.cell
+            reversedGens+= 1
+        display.MULTITRACK_TYPE= ""
+        genealogy.untrackAll(MAP)
+        try:
+            parentCell.genealogy.track("main")
+        except(RecursionError):
+            genealogy.untrackAll(MAP)
+            print("RECURSION LIMIT REACHED: Unable to track offspring")
+        MAP.trackedCell= parentCell
+        print("Reverse traversed "+ str(reversedGens) + " generations")
+    else:
+        print("No dopling currently being tracked. Please track a dopling before using the 'parent' command.")
+
+def children(MAP):
+    if MAP.trackedCell:
+        if MAP.trackedCell.genealogy.children:
+            childList= MAP.trackedCell.genealogy.children
+            for childIndex in range(0, len(childList)):
+                print(str(childIndex) + " - " + childList[childIndex].cell.name)
+            try:
+                trackChildIndex= int(input("\nPlease enter the corresponding index number of the child to be tracked: "))
+                trackedChild= childList[trackChildIndex].cell
+            except(ValueError, IndexError):
+                print("ERROR: Invlaid input. Please input an integer listed before one of the doplings.")
+                return
+            display.MULTITRACK_TYPE= ""
+            genealogy.untrackAll(MAP)
+            trackedChild.genealogy.track("main")
+            MAP.trackedCell= trackedChild
+            print("Now tracking " + trackedChild.name)
+        else:
+            print("This dopling has no children")
+    else:
+        print("No dopling currently being tracked. Please track a dopling before using the 'child' command.")
+
 def name(MAP):
     if MAP.trackedCell:
         MAP.trackedCell.name= input("What would you like to name this dopling?: ")
     else:
-        print("\nno dopling currently tracked, please track the dopling to be renamed")
+        print("\nNo dopling currently being tracked, please track the dopling to be renamed")
 
 def save(MAP):
     if MAP.trackedCell:
