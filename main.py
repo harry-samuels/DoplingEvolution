@@ -200,7 +200,7 @@ def multitrack(MAP):
     genealogy.untrackAll(MAP)
     display.MULTITRACK_TYPE= ""
     print("")
-    print("1  -  Top 3 Species\n2  -  Single Species\n3  -  Oldest Doplings")
+    print("1  -  Top 3 Species\n2  -  Single Species\n3  -  Oldest Doplings\n4  -  Random Dopling")
     print("")
     multitrackType= input("Please enter the number of the desired tracking catergory: ")
     if multitrackType == "1" or multitrackType == "top 3 species":
@@ -223,6 +223,13 @@ def multitrack(MAP):
 
     elif multitrackType == "3" or multitrackType == "oldest doplings":
         display.MULTITRACK_TYPE= "oldestCells"
+    
+    elif multitrackType == "4" or multitrackType == "random dopling":
+        trackedCell= random.choice(cell.CELLS)
+        display.MULTITRACK_TYPE= ""
+        genealogy.untrackAll(MAP)
+        trackedCell.genealogy.track("main")
+        MAP.trackedCell= trackedCell
     return
     
 
