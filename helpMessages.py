@@ -18,7 +18,7 @@ E   . . . . . . . . .
 Each turn, every dopling \x1b[36mmoves\x1b[0m 1 space on the grid (up, down, right, or left)
 If a dopling runs off of the grid, or into another dopling, it \x1b[31mlyses\x1b[0m (and \x1b[31mdies\x1b[0m :c)
 
-Every 10 turns, a dopling will grow up one letter, refelcting its age:
+Every 10 turns, a dopling will grow up one letter, reflecting its age:
     -each dopling starts as an \x1b[32ma\x1b[0m, then grows to \x1b[32mb\x1b[0m, then \x1b[32mc\x1b[0m and so on, until it reaches \x1b[32mz\x1b[0m and then \x1b[32mA\x1b[0m
     -after \x1b[32mZ\x1b[0m the dopling becomes an "elder", and will look like this: \x1b[32m&\x1b[0m
 
