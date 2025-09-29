@@ -30,6 +30,7 @@ E   . . . . . . . . .
 - This simulation is meant to demonstrate (at a very simplified scale) how single-celled organisms "work" on a functional level 
 - Cells use a massive number of proteins, encoded in DNA as "genes", to interact with their environment, reproduce, and perform all sorts of important actions
 - The doplings let users take a look "inside the cell" to see how genes (and their corresponding proteins) can evolve over time to create intricate systems using simple pieces
+
 Initially, the doplings will move randomly, and without purpose. But! After enough generations (and a little luck), the doplings will begin to ***evolve*** in new and exciting ways
 
 ## How do the doplings work? (The Nitty-Gritty)
