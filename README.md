@@ -98,10 +98,10 @@ There are a number of command line inputs you can use to view and interact with 
 - '***track***' : view the specific traits and protein levels of a given dopling
     - Typing the track command will prompt you to enter either the grid location of a certain dopling, or its ID Number
         -  Grid locations are written as "x-coordinate, y-coordinate", separated by a comma
-            -  Ex: "5,22" or "47,52"
+            - Ex: "5,22" or "47,52"
         -  An ID number is written with the '#' symbol
-            -  Ex: "#12" or "#14850"
-    -  Tracking a dopling will highlight it in white on the map and provide a ton of information about the dopling on the right side of the display
+            - Ex: "#12" or "#14850"
+    - Tracking a dopling will highlight it in white on the map and provide a ton of information about the dopling on the right side of the display
         - you can view the dopling's name, species, relatives, thoughts, protein levels, activation/inhibition values, and much more!
     -  Only living doplings can be tracked using this command
 - '***untrack***' : stop tracking all doplings
@@ -126,6 +126,7 @@ There are a number of command line inputs you can use to view and interact with 
 ### Pedigree and Phylogeny Generation:
 - '***pedigree***' : create a pedigree (family tree) containing all living doplings
     - Typing the pedigree command will output a pedigree that stretches back to the Last Common Ancestor and contains all living doplings
+    - A pedigree can only be made if there is an LCA (if all doplings are related)
 - '***bottom***' : move the phylogeny display to the bottom of the display
     - Typing the bottom command will move the phylogeny display to the bottom of the display, or move it back to the side if it is already on the bottom
     - This is useful for when the phylogeny grows to long and starts to wrap around, interrupting the map display
