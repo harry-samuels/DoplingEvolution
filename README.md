@@ -35,7 +35,8 @@
 Initially, the doplings will move randomly, and without purpose. But! After enough generations (and a little luck), the doplings will begin to ***evolve*** in new and exciting ways
 
 # How do the doplings work? (The Nitty-Gritty)
-This section details the inner workings of the doplings: how they move, reproduce, and evolve. To learn more about using the simulation, skip to "How to Use the Simulation"
+*This section details the inner workings of the doplings: how they move, reproduce, and evolve.*\
+*To learn more about using the simulation, skip to "How to Use the Simulation", or skip to "Quickstart Guide" if you want to act first and learn later.*
 ### Doplings need food to move
 - Food looks like this: `*`          or this: `$`  (for alotta food)
 - Doplings use a little food each time they move, and they need more food to move the bigger they get
@@ -73,6 +74,7 @@ This section details the inner workings of the doplings: how they move, reproduc
     - Upin, downin, leftin, rightin, and splittin cannot be duplicated (consider them "highly conserved")
 
 # How to Use the Simulation
+*This section gives a comprehensive breakdown of how to use the simulation. To start quickly, skip to "Quickstart Guide"*
 ## Starting the simulation
 1. Run the main.py python file in terminal from the simulation directory
 2. Read the start up messages and press 'Enter'
@@ -96,10 +98,10 @@ There are a number of command line inputs you can use to view and interact with 
 - '***track***' : view the specific traits and protein levels of a given dopling
     - Typing the track command will prompt you to enter either the grid location of a certain dopling, or its ID Number
         -  Grid locations are written as "x-coordinate, y-coordinate", separated by a comma
-            -  Ex: "5,22" or "47,52"
+            - Ex: "5,22" or "47,52"
         -  An ID number is written with the '#' symbol
-            -  Ex: "#12" or "#14850"
-    -  Tracking a dopling will highlight it in white on the map and provide a ton of information about the dopling on the right side of the display
+            - Ex: "#12" or "#14850"
+    - Tracking a dopling will highlight it in white on the map and provide a ton of information about the dopling on the right side of the display
         - you can view the dopling's name, species, relatives, thoughts, protein levels, activation/inhibition values, and much more!
     -  Only living doplings can be tracked using this command
 - '***untrack***' : stop tracking all doplings
@@ -124,6 +126,7 @@ There are a number of command line inputs you can use to view and interact with 
 ### Pedigree and Phylogeny Generation:
 - '***pedigree***' : create a pedigree (family tree) containing all living doplings
     - Typing the pedigree command will output a pedigree that stretches back to the Last Common Ancestor and contains all living doplings
+    - A pedigree can only be made if there is an LCA (if all doplings are related)
 - '***bottom***' : move the phylogeny display to the bottom of the display
     - Typing the bottom command will move the phylogeny display to the bottom of the display, or move it back to the side if it is already on the bottom
     - This is useful for when the phylogeny grows to long and starts to wrap around, interrupting the map display
@@ -142,6 +145,63 @@ There are a number of command line inputs you can use to view and interact with 
 - '***X***' : end the simulation
     - Typing "X" will cause the simulation to ask for confirmation of termination, and typing X a second time will permanently end the simulation
     - This command, like all others, will have no effect while either the 'speed' or 'jumpstart' command are being used, and cannot be used to exit them prematurely
+ 
+# Quickstart Guide
+*Here's how to jump right in:*
+1. Run the main.py python file in terminal from the simulation directory
+2. Press 'Enter' to advance the simulation turn by turn
+3. Type the 'jumpstart' command and enter '200' generations when prompted
+    + This will give the doplings time to evolve slightly "intelligent" behaviors
+4. Type the 'multitrack' command to select a random dopling to track
+5. See what happens!
 
+What's Next?
+- *You can let the doplings evolve even further by using 'jumpstart' to reach even higher generations!*
+- *You can build walls using the 'wall' command and see how the doplings respond!*
+    - *You can also build custom maps like the ones in the "custom_maps" folder*
+- *You can save an interesting dopling and try tinkering around with its .json file, then load it back up and see how it acts!*
+- *You can open up the inputs.py file and change the default values around to see how it changes the doplings' evolution!*
 
+# Reading the Activation/Inhibition Table (The *Really* Nitty Gritty)
+*The tracked dopling display shows the activation and inhibition values for all of a dopling's proteins. Feel free to ignore this section if you are just starting out.*
+
+The messenger activation/inhibition table shown by the tracked dopling display looks like this:
+```
+ #: |0 |5 |0 |0 |2 |0 |0 |0 |0 |0 |1 |3 |0 |0 |0 |0 |5 |
+In:  NE NF NC NS SE SF SC SS EE EF EC ES WE WF WC WS Fd Th Sc Pl Dr Up Dw Rt Lf Sp
+Th: |++|+ |--|0 |--|- |- |+ |+ |++|- |--|- |+ |--|+ |- |--|--|--|++|--|0 |--|- |++|
+Sc: |0 |+ |+ |++|- |--|++|--|- |- |+ |--|--|++|- |+ |- |+ |++|- |--|--|- |+ |- |+ |
+Pl: |- |--|- |- |- |- |+ |--|++|--|+ |--|- |+ |- |++|+ |--|+ |- |- |- |--|0 |- |++|
+Dr: |- |- |- |+ |+ |++|- |+ |+ |- |--|+ |+ |- |+ |0 |- |--|- |0 |--|- |- |0 |- |+ |
+```
+- The second row lists each of the inputs (In) that can activate and inhibit each of the messenger proteins
+    - NE, NF, NC, & NS stand for North Edge (the end of the grid), North Food, North Cell (another dopling), and North Size (the size of that dopling) 
+        - S, E, and W stand for South, East and West
+        - These are what the dopling can "see" from the outside environment 
+    - Fd is the doplings current food value
+    - The last set of columns, Th Sc Pl Dr Up Dw Rt Lf, are all of the doplings proteins
+        - Th is Thinkin, Sc is Schemin, Lf is Leftin, Sp is Splittin, etc.
+- The first row shows the values that represent what the dopling sees (and its current food)
+    - They correspond to the Input listed below them in the second row
+        - Example for the table shown: The dopling has a food value of 5 (Fd = 5)
+    - A dopling can see up to 5 spaces in each direction
+    - Something directly adjacent to the dopling has a sight value of 5, and something 5 spaces away has a value of 1
+        - Examples for the table shown:
+            - The dopling sees a piece of food 1 space to the North (NF = 5)
+            - The dopling sees an edge/wall 4 spaces to the South (SE = 2)
+            - The dopling sees another dopling 5 spaces to the East (EC = 1), that other dopling has a food value of 3 (ES = 3) 
+    - If all 5 spaces in a given direction are unnocupied, all 3 sight values for that direction will be 0
+        - Example for the table shown: The dopling sees "nothing" to the West (WE, WF, WC, WS = 0) 
+    - A dopling can only see the closest thing in each direction, so it will not see another dopling behind a piece of food
+- Each subsequent row represents the specific activation and inhibition effect of the listed Input on that row's protein
+    - The table uses a system of color coded +'s and -'s to represent the effect of each input on each protein
+        - The true values are floating point numbers, but there are too many of them to display each one in full     
+        - The "Key" displayed below the table lists the value of each + and - indicator
+        - Examples for the table shown:
+            - When the dopling sees an edge/wall to the north (NE > 0), Thinkin (Th) will be increased ("++"), Schemin (Sc) will be unaffected ("0"), and Plottin (Pl) and Dreamin (Dr) will be decreased ("-")
+                - The closer the edge/wall is to the dopling, the greater the value of NE, and the greater the effect on the production of each protein
+            - The prescence of Splittin (Sp) has a positive effect on the production of all 4 messenger proteins ("++" or "+")
+            - The presence of Thinkin has a positive effect ("+") on the production of Schemin
+            - The presence of Schemin has a negative effect ("--") on the production of Thinkin
+- The movement protein activation/inhibition table can be read similarly, but the true values are displayed rather than +'s and -'s   
          
