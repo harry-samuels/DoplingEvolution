@@ -35,7 +35,8 @@
 Initially, the doplings will move randomly, and without purpose. But! After enough generations (and a little luck), the doplings will begin to ***evolve*** in new and exciting ways
 
 # How do the doplings work? (The Nitty-Gritty)
-*This section details the inner workings of the doplings: how they move, reproduce, and evolve. To learn more about using the simulation, skip to "How to Use the Simulation", or skip to "Quickstart Guide" if you want to act first and learn later.*
+*This section details the inner workings of the doplings: how they move, reproduce, and evolve.*\
+*To learn more about using the simulation, skip to "How to Use the Simulation", or skip to "Quickstart Guide" if you want to act first and learn later.*
 ### Doplings need food to move
 - Food looks like this: `*`          or this: `$`  (for alotta food)
 - Doplings use a little food each time they move, and they need more food to move the bigger they get
