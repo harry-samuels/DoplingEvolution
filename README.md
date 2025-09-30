@@ -161,4 +161,46 @@ What's Next?
 - *You can save an interesting dopling and try tinkering around with its .json file, then load it back up and see how it acts!*
 - *You can open up the inputs.py file and change the default values around to see how it changes the doplings' evolution!*
 
+# Reading the Activation/Inhibition Table (The *Really* Nitty Gritty)
+*The tracked dopling display shows the activation and inhibition values for all of a dopling's proteins. Feel free to ignore this section if you are just starting out.*
+
+The messenger activation/inhibition table shown by the tracked dopling display looks like this:
+```
+ #: |0 |5 |0 |0 |2 |0 |0 |0 |0 |0 |1 |3 |0 |0 |0 |0 |5 |
+In:  NE NF NC NS SE SF SC SS EE EF EC ES WE WF WC WS Fd Th Sc Pl Dr Up Dw Rt Lf Sp
+Th: |++|+ |--|0 |--|- |- |+ |+ |++|- |--|- |+ |--|+ |- |--|--|--|++|--|0 |--|- |++|
+Sc: |0 |+ |+ |++|- |--|++|--|- |- |+ |--|--|++|- |+ |- |+ |++|- |--|--|- |+ |- |+ |
+Pl: |- |--|- |- |- |- |+ |--|++|--|+ |--|- |+ |- |++|+ |--|+ |- |- |- |--|0 |- |++|
+Dr: |- |- |- |+ |+ |++|- |+ |+ |- |--|+ |+ |- |+ |0 |- |--|- |0 |--|- |- |0 |- |+ |
+```
+- The second row lists each of the inputs (In) that can activate and inhibit each of the messenger proteins
+    - NE, NF, NC, & NS stand for North Edge (the end of the grid), North Food, North Cell (another dopling), and North Size (the size of that dopling) 
+        - S, E, and W stand for South, East and West
+        - These are what the dopling can "see" from the outside environment 
+    - Fd is the doplings current food value
+    - The last set of columns, Th Sc Pl Dr Up Dw Rt Lf, are all of the doplings proteins
+        - Th is Thinkin, Sc is Schemin, Lf is Leftin, Sp is Splittin, etc.
+- The first row shows the values that represent what the dopling sees (and its current food)
+    - They correspond to the Input listed below them in the second row
+        - Example for the table shown: The dopling has a food value of 5 (Fd = 5)
+    - A dopling can see up to 5 spaces in each direction
+    - Something directly adjacent to the dopling has a sight value of 5, and something 5 spaces away has a value of 1
+        - Examples for the table shown:
+            - The dopling sees a piece of food 1 space to the North (NF = 5)
+            - The dopling sees an edge/wall 4 spaces to the South (SE = 2)
+            - The dopling sees another dopling 5 spaces to the East (EC = 1), that other dopling has a food value of 3 (ES = 3) 
+    - If all 5 spaces in a given direction are unnocupied, all 3 sight values for that direction will be 0
+        - Example for the table shown: The dopling sees "nothing" to the West (WE, WF, WC, WS = 0) 
+    - A dopling can only see the closest thing in each direction, so it will not see another dopling behind a piece of food
+- Each subsequent row represents the specific activation and inhibition effect of the listed Input on that row's protein
+    - The table uses a system of color coded +'s and -'s to represent the effect of each input on each protein
+        - The true values are floating point numbers, but there are too many of them to display each one in full     
+        - The "Key" displayed below the table lists the value of each + and - indicator
+        - Examples for the table shown:
+            - When the dopling sees an edge/wall to the north (NE > 0), Thinkin (Th) will be increased ("++"), Schemin (Sc) will be unaffected ("0"), and Plottin (Pl) and Dreamin (Dr) will be decreased ("-")
+                - The closer the edge/wall is to the dopling, the greater the value of NE, and the greater the effect on the production of each protein
+            - The prescence of Splittin (Sp) has a positive effect on the production of all 4 messenger proteins ("++" or "+")
+            - The presence of Thinkin has a positive effect ("+") on the production of Schemin
+            - The presence of Schemin has a negative effect ("--") on the production of Thinkin
+- The movement protein activation/inhibition table can be read similarly, but the true values are displayed rather than +'s and -'s   
          
