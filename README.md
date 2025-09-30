@@ -121,6 +121,27 @@ There are a number of command line inputs you can use to view and interact with 
     - Typing the children command will provide a numbered list of the tracked doplings children and prompt you to select one
     - The chosen child will then become the new tracked dopling
  
-### Pedigree Generation:
-- 
+### Pedigree and Phylogeny Generation:
+- '***pedigree***' : create a pedigree (family tree) containing all living doplings
+    - Typing the pedigree command will output a pedigree that stretches back to the Last Common Ancestor and contains all living doplings
+- '***bottom***' : move the phylogeny display to the bottom of the display
+    - Typing the bottom command will move the phylogeny display to the bottom of the display, or move it back to the side if it is already on the bottom
+    - This is useful for when the phylogeny grows to long and starts to wrap around, interrupting the map display
 
+### Additional Commands:
+- '***wall***' : construct or remove walls on the map
+    - Typing the wall command will allow you to build or remove walls on the map
+        - walls act just like the edges of the map, and are "seen" as idenitical to map edges by the doplings
+    - Walls are contructed/removed in horizontal and vertical segments of specified lengths starting from a specified top/left coordinate
+- '***load***' : load a saved dopling into the simulation
+    - Typing the load command will prompt you to select a saved dopling and specify a location on the map for it to be placed onto
+    - The newly loaded dopling will also become the current tracked dopling
+    - Attempting to load any file that is not a saved dopling will immediately crash the simulation so please do not do that
+- '***help***' : see a list of the available commands
+    - Typing the help command will output up a list of available commands and information
+- '***X***' : end the simulation
+    - Typing "X" will cause the simulation to ask for confirmation of termination, and typing X a second time will permanently end the simulation
+    - This command, like all others, will have no effect while either the 'speed' or 'jumpstart' command are being used, and cannot be used to exit them prematurely
+
+
+         
