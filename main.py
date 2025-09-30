@@ -238,7 +238,7 @@ def load(MAP):
     print("")
     print("Saved Doplings: ")
     print("")
-    cellFileList= os.listdir("saved_cells")
+    cellFileList= os.listdir("saved_doplings")
     fileIndex= 0
     for cFile in cellFileList:
         print(str(fileIndex).ljust(3, " ") + " -   " + cFile)
@@ -246,7 +246,7 @@ def load(MAP):
         fileIndex+= 1
     try:
         cellFileIndex= int(input("Please enter the corresponding number of the dopling file to be loaded: "))
-        cellFile= "saved_cells/" + cellFileList[cellFileIndex]
+        cellFile= "saved_doplings/" + cellFileList[cellFileIndex]
 
     except (ValueError, IndexError):
         print("Integer entry not recognized, please enter only the corresponding integer value for the desired file")

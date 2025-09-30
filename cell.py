@@ -727,7 +727,7 @@ class Cell:
 
 
 
-        with open("saved_cells/" + self.name + ".json", "w") as cellFile:
+        with open("saved_doplings/" + self.name + ".json", "w") as cellFile:
             cellFile.write(json.dumps(cellData, indent=4))
 
 #spawn cell saved in cellFile (json filepath) in map (grid) at location (Node)
