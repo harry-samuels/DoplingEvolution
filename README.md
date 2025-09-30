@@ -73,7 +73,7 @@ Initially, the doplings will move randomly, and without purpose. But! After enou
     - Upin, downin, leftin, rightin, and splittin cannot be duplicated (consider them "highly conserved")
 
 # How to Use the Simulation
-*This section gives a comprehensive breakdown of how to use the simulation. To start quickly, skip to "Quickstart Guide"
+*This section gives a comprehensive breakdown of how to use the simulation. To start quickly, skip to "Quickstart Guide"*
 ## Starting the simulation
 1. Run the main.py python file in terminal from the simulation directory
 2. Read the start up messages and press 'Enter'
