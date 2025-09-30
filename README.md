@@ -35,7 +35,7 @@
 Initially, the doplings will move randomly, and without purpose. But! After enough generations (and a little luck), the doplings will begin to ***evolve*** in new and exciting ways
 
 # How do the doplings work? (The Nitty-Gritty)
-This section details the inner workings of the doplings: how they move, reproduce, and evolve. To learn more about using the simulation, skip to "How to Use the Simulation"
+*This section details the inner workings of the doplings: how they move, reproduce, and evolve. To learn more about using the simulation, skip to "How to Use the Simulation"*
 ### Doplings need food to move
 - Food looks like this: `*`          or this: `$`  (for alotta food)
 - Doplings use a little food each time they move, and they need more food to move the bigger they get
@@ -73,6 +73,7 @@ This section details the inner workings of the doplings: how they move, reproduc
     - Upin, downin, leftin, rightin, and splittin cannot be duplicated (consider them "highly conserved")
 
 # How to Use the Simulation
+*This section gives a comprehensive breakdown of how to use the simulation. To start quickly, skip to "Quickstart Guide"
 ## Starting the simulation
 1. Run the main.py python file in terminal from the simulation directory
 2. Read the start up messages and press 'Enter'
@@ -142,6 +143,21 @@ There are a number of command line inputs you can use to view and interact with 
 - '***X***' : end the simulation
     - Typing "X" will cause the simulation to ask for confirmation of termination, and typing X a second time will permanently end the simulation
     - This command, like all others, will have no effect while either the 'speed' or 'jumpstart' command are being used, and cannot be used to exit them prematurely
+ 
+# Quickstart Guide
+*Here's how to jump right in:*
+1. Run the main.py python file in terminal from the simulation directory
+2. Press 'Enter' to advance the simulation turn by turn
+3. Type the 'jumpstart' command and enter '200' generations when prompted
+    + This will give the doplings time to evolve slightly "intelligent" behaviors
+4. Type the 'multitrack' command to select a random dopling to track
+5. See what happens!
 
+What's Next?
+- *You can let the doplings evolve even further by using 'jumpstart' to reach even higher generations!*
+- *You can build walls using the 'wall' command and see how the doplings respond!*
+    - *You can also build custom maps like the ones in the "custom_maps" folder*
+- *You can save an interesting dopling and try tinkering around with its .json file, then load it back up and see how it acts!*
+- *You can open up the inputs.py file and change the default values around to see how it changes the doplings' evolution!*
 
          
