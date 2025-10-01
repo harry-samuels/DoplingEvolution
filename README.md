@@ -1,6 +1,8 @@
 # Welcome to The Gene Machine!
 *a (super neat) program by Harry B Samuels*
 
+<img width="789" height="412" alt="doplingSimulation" src="https://github.com/user-attachments/assets/ebf2cc12-ff2c-47f6-bfdd-8f5672fcc1b0" />
+
 **This is an **evolution simulator** that creates simple creatures called doplings. They look like this:** `a`
 
 **The doplings live on a tiny grid that looks like this:**
