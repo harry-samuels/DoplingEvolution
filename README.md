@@ -43,7 +43,7 @@ Initially, the doplings will move randomly, and without purpose. But! After enou
 - Food looks like this: `*`          or this: `$`  (for alotta food)
 - Doplings use a little food each time they move, and they need more food to move the bigger they get
 - If a dopling runs out of food, it lyses (and dies :c)
-- If a dopling runs into another dopling that 25% smaller, it will eat that dopling and gain its food
+- If a dopling runs into another dopling that is 25% smaller, it will eat that dopling and gain its food
     - If the other dopling is bigger or the same size, then the moving dopling will lyse instead
 - Each dopling has a set *speed*, which allows them to use extra food in order to move faster than other doplings
 ### Doplings decide where to move using proteins
