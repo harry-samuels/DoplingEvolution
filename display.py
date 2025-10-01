@@ -459,7 +459,7 @@ def assembleTrackedCellDisplay(trackedCell):
         display.append("Siblings: " + str(len(trackedCell.genealogy.mother.children)-1))
     
     display.append("")
-    display.append("Messenger Hormones:")
+    display.append("Messenger Proteins:")
     display.append("")
     messengerValues=[]
     for m in trackedCell.messengers:
