@@ -53,6 +53,8 @@ commandsMessage= """
 Pressing '\x1b[31mEnter\x1b[0m' advances the simulation one turn by moving all of the doplings
 The top right corner of the display will show the total number of turns that have passed, as well as the total number of doplings
 
+See the README.md file for greater detail on the simulation and its functions
+
 There are several command inputs that allow you to to fully utilize the program by typing them into the command line:
 
 '\x1b[36mspeed\x1b[0m': run the simulation at warp speed for a set number of turns
@@ -103,7 +105,6 @@ There are several command inputs that allow you to to fully utilize the program 
 
 'help':
     - Typing "help" will redisplay these help messages at any time (so no need for memorizing)
-
 """
 
 OLDtableMessage="""
