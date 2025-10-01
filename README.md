@@ -150,8 +150,9 @@ There are a number of command line inputs you can use to view and interact with 
 *Here's how to jump right in:*
 1. Run the main.py python file in terminal from the simulation directory
 2. Press 'Enter' to advance the simulation turn by turn
-3. Type the 'jumpstart' command and enter '200' generations when prompted
-    + This will give the doplings time to evolve slightly "intelligent" behaviors
+3. Type the 'jumpstart' command and enter '200' generations when prompted (this may take a few minutes)
+    + This will allow the doplings to evolve slightly "intelligent" behaviors by reproducing
+    + For *even faster* results, use the 'load' command to load "fourby" before jumpstarting
 4. Type the 'multitrack' command to select a random dopling to track
 5. See what happens!
 
@@ -203,5 +204,18 @@ Dr: |- |- |- |+ |+ |++|- |+ |+ |- |--|+ |+ |- |+ |0 |- |--|- |0 |--|- |- |0 |- |
             - The prescence of Splittin (Sp) has a positive effect on the production of all 4 messenger proteins ("++" or "+")
             - The presence of Thinkin has a positive effect ("+") on the production of Schemin
             - The presence of Schemin has a negative effect ("--") on the production of Thinkin
-- The movement protein activation/inhibition table can be read similarly, but the true values are displayed rather than +'s and -'s   
+- The movement protein activation/inhibition table can be read similarly, but the true values are displayed rather than +'s and -'s
+
+# Notes on Runnning the Simulation
+1. This program runs using Python, it was tested in Python 3.8.5 on MacOS
+2. This program uses ASCII Escape Characters to provide colors to the terminal output, so it is not useable in terminals that do not support them
+3. As the simulation progresses and the doplings evolve, it will save all doplings that have been created
+    + If your machine begins to run low on available memory, you can 'save' a chosen dopling, end the simulation, and start a new simulation by using the saved dopling to continue your evolutionary journey
+4. The inital 'jumpstart' command may take several minutes to create a successful lineage of doplings, as each starter dopling is generated completely randomly, and the overwhelming majority of them cannot navigate the map in any way
+    + Using an already evolved dopling with the 'load' command, like "fourby", can cut down on the startup time for your simulation
+    + The simulation is completely capable of creating a new succesful and random "starter" dopling, but certain inputs beyond the default ones may require even longer startup times
+    + Generating your own "starter" dopling using 'jumpstart' has no ill effects on memory useage because these initial random unsuccesful doplings are not saved
+  
+***Have Fun!***
+   
          
