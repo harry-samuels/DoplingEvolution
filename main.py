@@ -107,7 +107,7 @@ def jumpstart(MAP, numGenerationsInput):
 
 def track(MAP):
     trackedCell= None
-    trackIdentifier= (input("Enter the ID, beginning with '#', or the grid location ('X, Y') of the dopling to be tracked: "))
+    trackIdentifier= (input("Enter the ID, beginning with '#', or the grid location 'X, Y' of the dopling to be tracked: "))
     if "#" in trackIdentifier:
         try:
             trackID= int(trackIdentifier[1:])
