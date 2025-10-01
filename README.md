@@ -182,7 +182,7 @@ Dr: |- |- |- |+ |+ |++|- |+ |+ |- |--|+ |+ |- |+ |0 |- |--|- |0 |--|- |- |0 |- |
         - S, E, and W stand for South, East and West
         - These are what the dopling can "see" from the outside environment 
     - Fd is the doplings current food value
-    - The last set of columns, Th Sc Pl Dr Up Dw Rt Lf, are all of the doplings proteins
+    - The last set of columns, Th Sc Pl Dr Up Dw Rt Lf, are all of the dopling's proteins
         - Th is Thinkin, Sc is Schemin, Lf is Leftin, Sp is Splittin, etc.
 - The first row shows the values that represent what the dopling sees (and its current food)
     - They correspond to the Input listed below them in the second row
