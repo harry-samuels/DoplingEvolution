@@ -218,6 +218,7 @@ Dr: |- |- |- |+ |+ |++|- |+ |+ |- |--|+ |+ |- |+ |0 |- |--|- |0 |--|- |- |0 |- |
     + Using an already evolved dopling with the 'load' command, like "fourby", can cut down on the startup time for your simulation
     + The simulation is completely capable of creating a new succesful and random "starter" dopling, but certain inputs beyond the default ones may require even longer startup times
     + Generating your own "starter" dopling using 'jumpstart' has no ill effects on memory useage because these initial random unsuccesful doplings are not saved
+6. Editing the inputs.py file can be used to change settings such as map size, food spawning, use custom maps, and more
   
 ***Have Fun!***
    
