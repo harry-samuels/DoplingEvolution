@@ -166,7 +166,7 @@ What's Next?
 - *You can open up the inputs.py file and change the default values around to see how it changes the doplings' evolution!*
 
 # Reading the Activation/Inhibition Table (The *Really* Nitty Gritty)
-*The tracked dopling display shows the activation and inhibition values for all of a dopling's proteins. Feel free to ignore this section if you are just starting out.*
+*The tracked dopling display shows the activation and inhibition values for all of a dopling's proteins.* ***Feel free to ignore this section if you are just starting out.***
 
 The messenger activation/inhibition table shown by the tracked dopling display looks like this:
 ```
@@ -177,6 +177,15 @@ Sc: |0 |+ |+ |++|- |--|++|--|- |- |+ |--|--|++|- |+ |- |+ |++|- |--|--|- |+ |- |
 Pl: |- |--|- |- |- |- |+ |--|++|--|+ |--|- |+ |- |++|+ |--|+ |- |- |- |--|0 |- |++|
 Dr: |- |- |- |+ |+ |++|- |+ |+ |- |--|+ |+ |- |+ |0 |- |--|- |0 |--|- |- |0 |- |+ |
 ```
+### How are protein values calcuated?
+- Each turn, the quantity of each messenger protein is calculated using the following process:
+    - Each protein has a specifc activation/inhibition coefficient (any number, negative or positive) for each of the listed inputs (In:) in the table (more info below)
+        - The value of these coefficients is displayed by the table as +'s and -'s     
+    - The value of each input is multiplied by its respective coefficient for the given protein
+    - The sum of all of the products is then added to previous amount of the given protein (If a protein would have a negative total quantity, it is set to 0 instead)
+
+
+### What does the table mean?
 - The second row lists each of the inputs (In) that can activate and inhibit each of the messenger proteins
     - NE, NF, NC, & NS stand for North Edge (the end of the grid), North Food, North Cell (another dopling), and North Size (the size of that dopling) 
         - S, E, and W stand for South, East and West
@@ -184,7 +193,7 @@ Dr: |- |- |- |+ |+ |++|- |+ |+ |- |--|+ |+ |- |+ |0 |- |--|- |0 |--|- |- |0 |- |
     - Fd is the doplings current food value
     - The last set of columns, Th Sc Pl Dr Up Dw Rt Lf, are all of the dopling's proteins
         - Th is Thinkin, Sc is Schemin, Lf is Leftin, Sp is Splittin, etc.
-- The first row shows the values that represent what the dopling sees (and its current food)
+- The first row (which begins with #:) shows the values that represent what the dopling sees (and its current food)
     - They correspond to the Input listed below them in the second row
         - Example for the table shown: The dopling has a food value of 5 (Fd = 5)
     - A dopling can see up to 5 spaces in each direction
