@@ -177,7 +177,7 @@ Sc: |0 |+ |+ |++|- |--|++|--|- |- |+ |--|--|++|- |+ |- |+ |++|- |--|--|- |+ |- |
 Pl: |- |--|- |- |- |- |+ |--|++|--|+ |--|- |+ |- |++|+ |--|+ |- |- |- |--|0 |- |++|
 Dr: |- |- |- |+ |+ |++|- |+ |+ |- |--|+ |+ |- |+ |0 |- |--|- |0 |--|- |- |0 |- |+ |
 ```
-### How are protein values calcuated?
+### How are protein values calculated?
 - Each turn, the quantity of each messenger protein is calculated using the following process:
     - Each protein has a specifc activation/inhibition coefficient (any number, negative or positive) for each of the listed inputs (In:) in the table (more info below)
         - The value of these coefficients is displayed by the table as +'s and -'s     
