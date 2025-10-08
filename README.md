@@ -219,7 +219,7 @@ Dr: |- |- |- |+ |+ |++|- |+ |+ |- |--|+ |+ |- |+ |0 |- |--|- |0 |--|- |- |0 |- |
 
 # Notes on Runnning the Simulation
 1. This program runs using Python, it was tested in Python 3.8.5 on MacOS
-2. This program uses ASCII Escape Characters to provide colors to the terminal output, so it is not useable in terminals that do not support them
+2. This program uses ANSI Escape Codes to provide colors to the terminal output, so it is not useable in terminals that do not support them
 3. The default grid size is 100x100, you may need to decrease your terminal font size for the simualtion to display properly
 4. As the simulation progresses and the doplings evolve, it will save all doplings that have been created
     + If your machine begins to run low on available memory, you can 'save' a chosen dopling, end the simulation, and start a new simulation by using the saved dopling to continue your evolutionary journey
