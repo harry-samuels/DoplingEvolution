@@ -1,5 +1,6 @@
 import cell as cellModule
 import grid
+import inputs
 
 import random
 
@@ -38,8 +39,9 @@ class Genealogy:
             self.taxon= Taxon(self)
         else:
             self.mother= mothergenealogy
-            self.mother.children.append(self)
             self.generation= self.mother.generation + 1
+            if not inputs.MEMORY_SAVER_MODE:
+                self.mother.children.append(self)
 
             #check if this cell had a MegaMutation and change color from mother's color if True
             if self.mother.nextchildmegamutation:
@@ -60,6 +62,8 @@ class Genealogy:
             #check if mother cell is being tracked and initialize correct self.tracking and self.tracktype values
             self.initializeTracking()
 
+            if inputs.MEMORY_SAVER_MODE:
+                self.mother= None
         
         self.nextchildmegamutation= False
 
@@ -173,17 +177,18 @@ class Taxon:
         self.color= originatorGenealogy.color
         self.advent= self.originator.map.totalturns
         self.generations= 0
+        self.descendedFrom= None
         self.descendedTaxons= []
         self.isExtinct= False
         self.deadMembers= 0
 
-        if originatorGenealogy.mother is None:
-            self.descendedFrom= None
+        if originatorGenealogy.mother is None:        
             self.genus= "deus"
         else:
-            self.descendedFrom= originatorGenealogy.mother.taxon
             self.genus= originatorGenealogy.mother.taxon.species
-            self.descendedFrom.descendedTaxons.append(self)
+            if not inputs.MEMORY_SAVER_MODE:
+                self.descendedFrom= originatorGenealogy.mother.taxon
+                self.descendedFrom.descendedTaxons.append(self)
             
         
         self.species= originatorGenealogy.cell.name[:len(self.originator.name)//2] + random.choice(["eus", "iens", "ococcus", "es", "us", "ans", "ae", "era", "dae", "pi", "ca", "sis"])

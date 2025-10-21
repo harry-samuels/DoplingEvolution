@@ -36,6 +36,7 @@ MESSENGER_PROTEIN_NUMBER= 4
 #How many secondary messenger proteins should spontaneously generated dopling have
 SECONDARY_MESSENGER_NUMBER= 0
 
+
 #used in grid
 
 # Pac-Man mode creates an edgeless map by connecting the left side of the map to the right, and the top of the map to the bottom
@@ -45,6 +46,14 @@ PAC_MAN_MODE= False
 USE_CUSTOM_MAP= False
 # What is the path of the custom map file to be used
 CUSTOM_MAP_FILE= "custom_maps/canyon.json"
+
+
+# used in genealogy
+
+# This mode reduces the memory useage of the simulation (dopling's pointers to parents/children are removed, so only living doplings (mostly) are saved in memory)
+# Use this mode to run the simulation for a long time without interruption, doplings will act and evolve identically to the normal simulation mode 
+# Pedigree and phylogeny generation are not functional in this mode, all doplings will display as having no parents/offspring, and other display features may not work as normal
+MEMORY_SAVER_MODE= True
 
 
 # DEFAULT VALUES
@@ -61,3 +70,4 @@ CUSTOM_MAP_FILE= "custom_maps/canyon.json"
 # PAC_MAN_MODE= False
 # USE_CUSTOM_MAP= False
 # CUSTOM_MAP_FILE= "custom_maps/canyon.json"
+# MEMORY_SAVER_MODE= False
