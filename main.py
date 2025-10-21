@@ -314,7 +314,7 @@ runSimulation()
 Features to Implement:
 -----------------------
 
-
+- fix bug #BUG!!! Splitting onto food does not give the mother cell or daughter cell the food
 
 --------VISUAL/TRACKING:
 
