@@ -223,6 +223,7 @@ Dr: |- |- |- |+ |+ |++|- |+ |+ |- |--|+ |+ |- |+ |0 |- |--|- |0 |--|- |- |0 |- |
 3. The default grid size is 100x100, you may need to decrease your terminal font size for the simualtion to display properly
 4. As the simulation progresses and the doplings evolve, it will save all doplings that have been created
     + If your machine begins to run low on available memory, you can 'save' a chosen dopling, end the simulation, and start a new simulation by using the saved dopling to continue your evolutionary journey
+    + "Memory Saver Mode" can be activated in the inputs.py file, which will limit the simulation's tracking capabilities but greatly reduce memory useage
 5. The inital 'jumpstart' command may take several minutes to create a successful lineage of doplings, as each starter dopling is generated completely randomly, and the overwhelming majority of them cannot navigate the map in any way
     + Using an already evolved dopling with the 'load' command, like "fourby", can cut down on the startup time for your simulation
     + The simulation is completely capable of creating a new succesful and random "starter" dopling, but certain inputs beyond the default ones may require even longer startup times
