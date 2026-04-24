@@ -23,7 +23,7 @@ FOOD_VALUE= 1
 # What is the minimum number of living doplings (positive int)
 BASE_CELL_NUMBER= 25
 # How much food should spontaneously generated doplings have
-SPAWNED_CELL_FOOD= 5
+SPAWNED_CELL_FOOD= 2.5
 
 
 #used in cell
@@ -53,7 +53,7 @@ CUSTOM_MAP_FILE= "custom_maps/canyon.json"
 # This mode reduces the memory useage of the simulation (dopling's pointers to parents/children are removed, so only living doplings (mostly) are saved in memory)
 # Use this mode to run the simulation for a long time without interruption, doplings will act and evolve identically to the normal simulation mode 
 # Pedigree and phylogeny generation are not functional in this mode, all doplings will display as having no parents/offspring, and other display features may not work as normal
-MEMORY_SAVER_MODE= False
+MEMORY_SAVER_MODE= True
 
 
 # DEFAULT VALUES
