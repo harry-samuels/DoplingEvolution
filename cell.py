@@ -425,7 +425,7 @@ class Cell:
         #check if ready to split and ensure cell was not just spawned
         if isSplitting and (self.age > 1):
             self.split(goingTo)
-            #BUG!!! Splitting onto food does not give the mother cell or daughter cell the food
+            #(resolved in split method) BUG!!! Splitting onto food does not give the mother cell or daughter cell the food
         else:
             #this was above the if statement but i moved it down, this has stimmied evolution it appears
             self.checkFood(goingTo) # <-----
@@ -664,7 +664,12 @@ class Cell:
     def split(self, position):
         if position.isFull():
             return
-        #BUG splitting onto food does not give food
+        #allow splitting onto food to increase food of daughter cell
+        if position.isFood():
+            positionFood= position.contains.value
+        else:
+            positionFood= 0
+        #resolved BUG splitting onto food does not give food
         self.valuetable["food"]= self.valuetable["food"]/2
         for m in self.messengers:
             self.valuetable[m]= (self.valuetable[m])/2
@@ -674,7 +679,7 @@ class Cell:
         new_modtable, new_secondarytable, new_movementtable, new_valuetable, new_proteinInfo= mutateGenome(copy.deepcopy(self.modtable), copy.deepcopy(self.secondarytable), copy.deepcopy(self.movementtable), copy.deepcopy(self.valuetable), self)
 
 
-        c= Cell(self.map, position, self.valuetable["food"], new_modtable, new_secondarytable, new_movementtable, new_valuetable, new_proteinInfo, self.genealogy, mutateSpeed(self.speed, self))
+        c= Cell(self.map, position, (self.valuetable["food"] + positionFood), new_modtable, new_secondarytable, new_movementtable, new_valuetable, new_proteinInfo, self.genealogy, mutateSpeed(self.speed, self))
         c.move()
         return c
 
