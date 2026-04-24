@@ -13,12 +13,20 @@ def runSimulation():
     #cell.Cell.SPLIT_SPEED_RATIO= inputs.FOOD_TO_SPLIT/inputs.FOOD_TO_MOVE  #make this an actual input value?
     MAP= grid.Grid(inputs.MAP_ROWS, inputs.MAP_COLUMNS) # max size 999x999 
 
-    SIMULATING= True
-    generationThreshold= 100
+
     runTurn(MAP)
+
+    testCell= random.choice(cell.CELLS)
+    testCell.name= "TEST_" + testCell.name
+    testCell.saveCell()
+
     fourbyFile= "saved_doplings/fourby.json"
     spawnLocation= MAP.getNode(20, 20)
     cell.loadCell(fourbyFile, MAP, spawnLocation)
+
+    SIMULATING= True
+    generationThreshold= 100
+    
     while SIMULATING:
         runTurn(MAP)
         #display.printDisplay(MAP)
