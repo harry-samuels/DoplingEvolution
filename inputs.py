@@ -48,6 +48,14 @@ USE_CUSTOM_MAP= False
 CUSTOM_MAP_FILE= "custom_maps/canyon.json"
 
 
+#used in grid and main
+
+# If True, the stae JSON file located at SAVED_STATE_FILE will be used as the state for the simulation
+USE_SAVED_STATE= False
+# What is the path of the custom state file to be used
+SAVED_STATE_FILE= "saved_states/test.json"
+
+
 # used in genealogy
 
 # This mode reduces the memory useage of the simulation (dopling's pointers to parents/children are removed, so only living doplings (mostly) are saved in memory)
@@ -70,4 +78,6 @@ MEMORY_SAVER_MODE= True
 # PAC_MAN_MODE= False
 # USE_CUSTOM_MAP= False
 # CUSTOM_MAP_FILE= "custom_maps/canyon.json"
+# USE_SAVED_STATE= False
+# SAVED_STATE_FILE= "saved_states/test.json"
 # MEMORY_SAVER_MODE= False

@@ -7,13 +7,17 @@ import inputs
 
 import random
 import os
+import json
 
 #import cProfile
 
 def runSimulation():
     helpMessages.displayStartupMessages()
     #cell.Cell.SPLIT_SPEED_RATIO= inputs.FOOD_TO_SPLIT/inputs.FOOD_TO_MOVE  #make this an actual input value?
-    MAP= grid.Grid(inputs.MAP_ROWS, inputs.MAP_COLUMNS) # max size 999x999 
+    if inputs.USE_SAVED_STATE:
+        MAP= loadState()
+    else:
+        MAP= grid.Grid(inputs.MAP_ROWS, inputs.MAP_COLUMNS) # max size 999x999 
 
     SIMULATING= True
     while SIMULATING:
@@ -73,6 +77,9 @@ def processInput(MAP, inp):
         pedigree()
     elif inp == "wall":
         wall(MAP)
+    elif inp == "savestate":
+        saveState(MAP, input("What should this save state be called?: "))
+
     return True
  
     
@@ -306,6 +313,49 @@ def wall(MAP):
         
     elif buildRemoveDestroy == "destroy":
         MAP.destroyWalls()
+
+#save a loadable copy of the current map and all living doplings with their current valuetables
+#MAP is the Grid object being saved
+#file_name is a str 
+def saveState(MAP, file_name):
+    stateData= {}
+    stateData["FOOD_PER_TURN"]= inputs.FOOD_PER_TURN
+    stateData["FOOD_VALUE"]= inputs.FOOD_VALUE
+    stateData["BASE_CELL_NUMBER"]= inputs.BASE_CELL_NUMBER
+    stateData["SPAWNED_CELL_FOOD"]= inputs.SPAWNED_CELL_FOOD
+    stateData["FOOD_TO_MOVE"]= inputs.FOOD_TO_MOVE
+    stateData["MESSENGER_PROTEIN_NUMBER"]= inputs.MESSENGER_PROTEIN_NUMBER
+    stateData["SECONDARY_MESSENGER_NUMBER"]= inputs.SECONDARY_MESSENGER_NUMBER
+    stateData["PAC_MAN_MODE"]= inputs.PAC_MAN_MODE
+
+    stateData["MAP"]= MAP.saveGrid()
+
+    with open("saved_states/" + file_name + ".json", "w") as stateFile:
+                stateFile.write(json.dumps(stateData, indent=4))
+
+# Load the state file from inputs.py
+# Configure the simluation input vairables to match the saved state file and
+# Return the Grid Object of the saved state file in the input file
+def loadState():
+    stateData= json.load(open(inputs.SAVED_STATE_FILE))
+
+    inputs.FOOD_PER_TURN= stateData["FOOD_PER_TURN"] 
+    inputs.FOOD_VALUE= stateData["FOOD_VALUE"] 
+    inputs.BASE_CELL_NUMBER= stateData["BASE_CELL_NUMBER"] 
+    inputs.SPAWNED_CELL_FOOD= stateData["SPAWNED_CELL_FOOD"] 
+    inputs.FOOD_TO_MOVE= stateData["FOOD_TO_MOVE"] 
+    inputs.MESSENGER_PROTEIN_NUMBER= stateData["MESSENGER_PROTEIN_NUMBER"] 
+    inputs.SECONDARY_MESSENGER_NUMBER= stateData["SECONDARY_MESSENGER_NUMBER"] 
+    inputs.PAC_MAN_MODE= stateData["PAC_MAN_MODE"] 
+
+    inputs.USE_CUSTOM_MAP= False
+
+    MAP= grid.createStateGrid(stateData["MAP"])
+
+    return MAP
+
+
+
 
 runSimulation()
 

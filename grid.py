@@ -147,8 +147,6 @@ def createCustomGrid(rows, columns, customMapList):
             if row[x] == "X":
                 container[y][x].makeWall()
     return container
-            
-
 
 class Grid:
     
@@ -300,7 +298,49 @@ class Grid:
         else:
             cell.Cell(self, location, food)
 
+    #return a dictionary (MAP) representation of the grids that also includes all of the grids doplings
+    def saveGrid(self):
+        MAP= {}
+        MAP["rows"]= self.rows
+        MAP["columns"]= self.columns
+        MAP["latestgeneration"]= self.latestgeneration
+        
+        # a list of len 3 tuples: ( row (int), column (int), foodValue (float) )
+        foodList= []
+        # a list of len 2 tuples: ( row (int), column (int) )
+        wallsList= []
+        # a list of len 3 tuples: ( row (int), column (int), cellData (dictionary) )
+        cellsList= []
 
+        checkNode= None
+        for row in range(0, self.rows):
+            for column in range(0, self.columns):    
+                checkNode= self.getNode(row, column) 
+                if checkNode.isFood():
+                    foodList.append((row, column, checkNode.contains.value)) 
+                if checkNode.isWall():
+                    wallsList.append((row, column))
+                if checkNode.isFull():
+                    cellsList.append((row, column, checkNode.contains.saveCell(True)))
+
+        MAP["foodList"]= foodList
+        MAP["wallsList"]= wallsList
+        MAP["cellsList"]= cellsList
+
+        return MAP
+
+
+#create a Grid Object described by the MAPdata dictionary and return that object
+def createStateGrid(MAPdata):
+    MAP= Grid(MAPdata["rows"], MAPdata["columns"])
+    for food in MAPdata["foodList"]:
+        MAP.spawnFood(food[2], MAP.getNode(food[0], food[1]))
+    for wall in MAPdata["wallsList"]:
+        MAP.buildWall("H", wall[0], wall[1], 1)
+    for dataCell in MAPdata["cellsList"]:
+        cell.loadCell(dataCell[2], MAP, MAP.getNode(dataCell[0], dataCell[1]), True)
+
+    return MAP
 
                 
 

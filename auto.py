@@ -7,37 +7,26 @@ import inputs
 
 import random
 import os
+import json
 
 def runSimulation():
     #helpMessages.displayStartupMessages()
     #cell.Cell.SPLIT_SPEED_RATIO= inputs.FOOD_TO_SPLIT/inputs.FOOD_TO_MOVE  #make this an actual input value?
-    MAP= grid.Grid(inputs.MAP_ROWS, inputs.MAP_COLUMNS) # max size 999x999 
+    MAP= loadState("saved_states/generation_333000.json") # max size 999x999 
 
 
     runTurn(MAP)
-
-    testCell= random.choice(cell.CELLS)
-    testCell.name= "TEST_" + testCell.name
-    testCell.saveCell()
-
-    fourbyFile= "saved_doplings/fourby.json"
-    spawnLocation= MAP.getNode(20, 20)
-    cell.loadCell(fourbyFile, MAP, spawnLocation)
 
     SIMULATING= True
     generationThreshold= 100
     
     while SIMULATING:
         runTurn(MAP)
-        #display.printDisplay(MAP)
-        #SIMULATING= processInput(MAP, input())
+        print(MAP.latestgeneration) #DEBUG
         if MAP.latestgeneration > generationThreshold:
-            sampleCell= random.choice(cell.CELLS)
-            sampleCell.name= str(generationThreshold) + "_" + sampleCell.name
-            sampleCell.saveCell()
+            saveState(MAP, "currentState")
             generationThreshold +=500
-           # if generationThreshold > 1000:
-            #    SIMULATING= False
+
 
 def runTurn(MAP):
     #increase turn counter
@@ -54,6 +43,48 @@ def runTurn(MAP):
         MAP.spawnCell(food=inputs.SPAWNED_CELL_FOOD)
     #set latest generation to most recently created cell's generation
     #MAP.latestgeneration= cell.ALL_CELLS[-1].genealogy.generation
+
+
+#save a loadable copy of the current map and all living doplings with their current valuetables
+#MAP is the Grid object being saved
+#file_name is a str 
+def saveState(MAP, file_name):
+    stateData= {}
+    stateData["FOOD_PER_TURN"]= inputs.FOOD_PER_TURN
+    stateData["FOOD_VALUE"]= inputs.FOOD_VALUE
+    stateData["BASE_CELL_NUMBER"]= inputs.BASE_CELL_NUMBER
+    stateData["SPAWNED_CELL_FOOD"]= inputs.SPAWNED_CELL_FOOD
+    stateData["FOOD_TO_MOVE"]= inputs.FOOD_TO_MOVE
+    stateData["MESSENGER_PROTEIN_NUMBER"]= inputs.MESSENGER_PROTEIN_NUMBER
+    stateData["SECONDARY_MESSENGER_NUMBER"]= inputs.SECONDARY_MESSENGER_NUMBER
+    stateData["PAC_MAN_MODE"]= inputs.PAC_MAN_MODE
+
+    stateData["MAP"]= MAP.saveGrid()
+
+    with open("saved_states/" + file_name + ".json", "w") as stateFile:
+                stateFile.write(json.dumps(stateData, indent=4))
+
+
+# Load the state file (str path to state file) from inputs.py
+# Configure the simluation input vairables to match the saved state file and
+# Return the Grid Object of the saved state file in the input file
+def loadState(stateFile):
+    stateData= json.load(open(stateFile))
+
+    inputs.FOOD_PER_TURN= stateData["FOOD_PER_TURN"] 
+    inputs.FOOD_VALUE= stateData["FOOD_VALUE"] 
+    inputs.BASE_CELL_NUMBER= stateData["BASE_CELL_NUMBER"] 
+    inputs.SPAWNED_CELL_FOOD= stateData["SPAWNED_CELL_FOOD"] 
+    inputs.FOOD_TO_MOVE= stateData["FOOD_TO_MOVE"] 
+    inputs.MESSENGER_PROTEIN_NUMBER= stateData["MESSENGER_PROTEIN_NUMBER"] 
+    inputs.SECONDARY_MESSENGER_NUMBER= stateData["SECONDARY_MESSENGER_NUMBER"] 
+    inputs.PAC_MAN_MODE= stateData["PAC_MAN_MODE"] 
+
+    inputs.USE_CUSTOM_MAP= False
+
+    MAP= grid.createStateGrid(stateData["MAP"])
+
+    return MAP
 
 runSimulation()
 

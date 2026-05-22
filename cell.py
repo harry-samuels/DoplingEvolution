@@ -711,7 +711,7 @@ class Cell:
     #         print(movs)
         
 
-    def saveCell(self):
+    def saveCell(self, returnDICT=False):
         cellData= {}
         cellData["name"]= self.name
         cellData["color"]= self.genealogy.color
@@ -730,22 +730,32 @@ class Cell:
         cellData["secondarytable"]= self.secondarytable
         cellData["movementtable"]= self.movementtable
 
+        cellData["valuetable"]= self.valuetable
 
-
+        #If returnDICT is True, the cell file will not be saved to the saved cells folder and the cellData dictionary will instead by returned for use elsewhere
+        if returnDICT:
+            return cellData
+            
         with open("saved_doplings/" + self.name + ".json", "w") as cellFile:
             cellFile.write(json.dumps(cellData, indent=4))
 
 #spawn cell saved in cellFile (json filepath) in map (grid) at location (Node)
-def loadCell(cellFile, map, location):
-    cellData= json.load(open(cellFile))
+# if directDictionary is True then the given cellFile is actually a dictionary object with the needed information and is not a filepath
+def loadCell(cellFile, map, location, directDictionary=False):
+    if directDictionary:
+        cellData= cellFile
+    else:
+        cellData= json.load(open(cellFile))
     cellIndex= BASE_MOD_INDEX + cellData["proteinInfo"]["messengers"] + cellData["proteinInfo"]["secondaries"] + cellData["proteinInfo"]["proteins"]
-    loadedCell= Cell(map, location, inputs.SPAWNED_CELL_FOOD, cellData["modtable"], cellData["secondarytable"], cellData["movementtable"], dict.fromkeys(cellIndex, 0), cellData["proteinInfo"])
+    #Older saved doplings did not save valuetable
+    if not ("valuetable" in cellData):
+        cellData["valuetable"]= dict.fromkeys(cellIndex, 0)
+        cellData["valuetable"]["food"]= inputs.SPAWNED_CELL_FOOD
+    loadedCell= Cell(map, location, cellData["valuetable"]["food"], cellData["modtable"], cellData["secondarytable"], cellData["movementtable"], cellData["valuetable"], cellData["proteinInfo"])
     #give cell correct name and corrected taxon + color
     loadedCell.name= cellData["name"]
     loadedCell.genealogy.color= cellData["color"]
     loadedCell.genealogy.taxon= genealogy.Taxon(loadedCell.genealogy)
-    #ignore splith speed ratio restrictions
-    #loadedCell.splitThreshold= cellData["split"]
     loadedCell.speed= cellData["speed"]
 
     return loadedCell
