@@ -10,9 +10,7 @@ import os
 import json
 
 def runSimulation():
-    #helpMessages.displayStartupMessages()
-    #cell.Cell.SPLIT_SPEED_RATIO= inputs.FOOD_TO_SPLIT/inputs.FOOD_TO_MOVE  #make this an actual input value?
-    MAP= loadState("saved_states/generation_333000.json") # max size 999x999 
+    MAP= loadState("saved_states/500_Generations.json") # max size 999x999 
 
 
     runTurn(MAP)
@@ -22,7 +20,7 @@ def runSimulation():
     
     while SIMULATING:
         runTurn(MAP)
-        print(MAP.latestgeneration) #DEBUG
+        #print(MAP.latestgeneration) #DEBUG
         if MAP.latestgeneration > generationThreshold:
             saveState(MAP, "currentState")
             generationThreshold +=500
